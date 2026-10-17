@@ -102,7 +102,7 @@ flowchart TD
 ## 3. Cấu Trúc Thư Mục Dự Án
 
 ```text
-Đồ Án Clean Data/
+Real-Time-Weather-Data-Collection-and-Cleaning/
 ├── app.py                              # Giao diện Web Dashboard Streamlit (4 Tab trực quan)
 ├── run_dashboard.bat                   # File .bat duy nhất: tự động kiểm tra thư viện, chạy pipeline (nếu cần) & mở Web
 ├── requirements.txt                    # Danh sách thư viện Python (pandas, scikit-learn, xgboost, torch, streamlit...)
