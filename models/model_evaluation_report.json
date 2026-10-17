@@ -1,94 +1,107 @@
 {
-  "model_name": "Hybrid Ridge + HistGradientBoosting + XGBoost Residual Forecaster",
-  "trained_at": "2026-10-17 15:37:35",
-  "train_rows": 20160,
-  "val_rows": 4320,
-  "test_rows": 4300,
+  "model_name": "Hybrid (GRU + Ridge + HistGradientBoosting) + XGBoost Residual Forecaster",
+  "trained_at": "2026-10-17 18:57:54",
+  "train_rows": 30180,
+  "val_rows": 6460,
+  "test_rows": 6460,
   "num_features": 58,
   "stationarity_diagnostics": {
-    "adf_statistic": -3.1572,
-    "adf_pvalue": 0.022596511397075334,
-    "lag24_autocorrelation": 0.8421
+    "adf_statistic": -3.9569,
+    "adf_pvalue": 0.0016536224572098294,
+    "lag24_autocorrelation": 0.8296
   },
   "temperature_model_comparison": {
     "Seasonal Naive": {
-      "val_mae": 1.0136,
-      "val_rmse": 1.4733,
-      "val_r2": 0.848,
-      "test_mae": 0.9681,
+      "val_mae": 0.7232,
+      "val_rmse": 1.0182,
+      "val_r2": 0.9158,
+      "test_mae": 1.0187,
       "test_mae_95ci": [
-        0.9421,
-        0.9966
+        0.9947,
+        1.0445
       ],
-      "test_rmse": 1.3596,
-      "test_r2": 0.8491,
+      "test_rmse": 1.4423,
+      "test_r2": 0.8483,
       "train_time_sec": 0.001
     },
     "Ridge Autoregressive": {
-      "val_mae": 0.4571,
-      "val_rmse": 0.6524,
-      "val_r2": 0.9702,
-      "test_mae": 0.4825,
+      "val_mae": 0.3943,
+      "val_rmse": 0.5695,
+      "val_r2": 0.9737,
+      "test_mae": 0.455,
       "test_mae_95ci": [
-        0.4674,
-        0.4985
+        0.4422,
+        0.4657
       ],
-      "test_rmse": 0.6698,
-      "test_r2": 0.9634,
-      "train_time_sec": 0.0346
+      "test_rmse": 0.6425,
+      "test_r2": 0.9699,
+      "train_time_sec": 0.0306
+    },
+    "GRU Neural Network": {
+      "val_mae": 0.3915,
+      "val_rmse": 0.5569,
+      "val_r2": 0.9748,
+      "test_mae": 0.4603,
+      "test_mae_95ci": [
+        0.4494,
+        0.4704
+      ],
+      "test_rmse": 0.6359,
+      "test_r2": 0.9705,
+      "train_time_sec": 24.166
     },
     "HistGradientBoosting": {
-      "val_mae": 0.4,
-      "val_rmse": 0.6184,
-      "val_r2": 0.9732,
-      "test_mae": 0.3825,
+      "val_mae": 0.3541,
+      "val_rmse": 0.5248,
+      "val_r2": 0.9776,
+      "test_mae": 0.4217,
       "test_mae_95ci": [
-        0.369,
-        0.3938
+        0.4109,
+        0.4328
       ],
-      "test_rmse": 0.5766,
-      "test_r2": 0.9729,
-      "train_time_sec": 2.9666
+      "test_rmse": 0.6415,
+      "test_r2": 0.97,
+      "train_time_sec": 3.1551
     },
-    "Hybrid + XGBoost Residual": {
-      "val_mae": 0.3928,
-      "val_rmse": 0.6035,
-      "val_r2": 0.9745,
-      "test_mae": 0.3768,
+    "Hybrid GRU + XGBoost Residual": {
+      "val_mae": 0.3461,
+      "val_rmse": 0.5146,
+      "val_r2": 0.9785,
+      "test_mae": 0.4104,
       "test_mae_95ci": [
-        0.3639,
-        0.3888
+        0.3998,
+        0.4202
       ],
-      "test_rmse": 0.5687,
-      "test_r2": 0.9736,
-      "train_time_sec": 5.1355
+      "test_rmse": 0.61,
+      "test_r2": 0.9729,
+      "train_time_sec": 20.6626
     }
   },
   "multi_target_test_metrics": {
     "temperature_2m": {
-      "test_mae": 0.3628,
-      "test_rmse": 0.5528,
-      "test_r2": 0.9751
+      "test_mae": 0.3889,
+      "test_rmse": 0.5934,
+      "test_r2": 0.9743
     },
     "relative_humidity_2m": {
-      "test_mae": 1.9331,
-      "test_rmse": 2.9491,
-      "test_r2": 0.9436
+      "test_mae": 2.0876,
+      "test_rmse": 3.1968,
+      "test_r2": 0.9414
     },
     "wind_speed_10m": {
-      "test_mae": 1.2353,
-      "test_rmse": 1.7185,
-      "test_r2": 0.8888
+      "test_mae": 1.4906,
+      "test_rmse": 2.0662,
+      "test_r2": 0.8277
     },
     "precipitation": {
-      "test_mae": 0.2138,
-      "test_rmse": 0.472,
-      "test_r2": 0.3413
+      "test_mae": 0.2664,
+      "test_rmse": 0.6395,
+      "test_r2": 0.3598
     },
     "pressure_msl": {
-      "test_mae": 0.2658,
-      "test_rmse": 0.3439,
-      "test_r2": 0.9812
+      "test_mae": 0.2711,
+      "test_rmse": 0.3871,
+      "test_r2": 0.9821
     }
   }
 }

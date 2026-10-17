@@ -3,10 +3,10 @@ Topic 6: Real-Time Weather Data Collection and Cleaning
 Step 5: Real-Time API Fetching, Live Data Cleaning & 7-Day Weight Inference Engine
 This module is used both via CLI and inside the Streamlit Live Demo (`app.py`):
   1. Calls all 4 Real-Time APIs (`Open-Meteo SDK`, `WeatherAPI.com`, `Xweather API`, `FreeOpenAPI.dev`)
-     for a selected location to obtain the latest 72+ hours of real-time context.
+     for a selected location to obtain the latest 96 hours of real-time context plus synoptic guidance.
   2. Executes the Real-Time Cleaning Pipeline (standardize timestamps, deduplicate, fuse sensors, validate ranges).
-  3. Loads the pre-trained weights from `models/weather_forecast_weights.joblib` and runs recursive
-     Hybrid + XGBoost Residual Weight Inference to forecast all 5 weather variables for the next 7 days (168 hours).
+  3. Loads the pre-trained weights from `models/weather_forecast_weights.joblib` and runs
+     Hybrid + XGBoost Residual Weight Inference combined with synoptic NWP dynamics for the next 7 days (168 hours).
 """
 
 import json
@@ -18,9 +18,6 @@ from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
-import openmeteo_requests
-import requests_cache
-from retry_requests import retry
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -70,8 +67,8 @@ def http_get_json(url: str, headers: dict = None, timeout: int = 10) -> dict:
 def fetch_and_clean_live_city_data(loc_meta: dict) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     """
     Call all 4 live APIs in real-time for a single city, return:
-      - df_raw_live: Uncleaned multi-API records just fetched
-      - df_clean_live: Cleaned, standardized, sensor-fused hourly history
+      - df_raw_live: Uncleaned multi-API records just fetched (up to current hour)
+      - df_clean_live: Cleaned, standardized, sensor-fused hourly history (plus synoptic future stored in attrs)
       - api_status: Dict summarizing status & latency of each of the 4 APIs
     """
     env = load_env_keys()
@@ -84,13 +81,13 @@ def fetch_and_clean_live_city_data(loc_meta: dict) -> tuple[pd.DataFrame, pd.Dat
     raw_rows = []
     api_status = {}
 
-    # 1. Open-Meteo Live API
+    # 1. Open-Meteo Live API (past_days=4 + forecast_days=8 for synoptic coupling)
     t0 = time.perf_counter()
     try:
         om_url = (
             f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
             f"&hourly=temperature_2m,wind_speed_10m,relative_humidity_2m,precipitation,pressure_msl,wind_gusts_10m"
-            f"&past_days=4&forecast_days=1&timezone=Asia%2FBangkok"
+            f"&past_days=4&forecast_days=8&timezone=Asia%2FBangkok"
         )
         om_json = http_get_json(om_url)
         hourly = om_json.get("hourly", {})
@@ -120,7 +117,7 @@ def fetch_and_clean_live_city_data(loc_meta: dict) -> tuple[pd.DataFrame, pd.Dat
     t0 = time.perf_counter()
     try:
         wkey = env.get("WEATHERAPI_KEY", "")
-        w_url = f"http://api.weatherapi.com/v1/forecast.json?key={wkey}&q={lat},{lon}&days=2&aqi=no&alerts=no"
+        w_url = f"http://api.weatherapi.com/v1/forecast.json?key={wkey}&q={lat},{lon}&days=3&aqi=no&alerts=no"
         w_json = http_get_json(w_url)
         curr = w_json.get("current", {})
         cnt = 0
@@ -219,16 +216,17 @@ def fetch_and_clean_live_city_data(loc_meta: dict) -> tuple[pd.DataFrame, pd.Dat
     except Exception as e:
         api_status["FreeOpenAPI.dev"] = {"status": f"OFFLINE: {e}", "records": 0, "latency_ms": 0}
 
-    df_raw_live = pd.DataFrame(raw_rows)
+    df_all_live = pd.DataFrame(raw_rows)
 
-    if df_raw_live.empty:
+    if df_all_live.empty:
         df_local = pd.read_csv(CLEAN_DIR / "cleaned_weather_data.csv")
         df_city = df_local[df_local["location_id"] == loc_id].tail(120).copy()
         df_city["timestamp"] = pd.to_datetime(df_city["time"])
+        df_city["time_vn"] = df_city["timestamp"].dt.strftime("%d/%m/%Y %H:%M")
         return df_city, df_city, api_status
 
     # Live Data Cleaning Pipeline
-    df = df_raw_live.copy()
+    df = df_all_live.copy()
     s_clean = (
         df["raw_date"].astype(str)
         .str.replace("T", " ", regex=False)
@@ -243,7 +241,7 @@ def fetch_and_clean_live_city_data(loc_meta: dict) -> tuple[pd.DataFrame, pd.Dat
         low, high = VALID_RANGES[col]
         df.loc[(df[col] < low) | (df[col] > high), col] = np.nan
 
-    df_fused = (
+    df_fused_all = (
         df.groupby("timestamp", as_index=False)
         .agg(
             location_id=("location_id", "first"),
@@ -260,23 +258,68 @@ def fetch_and_clean_live_city_data(loc_meta: dict) -> tuple[pd.DataFrame, pd.Dat
         .sort_values("timestamp")
     )
 
-    grid = pd.date_range(df_fused["timestamp"].min(), df_fused["timestamp"].max(), freq="1h")
-    df_fused = df_fused.set_index("timestamp").reindex(grid)
-    df_fused.index.name = "timestamp"
-    df_fused["location_id"] = loc_id
-    df_fused["city"] = city
-    df_fused["region"] = region
+    grid = pd.date_range(df_fused_all["timestamp"].min(), df_fused_all["timestamp"].max(), freq="1h")
+    df_fused_all = df_fused_all.set_index("timestamp").reindex(grid)
+    df_fused_all.index.name = "timestamp"
+    df_fused_all["location_id"] = loc_id
+    df_fused_all["city"] = city
+    df_fused_all["region"] = region
     for col in TARGET_VARS:
         if col == "precipitation":
-            df_fused[col] = df_fused[col].fillna(0.0).round(2)
+            df_fused_all[col] = df_fused_all[col].fillna(0.0).round(2)
         else:
-            df_fused[col] = df_fused[col].interpolate(method="time").ffill().bfill().round(2)
-    df_fused["num_sources"] = df_fused["num_sources"].fillna(1).astype(int)
-    df_fused["sources"] = df_fused["sources"].fillna("Interpolated")
-    df_clean_live = df_fused.reset_index()
-    df_clean_live["time"] = df_clean_live["timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
+            df_fused_all[col] = df_fused_all[col].interpolate(method="time").ffill().bfill().round(2)
+    df_fused_all["num_sources"] = df_fused_all["num_sources"].fillna(1).astype(int)
+    df_fused_all["sources"] = df_fused_all["sources"].fillna("Interpolated")
+    df_fused_all = df_fused_all.reset_index()
+
+    now_hr = pd.Timestamp.now().floor("h")
+    # Split strictly into observed history (<= now_hr) and synoptic NWP guidance (> now_hr)
+    df_raw_live = df[df["timestamp"] <= now_hr].drop(columns=["timestamp"]).copy()
+    df_clean_live = df_fused_all[df_fused_all["timestamp"] <= now_hr].copy()
+    df_synoptic_future = df_fused_all[df_fused_all["timestamp"] > now_hr].copy()
+
+    df_clean_live["time"] = df_clean_live["timestamp"].dt.strftime("%d/%m/%Y %H:%M")
+    df_clean_live.attrs["synoptic_future"] = df_synoptic_future
 
     return df_raw_live, df_clean_live, api_status
+
+
+def _sigmoid(x: np.ndarray) -> np.ndarray:
+    return 1.0 / (1.0 + np.exp(-np.clip(x, -40.0, 40.0)))
+
+
+def gru_predict_from_weights(gru_w: dict, X_scaled: np.ndarray) -> np.ndarray:
+    """
+    Execute the exact mathematical PyTorch GRU forward pass using the saved NumPy weight matrices.
+    """
+    seq_idx_arr = np.array(gru_w["seq_indices"], dtype=np.int64)
+    X_seq = X_scaled[:, seq_idx_arr]  # (N, 8, 5)
+    N, T, _ = X_seq.shape
+    H = gru_w["hidden_dim"]
+
+    W_ih = gru_w["W_ih"]  # (3H, 5)
+    W_hh = gru_w["W_hh"]  # (3H, H)
+    b_ih = gru_w["b_ih"]  # (3H,)
+    b_hh = gru_w["b_hh"]  # (3H,)
+
+    h = np.zeros((N, H), dtype=np.float64)
+    for t in range(T):
+        x_t = X_seq[:, t, :]
+        gi = x_t @ W_ih.T + b_ih
+        gh = h @ W_hh.T + b_hh
+
+        i_r, i_z, i_n = gi[:, :H], gi[:, H:2 * H], gi[:, 2 * H:]
+        h_r, h_z, h_n = gh[:, :H], gh[:, H:2 * H], gh[:, 2 * H:]
+
+        r_t = _sigmoid(i_r + h_r)
+        z_t = _sigmoid(i_z + h_z)
+        n_t = np.tanh(i_n + r_t * h_n)
+        h = (1.0 - z_t) * n_t + z_t * h
+
+    combined = np.hstack([h, X_scaled])  # (N, H + 58)
+    out_norm = (combined @ gru_w["fc_W"].T + gru_w["fc_b"]).ravel()
+    return out_norm * gru_w["y_std"] + gru_w["y_mean"]
 
 
 def forecast_7_days_via_weight_inference(
@@ -286,7 +329,8 @@ def forecast_7_days_via_weight_inference(
     horizon_hours: int = 168,
 ) -> tuple[pd.DataFrame, pd.DataFrame, float]:
     """
-    Execute 7-Day Recursive Weight Inference using the saved Hybrid + XGBoost Residual weights.
+    Execute 7-Day Recursive Weight Inference using the saved Hybrid (GRU + Ridge + HistGB) + XGBoost Residual weights
+    coupled with multi-API synoptic NWP dynamics so day-to-day weather transitions are captured accurately.
     """
     t_start = time.perf_counter()
 
@@ -294,6 +338,7 @@ def forecast_7_days_via_weight_inference(
     lags = weights_bundle["lags"]
     hgb_models = weights_bundle["hgb_models"]
     ridge_models = weights_bundle["ridge_models"]
+    gru_weights = weights_bundle.get("gru_weights", {})
     xgb_residual_models = weights_bundle.get("xgb_residual_models", {})
     scaler = weights_bundle["scaler"]
 
@@ -302,10 +347,11 @@ def forecast_7_days_via_weight_inference(
     lon = loc_meta["requested_lon"]
     elev = loc_meta["elevation_m"]
 
-    clim_records = weights_bundle.get("hourly_climatology", [])
-    clim_lookup = {
-        r["hour"]: r for r in clim_records if int(r["location_id"]) == int(loc_id)
-    }
+    synoptic_df = df_clean_history.attrs.get("synoptic_future", pd.DataFrame())
+    synoptic_lookup = {}
+    if isinstance(synoptic_df, pd.DataFrame) and not synoptic_df.empty:
+        for _, srow in synoptic_df.iterrows():
+            synoptic_lookup[srow["timestamp"]] = srow
 
     now_hr = pd.Timestamp.now().floor("h")
     hist_upto_now = df_clean_history[df_clean_history["timestamp"] <= now_hr]
@@ -350,36 +396,53 @@ def forecast_7_days_via_weight_inference(
         X_step_scaled = (X_step - scaler_mean) / scaler_scale
 
         step_pred = {"timestamp": next_ts}
-        clim_hr = clim_lookup.get(hr, {})
+        syn_row = synoptic_lookup.get(next_ts, None)
 
-        clim_weight = min(0.25, 0.05 + 0.0012 * step)
-        model_weight = 1.0 - clim_weight
+        # Progressive hybrid coupling: short-range relies heavily on local autoregressive + GRU + XGBoost residual weights,
+        # while medium-range (days 2-7) incorporates synoptic air-mass transitions so daily weather evolves naturally
+        syn_weight = min(0.55, 0.15 + 0.003 * step)
+        ml_weight = 1.0 - syn_weight
 
         for var in TARGET_VARS:
             pred_hgb = float(hgb_models[var].predict(X_step)[0])
             pred_ridge = float(ridge_models[var].predict(X_step_scaled)[0])
+            pred_gru = (
+                float(gru_predict_from_weights(gru_weights[var], X_step_scaled)[0])
+                if var in gru_weights
+                else pred_ridge
+            )
             pred_xgb_res = (
                 float(xgb_residual_models[var].predict(X_step)[0])
                 if var in xgb_residual_models
                 else 0.0
             )
-            raw_model_pred = 0.15 * pred_ridge + 0.85 * pred_hgb + 0.50 * pred_xgb_res
+            base_pred = 0.15 * pred_gru + 0.10 * pred_ridge + 0.75 * pred_hgb
+            raw_ml_pred = base_pred + 0.50 * pred_xgb_res
 
-            if var in clim_hr:
-                val = model_weight * raw_model_pred + clim_weight * float(clim_hr[var])
+            if syn_row is not None and pd.notna(syn_row.get(var)):
+                syn_val = float(syn_row[var])
+                if var == "precipitation":
+                    # Combine synoptic rain occurrence with ML intensity correction
+                    if syn_val <= 0.10:
+                        val = 0.0
+                    else:
+                        val = 0.65 * syn_val + 0.35 * max(0.0, raw_ml_pred)
+                else:
+                    val = ml_weight * raw_ml_pred + syn_weight * syn_val
             else:
-                val = raw_model_pred
+                val = raw_ml_pred
+                if var == "precipitation" and val < 0.55:
+                    val = 0.0
 
             low, high = VALID_RANGES[var]
             val = float(np.clip(val, low, high))
-            if var == "precipitation":
-                val = val if val >= 0.48 else 0.0
             step_pred[var] = round(val, 2)
             buf_arrays[var].append(step_pred[var])
 
         step_pred["step_hour"] = step
-        step_pred["time"] = next_ts.strftime("%Y-%m-%d %H:%M:%S")
-        step_pred["date"] = next_ts.strftime("%Y-%m-%d")
+        step_pred["time"] = next_ts.strftime("%d/%m/%Y %H:%M")
+        step_pred["date_sort"] = next_ts.strftime("%Y-%m-%d")
+        step_pred["date"] = next_ts.strftime("%d/%m/%Y")
         step_pred["hour"] = hr
         step_pred["city"] = loc_meta["city"]
         step_pred["region"] = loc_meta["region"]
@@ -388,7 +451,7 @@ def forecast_7_days_via_weight_inference(
     df_hourly_forecast = pd.DataFrame(forecast_rows)
 
     df_daily_forecast = (
-        df_hourly_forecast.groupby("date", as_index=False)
+        df_hourly_forecast.groupby(["date_sort", "date"], as_index=False)
         .agg(
             temp_mean=("temperature_2m", "mean"),
             temp_min=("temperature_2m", "min"),
@@ -399,6 +462,7 @@ def forecast_7_days_via_weight_inference(
             precip_total=("precipitation", "sum"),
             pressure_mean=("pressure_msl", "mean"),
         )
+        .sort_values("date_sort")
         .head(7)
         .round(2)
     )
@@ -406,9 +470,9 @@ def forecast_7_days_via_weight_inference(
     def classify_weather(row):
         if row["precip_total"] >= 15.0:
             return "Mưa lớn"
-        elif row["precip_total"] >= 3.0:
+        elif row["precip_total"] >= 2.5:
             return "Mưa rào"
-        elif row["humidity_mean"] >= 85.0:
+        elif row["humidity_mean"] >= 84.0:
             return "Nhiều mây"
         elif row["temp_max"] >= 33.0:
             return "Nắng nóng"

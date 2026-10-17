@@ -110,11 +110,18 @@ def clean_multi_source_weather_dataset():
     df["hour"] = df["timestamp"].dt.hour
 
     # -------------------------------------------------------------------------
-    # 3. Remove Completely Empty API Horizon Rows (Open-Meteo >61 days ago)
+    # 3. Remove Future Unobserved Forecast Rows (Strictly keep past up to NOW)
     # -------------------------------------------------------------------------
-    df_valid = df.loc[~all_vars_missing_mask].copy()
+    now_cutoff = pd.Timestamp.now().floor("h")
+    future_mask = df["timestamp"] > now_cutoff
+    future_rows_removed = int(future_mask.sum())
+    empty_api_response_rows = int(all_vars_missing_mask.sum()) + future_rows_removed
+
+    df_valid = df.loc[(~all_vars_missing_mask) & (~future_mask)].copy()
     for col in WEATHER_VARS:
         df_valid[col] = pd.to_numeric(df_valid[col], errors="coerce")
+
+    print(f"   - Future unobserved rows filtered (> {now_cutoff}) : {future_rows_removed:,} rows")
 
     # -------------------------------------------------------------------------
     # 4. Save Multi-Source Cross-API Comparison Table (Before Deduplication)

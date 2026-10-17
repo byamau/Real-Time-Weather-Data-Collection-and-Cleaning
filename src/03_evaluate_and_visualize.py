@@ -74,24 +74,28 @@ def evaluate_and_visualize_real_data():
 
     std_labels = [
         "Float32 Precision\nArtifacts",
-        "Missing Numeric\nCells (NaN)",
         "Unstandardized\nTimestamps (4 APIs)",
-        "Empty API Rows\n(>61d Horizon)",
         "Overlapping\nDuplicates (4 APIs)",
+        "Unobserved / Future\nAPI Rows Filtered",
+        "Wind Gusts < Speed\nInconsistencies",
     ]
     before_std = [
         before["float32_precision_artifacts"],
-        before["total_missing_cells"],
         before["unstandardized_timestamps"],
-        before["empty_api_response_rows"],
         before["key_duplicates"],
+        before["empty_api_response_rows"],
+        before["wind_gust_inconsistencies"],
     ]
     after_std = [0, 0, 0, 0, 0]
 
+    total_raw_cnt = before["total_rows"]
+    total_clean_cnt = report["after_cleaning"]["total_rows"]
+    hours_per_loc = report["after_cleaning"]["hours_per_location"]
+
     x1 = np.arange(len(std_labels))
     w = 0.36
-    b1 = ax1.bar(x1 - w / 2, before_std, w, label="Raw 4-API Data (46,600 rows)", color="#e05a47", edgecolor="black")
-    b2 = ax1.bar(x1 + w / 2, after_std, w, label="Cleaned Dataset (30,220 rows)", color="#2b8cbe", edgecolor="black")
+    b1 = ax1.bar(x1 - w / 2, before_std, w, label=f"Raw Multi-API Data ({total_raw_cnt:,} rows)", color="#e05a47", edgecolor="black")
+    b2 = ax1.bar(x1 + w / 2, after_std, w, label=f"Cleaned Dataset ({total_clean_cnt:,} rows)", color="#2b8cbe", edgecolor="black")
     ax1.set_title("Multi-API Data Quality Issues Detected & Cleaned", fontsize=11.5, fontweight="bold")
     ax1.set_ylabel("Count of Cells / Records", fontsize=10.5)
     ax1.set_xticks(x1)
@@ -128,7 +132,7 @@ def evaluate_and_visualize_real_data():
     plt.close(fig)
 
     # -------------------------------------------------------------------------
-    # Figure 2: Boxplot Distributions of All 6 Weather Variables (30,220 Clean Rows)
+    # Figure 2: Boxplot Distributions of All 6 Weather Variables
     # -------------------------------------------------------------------------
     fig, axes = plt.subplots(2, 3, figsize=(14, 7.5))
     plot_specs = [
@@ -154,7 +158,7 @@ def evaluate_and_visualize_real_data():
         ax.set_yticks([])
         ax.grid(axis="x", linestyle="--", alpha=0.4)
 
-    fig.suptitle("Distributions & Real Meteorological Outliers Across All 6 Variables (30,220 Hourly Observations)", fontsize=13, fontweight="bold", y=1.01)
+    fig.suptitle(f"Distributions & Real Meteorological Outliers Across All 6 Variables ({total_clean_cnt:,} Hourly Observations)", fontsize=13, fontweight="bold", y=1.01)
     plt.tight_layout()
     fig.savefig(FIG_DIR / "fig2_range_validation_boxplots.png", bbox_inches="tight")
     plt.close(fig)
@@ -164,7 +168,7 @@ def evaluate_and_visualize_real_data():
     # -------------------------------------------------------------------------
     rep_cities = [
         "Ho Chi Minh City", "Hanoi", "Da Nang", "Can Tho",
-        "Da Lat (Lam Dong)", "Phu Quoc", "Sa Pa", "Nha Trang"
+        "Da Lat - Lam Dong", "Phu Quoc", "Sa Pa", "Nha Trang"
     ]
     daily_temp = (
         df_clean[df_clean["city"].isin(rep_cities)]
@@ -179,8 +183,8 @@ def evaluate_and_visualize_real_data():
         sub = daily_temp[daily_temp["city"] == c_name].sort_values("obs_date")
         ax.plot(sub["obs_date"], sub["temperature_2m"], label=c_name, linewidth=1.9, color=color, alpha=0.9)
 
-    ax.set_title("Daily Mean Temperature Time-Series Across 8 Representative Locations (Multi-API Fused)", fontsize=12.5, fontweight="bold", pad=10)
-    ax.set_xlabel("Date (Continuous Window: 2026-08-18 to 2026-10-19)", fontsize=11)
+    ax.set_title("Daily Mean Temperature Time-Series Across 8 Representative Locations (Archive + Real-Time Fused)", fontsize=12.5, fontweight="bold", pad=10)
+    ax.set_xlabel(f"Date ({df_clean['obs_date'].min()} to {df_clean['obs_date'].max()})", fontsize=11)
     ax.set_ylabel("Daily Mean Temperature (°C)", fontsize=11)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
     ax.grid(True, linestyle="--", alpha=0.35)
@@ -204,9 +208,9 @@ def evaluate_and_visualize_real_data():
                 va="center", fontsize=8.5, color="#252525")
 
     ax.set_yticks(y_pos)
-    ax.set_yticklabels([f"#{int(r['location_id']):02d} {r['city']} ({int(r['elevation_m'])}m)" for _, r in ranked.iterrows()], fontsize=9)
+    ax.set_yticklabels([f"{r['city']} - {int(r['elevation_m'])}m" for _, r in ranked.iterrows()], fontsize=9)
     ax.set_xlabel("Temperature (°C)", fontsize=11)
-    ax.set_title("Temperature Profile Across All 20 Locations (1,511 Hours/Location)", fontsize=12.5, fontweight="bold", pad=10)
+    ax.set_title(f"Temperature Profile Across All 20 Locations ({hours_per_loc:,} Hours/Location)", fontsize=12.5, fontweight="bold", pad=10)
     ax.set_xlim(ranked["temp_min"].min() - 2, ranked["temp_max"].max() + 6.5)
     ax.grid(axis="x", linestyle="--", alpha=0.4)
     ax.legend(loc="lower right", frameon=True)

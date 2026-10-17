@@ -79,7 +79,7 @@ with st.sidebar:
 # =============================================================================
 # EXECUTE REAL-TIME API FETCH + LIVE CLEANING + WEIGHT INFERENCE
 # =============================================================================
-state_key = f"live_result_{selected_loc['location_id']}_{horizon_hours}"
+state_key = f"live_result_v3_{selected_loc['location_id']}_{horizon_hours}"
 if live_btn or state_key not in st.session_state:
     with st.spinner(f"Đang gọi trực tiếp 4 API thời gian thực cho {selected_loc['city']}, làm sạch dữ liệu và dự báo {forecast_days} ngày..."):
         df_raw_live, df_clean_live, api_status = rt_module.fetch_and_clean_live_city_data(selected_loc)
@@ -110,8 +110,8 @@ st.title(f"Hệ Thống Thu Thập, Làm Sạch Và Dự Báo Thời Tiết Th�
 st.markdown(
     f"**Tọa độ:** `{selected_loc['requested_lat']}°N, {selected_loc['requested_lon']}°E` | "
     f"**Độ cao:** `{selected_loc['elevation_m']} m` | "
-    f"**Mô hình:** `Hybrid + XGBoost Residual` | "
-    f"**Thời gian suy luận {horizon_hours} giờ:** `{infer_ms} ms`"
+    f"**Mô hình:** `Hybrid GRU + XGBoost Residual` | "
+    f"**Thời gian phân tích:** `{infer_ms} ms`"
 )
 
 latest_obs = df_clean_live.iloc[-1]
@@ -121,7 +121,7 @@ kpi2.metric("Độ Ẩm Tương Đối", f"{latest_obs['relative_humidity_2m']:.
 kpi3.metric("Tốc Độ Gió", f"{latest_obs['wind_speed_10m']:.1f} km/h", f"Max {forecast_days} ngày: {df_hr_fc['wind_speed_10m'].max():.1f} km/h")
 kpi4.metric("Lượng Mưa Giờ Gần Nhất", f"{latest_obs['precipitation']:.2f} mm", f"Tổng {forecast_days} ngày: {df_hr_fc['precipitation'].sum():.1f} mm")
 kpi5.metric("Áp Suất Khí Quyển", f"{latest_obs['pressure_msl']:.1f} hPa", f"TB: {df_hr_fc['pressure_msl'].mean():.1f} hPa")
-kpi6.metric("Thời Gian Suy Luận", f"{infer_ms} ms", f"{horizon_hours} bước dự báo")
+kpi6.metric("Thời Gian Phân Tích", f"{infer_ms} ms", f"{horizon_hours} bước dự báo")
 
 # =============================================================================
 # MAIN TABS
@@ -129,7 +129,7 @@ kpi6.metric("Thời Gian Suy Luận", f"{infer_ms} ms", f"{horizon_hours} bướ
 tab1, tab2, tab3, tab4 = st.tabs([
     f"1. Dự Báo {forecast_days} Ngày Tới",
     "2. Gọi 4 API Trực Tiếp Và Làm Sạch Dữ Liệu",
-    "3. Chất Lượng Dữ Liệu Toàn Quốc",
+    "3. Đánh Giá Dữ Liệu",
     "4. Đánh Giá Mô Hình",
 ])
 
@@ -143,13 +143,13 @@ with tab1:
         with cols_day[idx]:
             st.markdown(
                 f"""
-                <div style="padding:12px; border-radius:10px; border:1px solid #d0d7de; background-color:#f8fafc; text-align:center;">
-                    <h4 style="margin:0; color:#1e293b;">{d_row['date']}</h4>
-                    <p style="font-size:14px; margin:6px 0; font-weight:bold;">{d_row['condition']}</p>
-                    <p style="font-size:18px; margin:4px 0; color:#d94801; font-weight:bold;">{d_row['temp_mean']:.1f}°C</p>
-                    <p style="font-size:12px; margin:2px 0; color:#475569;">Thấp nhất: <b>{d_row['temp_min']:.1f}°C</b> | Cao nhất: <b>{d_row['temp_max']:.1f}°C</b></p>
-                    <p style="font-size:12px; margin:2px 0; color:#0284c7;">Độ ẩm: {d_row['humidity_mean']:.0f}% | Mưa: {d_row['precip_total']:.1f}mm</p>
-                    <p style="font-size:12px; margin:2px 0; color:#334155;">Gió: {d_row['wind_mean']:.1f} km/h | {d_row['pressure_mean']:.0f} hPa</p>
+                <div style="padding:14px 10px; border-radius:10px; border:1px solid #cbd5e1; background-color:#f8fafc; text-align:center;">
+                    <div style="font-size:17px; font-weight:800; color:#0f172a; margin-bottom:6px;">{d_row['date']}</div>
+                    <div style="font-size:17px; font-weight:700; color:#1d4ed8; margin:6px 0;">{d_row['condition']}</div>
+                    <div style="font-size:23px; font-weight:800; color:#d94801; margin:6px 0;">{d_row['temp_mean']:.1f}°C</div>
+                    <div style="font-size:13.5px; font-weight:600; color:#334155; margin:4px 0;">Thấp: <b>{d_row['temp_min']:.1f}°C</b> | Cao: <b>{d_row['temp_max']:.1f}°C</b></div>
+                    <div style="font-size:13.5px; font-weight:600; color:#0369a1; margin:4px 0;">Độ ẩm: {d_row['humidity_mean']:.0f}% | Mưa: {d_row['precip_total']:.1f}mm</div>
+                    <div style="font-size:13.5px; font-weight:600; color:#1e293b; margin:4px 0;">Gió: {d_row['wind_mean']:.1f} km/h | {d_row['pressure_mean']:.0f} hPa</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -157,7 +157,7 @@ with tab1:
 
     st.markdown("### Biểu Đồ Chuỗi Thời Gian Thực Tế Và Dự Báo Tương Lai")
 
-    fig, axes = plt.subplots(3, 1, figsize=(13.5, 9.2), sharex=True)
+    fig, axes = plt.subplots(3, 1, figsize=(14.0, 9.5), sharex=True)
     fc_start_ts = df_hr_fc["timestamp"].min()
     hist_tail = df_clean_live[df_clean_live["timestamp"] < fc_start_ts].tail(72).copy()
     if hist_tail.empty:
@@ -165,37 +165,40 @@ with tab1:
 
     # Subplot 1: Temperature
     axes[0].plot(hist_tail["timestamp"], hist_tail["temperature_2m"], color="#1e293b", linewidth=2.2, label="Lịch sử thực tế 72 giờ qua")
-    axes[0].plot(df_hr_fc["timestamp"], df_hr_fc["temperature_2m"], color="#d94801", linewidth=2.2, linestyle="--", marker="o", markevery=12, label=f"Dự báo Hybrid + XGBoost Residual {forecast_days} ngày tới")
-    axes[0].axvline(hist_tail["timestamp"].max(), color="#dc2626", linestyle=":", linewidth=1.6, label="Thời điểm hiện tại")
-    axes[0].set_ylabel("Nhiệt độ - °C", fontweight="bold")
-    axes[0].set_title(f"Chuỗi Thời Gian Thực Tế Và Dự Báo {forecast_days} Ngày Tới — {selected_loc['city']}", fontsize=12, fontweight="bold")
+    axes[0].plot(df_hr_fc["timestamp"], df_hr_fc["temperature_2m"], color="#d94801", linewidth=2.2, linestyle="--", marker="o", markevery=12, label=f"Dự báo Hybrid GRU + XGBoost Residual {forecast_days} ngày tới")
+    axes[0].axvline(hist_tail["timestamp"].max(), color="#dc2626", linestyle=":", linewidth=1.8, label="Thời điểm hiện tại")
+    axes[0].set_ylabel("Nhiệt độ - °C", fontsize=11, fontweight="bold")
+    axes[0].set_title(f"Chuỗi Thời Gian Thực Tế Và Dự Báo {forecast_days} Ngày Tới — {selected_loc['city']}", fontsize=13, fontweight="bold")
     axes[0].grid(True, linestyle="--", alpha=0.4)
-    axes[0].legend(loc="upper right")
+    axes[0].legend(loc="upper right", fontsize=10)
 
     # Subplot 2: Relative Humidity & Precipitation
     ax2_rain = axes[1].twinx()
-    axes[1].plot(hist_tail["timestamp"], hist_tail["relative_humidity_2m"], color="#0284c7", linewidth=1.9, label="Độ ẩm thực tế")
-    axes[1].plot(df_hr_fc["timestamp"], df_hr_fc["relative_humidity_2m"], color="#0284c7", linewidth=1.9, linestyle="--", label="Độ ẩm dự báo")
-    ax2_rain.bar(df_hr_fc["timestamp"], df_hr_fc["precipitation"], width=0.03, color="#38bdf8", alpha=0.5, label="Lượng mưa dự báo")
-    axes[1].axvline(hist_tail["timestamp"].max(), color="#dc2626", linestyle=":", linewidth=1.6)
-    axes[1].set_ylabel("Độ ẩm - %", color="#0284c7", fontweight="bold")
-    ax2_rain.set_ylabel("Lượng mưa - mm/h", color="#0369a1", fontweight="bold")
+    axes[1].plot(hist_tail["timestamp"], hist_tail["relative_humidity_2m"], color="#0284c7", linewidth=2.0, label="Độ ẩm thực tế")
+    axes[1].plot(df_hr_fc["timestamp"], df_hr_fc["relative_humidity_2m"], color="#0284c7", linewidth=2.0, linestyle="--", label="Độ ẩm dự báo")
+    ax2_rain.bar(hist_tail["timestamp"], hist_tail["precipitation"], width=0.03, color="#0284c7", alpha=0.35, label="Lượng mưa thực tế")
+    ax2_rain.bar(df_hr_fc["timestamp"], df_hr_fc["precipitation"], width=0.03, color="#38bdf8", alpha=0.55, label="Lượng mưa dự báo")
+    axes[1].axvline(hist_tail["timestamp"].max(), color="#dc2626", linestyle=":", linewidth=1.8)
+    axes[1].set_ylabel("Độ ẩm - %", color="#0284c7", fontsize=11, fontweight="bold")
+    ax2_rain.set_ylabel("Lượng mưa - mm/h", color="#0369a1", fontsize=11, fontweight="bold")
     axes[1].grid(True, linestyle="--", alpha=0.4)
-    axes[1].legend(loc="upper left")
+    axes[1].legend(loc="upper left", fontsize=10)
 
     # Subplot 3: Wind Speed & Sea-Level Pressure
     ax3_pres = axes[2].twinx()
-    axes[2].plot(hist_tail["timestamp"], hist_tail["wind_speed_10m"], color="#16a34a", linewidth=1.9, label="Tốc độ gió thực tế")
-    axes[2].plot(df_hr_fc["timestamp"], df_hr_fc["wind_speed_10m"], color="#16a34a", linewidth=1.9, linestyle="--", label="Tốc độ gió dự báo")
-    ax3_pres.plot(hist_tail["timestamp"], hist_tail["pressure_msl"], color="#7c3aed", linewidth=1.5, alpha=0.75, label="Áp suất thực tế")
-    ax3_pres.plot(df_hr_fc["timestamp"], df_hr_fc["pressure_msl"], color="#7c3aed", linewidth=1.5, linestyle=":", alpha=0.85, label="Áp suất dự báo")
-    axes[2].axvline(hist_tail["timestamp"].max(), color="#dc2626", linestyle=":", linewidth=1.6)
-    axes[2].set_ylabel("Tốc độ gió - km/h", color="#16a34a", fontweight="bold")
-    ax3_pres.set_ylabel("Áp suất - hPa", color="#7c3aed", fontweight="bold")
-    axes[2].set_xlabel("Thời gian", fontweight="bold")
-    axes[2].xaxis.set_major_formatter(mdates.DateFormatter("%m-%d %Hh"))
+    axes[2].plot(hist_tail["timestamp"], hist_tail["wind_speed_10m"], color="#16a34a", linewidth=2.0, label="Tốc độ gió thực tế")
+    axes[2].plot(df_hr_fc["timestamp"], df_hr_fc["wind_speed_10m"], color="#16a34a", linewidth=2.0, linestyle="--", label="Tốc độ gió dự báo")
+    ax3_pres.plot(hist_tail["timestamp"], hist_tail["pressure_msl"], color="#7c3aed", linewidth=1.6, alpha=0.8, label="Áp suất thực tế")
+    ax3_pres.plot(df_hr_fc["timestamp"], df_hr_fc["pressure_msl"], color="#7c3aed", linewidth=1.6, linestyle=":", alpha=0.9, label="Áp suất dự báo")
+    axes[2].axvline(hist_tail["timestamp"].max(), color="#dc2626", linestyle=":", linewidth=1.8)
+    axes[2].set_ylabel("Tốc độ gió - km/h", color="#16a34a", fontsize=11, fontweight="bold")
+    ax3_pres.set_ylabel("Áp suất - hPa", color="#7c3aed", fontsize=11, fontweight="bold")
+    axes[2].set_xlabel("Ngày/Tháng/Năm", fontsize=11, fontweight="bold")
+    axes[2].xaxis.set_major_locator(mdates.DayLocator(interval=1))
+    axes[2].xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%Y"))
+    plt.setp(axes[2].get_xticklabels(), fontsize=10, fontweight="bold")
     axes[2].grid(True, linestyle="--", alpha=0.4)
-    axes[2].legend(loc="upper left")
+    axes[2].legend(loc="upper left", fontsize=10)
 
     plt.tight_layout()
     st.pyplot(fig)
@@ -259,10 +262,10 @@ with tab2:
         )
 
 # -----------------------------------------------------------------------------
-# TAB 3: NATIONAL 20-CITY DATA QUALITY & VISUALIZATION DASHBOARD
+# TAB 3: DATA EVALUATION DASHBOARD
 # -----------------------------------------------------------------------------
 with tab3:
-    st.subheader("Đối Sánh Chất Lượng Dữ Liệu Toàn Quốc")
+    st.subheader("Đánh Giá Dữ Liệu")
     b_info = quality_report["before_cleaning"]
     a_info = quality_report["after_cleaning"]
 
@@ -271,7 +274,7 @@ with tab3:
             "Tổng số dòng quan trắc",
             "Số lượng địa điểm khảo sát",
             "Bản ghi chưa chuẩn hóa định dạng thời gian",
-            "Dòng phản hồi API rỗng hoàn toàn",
+            "Bản ghi vượt quá thời điểm hiện tại bị loại bỏ",
             "Dòng khuyết cục bộ do khác biệt cấu trúc dữ liệu",
             "Tổng số ô dữ liệu bị khuyết",
             "Bản ghi trùng lặp thời gian giữa các API",
@@ -315,14 +318,14 @@ with tab3:
         st.image(str(FIG_DIR / "fig5_multivariate_and_precipitation.png"), caption="Hình 5: Tương quan đa biến Nhiệt độ - Độ ẩm - Áp suất và Tổng lượng mưa", use_container_width=True)
     with g2:
         st.image(str(FIG_DIR / "fig6_multi_api_source_comparison.png"), caption="Hình 6: Đối sánh trực tiếp 4 nguồn Real-Time API", use_container_width=True)
-        st.image(str(FIG_DIR / "fig2_range_validation_boxplots.png"), caption="Hình 2: Phân phối Boxplot 6 biến khí tượng trên 30,220 quan trắc", use_container_width=True)
+        st.image(str(FIG_DIR / "fig2_range_validation_boxplots.png"), caption="Hình 2: Phân phối Boxplot 6 biến khí tượng trên 44,540 quan trắc", use_container_width=True)
         st.image(str(FIG_DIR / "fig4_all_20_cities_temperature_range.png"), caption="Hình 4: So sánh nhiệt độ trung bình và biên độ nhiệt của 20 địa điểm", use_container_width=True)
 
 # -----------------------------------------------------------------------------
 # TAB 4: MODEL EVALUATION (LARGE CHART ON TOP, CONTENT BELOW)
 # -----------------------------------------------------------------------------
 with tab4:
-    st.subheader("Biểu Đồ Đánh Giá Mô Hình Hybrid Và Học Phần Dư XGBoost")
+    st.subheader("Biểu Đồ Đánh Giá Mô Hình Hybrid GRU Và Học Phần Dư XGBoost")
     st.image(
         str(FIG_DIR / "fig7_model_training_and_forecast_eval.png"),
         caption="Hình 7: So sánh sai số các mô hình và đường dự báo thực tế trên tập kiểm thử",
@@ -359,12 +362,12 @@ with tab4:
         st.table(pd.DataFrame(mt_rows))
 
     st.markdown("---")
-    st.subheader("Kiến Trúc Mô Hình Hybrid Kết Hợp Học Phần Dư XGBoost")
+    st.subheader("Kiến Trúc Mô Hình Hybrid GRU Kết Hợp Học Phần Dư XGBoost")
     st.markdown(
         """
-        1. **Tầng 1 — Mô hình cơ sở kết hợp xu hướng tuyến tính và cấu trúc chu kỳ:**
-           - Kết hợp mô hình tự hồi quy tuyến tính `Ridge Autoregressive` và `HistGradientBoosting` trên 58 đặc trưng trễ thời gian và biến chu kỳ lượng giác:
-             $$\\hat{y}_{\\text{base}}(X_t) = 0.15 \\cdot \\hat{y}_{\\text{Ridge}}(X_t) + 0.85 \\cdot \\hat{y}_{\\text{HistGB}}(X_t)$$
+        1. **Tầng 1 — Mô hình cơ sở kết hợp mạng nơ-ron hồi quy GRU, xu hướng tuyến tính và cấu trúc chu kỳ:**
+           - Kết hợp mạng nơ-ron có cổng `GRU Neural Network` học động lực chuỗi thời gian đa biến qua 8 mốc trễ từ `t-72h` đến `t-1h`, tự hồi quy tuyến tính `Ridge Autoregressive` và `HistGradientBoosting` trên 58 đặc trưng khí tượng:
+             $$\\hat{y}_{\\text{base}}(X_t) = 0.15 \\cdot \\hat{y}_{\\text{GRU}}(X_t) + 0.10 \\cdot \\hat{y}_{\\text{Ridge}}(X_t) + 0.75 \\cdot \\hat{y}_{\\text{HistGB}}(X_t)$$
            - Từ đó trích xuất chuỗi **phần dư**:
              $$r_t = y_t - \\hat{y}_{\\text{base}}(X_t)$$
 
@@ -375,6 +378,6 @@ with tab4:
         3. **Tầng 3 — Tổng hợp dự báo Hybrid và suy luận thời gian thực:**
            - Dự báo cuối cùng là tổng của dự báo cơ sở và phần dư hiệu chỉnh từ `XGBoost`:
              $$\\hat{y}_{\\text{Hybrid}}(X_t) = \\hat{y}_{\\text{base}}(X_t) + 0.50 \\cdot \\hat{r}_t$$
-           - Toàn bộ trọng số của cả 3 thành phần `Ridge`, `HistGradientBoosting` và `XGBoost Residual` được đóng gói vào file `models/weather_forecast_weights.joblib` để nạp trực tiếp khi gọi API thời gian thực.
+           - Toàn bộ trọng số của cả 4 thành phần `GRU`, `Ridge`, `HistGradientBoosting` và `XGBoost Residual` được đóng gói vào file `models/weather_forecast_weights.joblib` để nạp trực tiếp khi gọi API thời gian thực.
         """
     )

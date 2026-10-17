@@ -1,11 +1,12 @@
 """
 Topic 6: Real-Time Weather Data Collection and Cleaning
-Step 1: Multi-Source Real-Time & Time-Series Weather Data Collection
-Integrates 4 Real Weather APIs across 20 Locations in Vietnam:
-  1. Open-Meteo Official Python SDK (openmeteo_requests, past_days=92, forecast_days=1)
-  2. WeatherAPI.com (/v1/forecast.json & current, 3 days hourly + realtime)
-  3. Vaisala Xweather API (/conditions & /observations, 24h hourly + station observations)
-  4. FreeOpenAPI.dev (/api/v1/weather/current, real-time conditions)
+Step 1: Multi-Source Historical Archive & Real-Time Weather Data Collection
+Integrates Open-Meteo Historical Archive API + 4 Real-Time Weather APIs across 20 Locations in Vietnam:
+  1. Open-Meteo Archive SDK (`https://archive-api.open-meteo.com/v1/archive` - ERA5/ECMWF Historical Reanalysis)
+     + Real-Time Recent Bridge (`https://api.open-meteo.com/v1/forecast` for the last 5 days where ERA5 is pending)
+  2. WeatherAPI.com (`/v1/forecast.json` & `current`, 3 days hourly + realtime)
+  3. Vaisala Xweather API (`/conditions`, 24h hourly station-assimilated conditions)
+  4. FreeOpenAPI.dev (`/api/v1/weather/current`, live real-time snapshot)
 """
 
 import json
@@ -14,6 +15,7 @@ import sys
 import time
 import urllib.request
 import urllib.error
+from datetime import datetime, timedelta
 from pathlib import Path
 import openmeteo_requests
 import pandas as pd
@@ -43,7 +45,7 @@ def load_env_file(env_path: Path) -> dict:
 
 
 def http_get_json(url: str, headers: dict = None, timeout: int = 15) -> dict:
-    req_headers = {"User-Agent": "VN-MultiAPI-WeatherCollector/2.0"}
+    req_headers = {"User-Agent": "VN-MultiAPI-WeatherCollector/3.0"}
     if headers:
         req_headers.update(headers)
     req = urllib.request.Request(url, headers=req_headers)
@@ -51,29 +53,65 @@ def http_get_json(url: str, headers: dict = None, timeout: int = 15) -> dict:
         return json.loads(resp.read().decode("utf-8"))
 
 
-# 20 Locations matching the exact latitude & longitude arrays provided by the user
+# 20 Locations matching the exact latitude & longitude arrays provided by the user (clean names without parentheses)
 LOCATION_METADATA = [
-    {"location_id": 1,  "city": "Phu Loc (Hue)",       "region": "Central",           "req_lat": 16.1667, "req_lon": 107.8333},
-    {"location_id": 2,  "city": "Da Lat (Lam Dong)",   "region": "Central Highlands", "req_lat": 11.4111, "req_lon": 107.8444},
-    {"location_id": 3,  "city": "Nam Dinh",            "region": "North",             "req_lat": 20.4737, "req_lon": 106.0229},
-    {"location_id": 4,  "city": "Ho Chi Minh City",    "region": "South",             "req_lat": 10.8230, "req_lon": 106.6296},
-    {"location_id": 5,  "city": "Nha Trang",           "region": "South Central",     "req_lat": 12.2451, "req_lon": 109.1943},
-    {"location_id": 6,  "city": "Da Nang",             "region": "Central",           "req_lat": 16.0678, "req_lon": 108.2208},
-    {"location_id": 7,  "city": "Hanoi",               "region": "North",             "req_lat": 21.2598, "req_lon": 105.8045},
-    {"location_id": 8,  "city": "Can Tho",             "region": "Mekong Delta",      "req_lat": 10.0371, "req_lon": 105.7883},
-    {"location_id": 9,  "city": "Phu Quoc",            "region": "Islands",           "req_lat": 10.2872, "req_lon": 104.0105},
-    {"location_id": 10, "city": "Ha Long",             "region": "North",             "req_lat": 20.9505, "req_lon": 107.0734},
-    {"location_id": 11, "city": "Sa Pa",               "region": "North Mountain",    "req_lat": 22.3402, "req_lon": 103.8441},
-    {"location_id": 12, "city": "Vinh",                "region": "North Central",     "req_lat": 18.6734, "req_lon": 105.6923},
-    {"location_id": 13, "city": "Hue City",            "region": "Central",           "req_lat": 16.4619, "req_lon": 107.5955},
-    {"location_id": 14, "city": "Phan Thiet",          "region": "South Central",     "req_lat": 10.9289, "req_lon": 108.1021},
-    {"location_id": 15, "city": "Vung Tau",            "region": "South",             "req_lat": 10.3460, "req_lon": 107.0843},
-    {"location_id": 16, "city": "Ca Mau",              "region": "Mekong Delta",      "req_lat": 9.1768,  "req_lon": 105.1524},
-    {"location_id": 17, "city": "Con Dao",             "region": "Islands",           "req_lat": 8.7029,  "req_lon": 106.6489},
-    {"location_id": 18, "city": "Pleiku",              "region": "Central Highlands", "req_lat": 13.9833, "req_lon": 108.0000},
-    {"location_id": 19, "city": "Buon Ma Thuot",       "region": "Central Highlands", "req_lat": 12.6675, "req_lon": 108.0378},
-    {"location_id": 20, "city": "Dien Bien Phu",       "region": "North Mountain",    "req_lat": 21.3860, "req_lon": 103.0230},
+    {"location_id": 1,  "city": "Phu Loc - Hue",      "region": "Central",           "req_lat": 16.1667, "req_lon": 107.8333},
+    {"location_id": 2,  "city": "Da Lat - Lam Dong",  "region": "Central Highlands", "req_lat": 11.4111, "req_lon": 107.8444},
+    {"location_id": 3,  "city": "Nam Dinh",           "region": "North",             "req_lat": 20.4737, "req_lon": 106.0229},
+    {"location_id": 4,  "city": "Ho Chi Minh City",   "region": "South",             "req_lat": 10.8230, "req_lon": 106.6296},
+    {"location_id": 5,  "city": "Nha Trang",          "region": "South Central",     "req_lat": 12.2451, "req_lon": 109.1943},
+    {"location_id": 6,  "city": "Da Nang",            "region": "Central",           "req_lat": 16.0678, "req_lon": 108.2208},
+    {"location_id": 7,  "city": "Hanoi",              "region": "North",             "req_lat": 21.2598, "req_lon": 105.8045},
+    {"location_id": 8,  "city": "Can Tho",            "region": "Mekong Delta",      "req_lat": 10.0371, "req_lon": 105.7883},
+    {"location_id": 9,  "city": "Phu Quoc",           "region": "Islands",           "req_lat": 10.2872, "req_lon": 104.0105},
+    {"location_id": 10, "city": "Ha Long",            "region": "North",             "req_lat": 20.9505, "req_lon": 107.0734},
+    {"location_id": 11, "city": "Sa Pa",              "region": "North Mountain",    "req_lat": 22.3402, "req_lon": 103.8441},
+    {"location_id": 12, "city": "Vinh",               "region": "North Central",     "req_lat": 18.6734, "req_lon": 105.6923},
+    {"location_id": 13, "city": "Hue City",           "region": "Central",           "req_lat": 16.4619, "req_lon": 107.5955},
+    {"location_id": 14, "city": "Phan Thiet",         "region": "South Central",     "req_lat": 10.9289, "req_lon": 108.1021},
+    {"location_id": 15, "city": "Vung Tau",           "region": "South",             "req_lat": 10.3460, "req_lon": 107.0843},
+    {"location_id": 16, "city": "Ca Mau",             "region": "Mekong Delta",      "req_lat": 9.1768,  "req_lon": 105.1524},
+    {"location_id": 17, "city": "Con Dao",            "region": "Islands",           "req_lat": 8.7029,  "req_lon": 106.6489},
+    {"location_id": 18, "city": "Pleiku",             "region": "Central Highlands", "req_lat": 13.9833, "req_lon": 108.0000},
+    {"location_id": 19, "city": "Buon Ma Thuot",      "region": "Central Highlands", "req_lat": 12.6675, "req_lon": 108.0378},
+    {"location_id": 20, "city": "Dien Bien Phu",      "region": "North Mountain",    "req_lat": 21.3860, "req_lon": 103.0230},
 ]
+
+
+def _extract_om_dataframe(response, meta: dict, source_label: str) -> pd.DataFrame:
+    tz_name = (
+        response.Timezone().decode("utf-8")
+        if isinstance(response.Timezone(), bytes)
+        else str(response.Timezone())
+    )
+    hourly = response.Hourly()
+    hourly_data = {
+        "date": pd.date_range(
+            start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
+            end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
+            freq=pd.Timedelta(seconds=hourly.Interval()),
+            inclusive="left",
+        )
+        .tz_convert(tz_name)
+        .astype(str),
+        "location_id": meta["location_id"],
+        "city": meta["city"],
+        "region": meta["region"],
+        "source_api": source_label,
+        "requested_lat": meta["req_lat"],
+        "requested_lon": meta["req_lon"],
+        "api_latitude": round(float(response.Latitude()), 6),
+        "api_longitude": round(float(response.Longitude()), 6),
+        "elevation_m": round(float(response.Elevation()), 1),
+        "timezone": tz_name,
+        "temperature_2m": hourly.Variables(0).ValuesAsNumpy(),
+        "wind_speed_10m": hourly.Variables(1).ValuesAsNumpy(),
+        "relative_humidity_2m": hourly.Variables(2).ValuesAsNumpy(),
+        "precipitation": hourly.Variables(3).ValuesAsNumpy(),
+        "pressure_msl": hourly.Variables(4).ValuesAsNumpy(),
+        "wind_gusts_10m": hourly.Variables(5).ValuesAsNumpy(),
+    }
+    return pd.DataFrame(data=hourly_data)
 
 
 def collect_all_four_weather_apis():
@@ -85,87 +123,101 @@ def collect_all_four_weather_apis():
 
     all_frames = []
     raw_json_archive = {
-        "open_meteo_sdk": [],
+        "open_meteo_archive_sdk": [],
+        "open_meteo_realtime_bridge": [],
         "weatherapi_com": [],
         "xweather_api": [],
         "freeopenapi_dev": [],
     }
 
-    # =========================================================================
-    # SOURCE 1: Open-Meteo Official Python SDK (openmeteo_requests)
-    # =========================================================================
-    print("=" * 78)
-    print("[SOURCE 1/4] COLLECTING FROM OPEN-METEO PYTHON SDK (openmeteo_requests)")
-    print("=" * 78)
-
-    cache_path = str(BASE_DIR / ".cache")
+    cache_path = str(BASE_DIR / ".cache_archive")
     cache_session = requests_cache.CachedSession(cache_path, expire_after=3600)
-    retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
+    retry_session = retry(cache_session, retries=5, backoff_factor=0.3)
     openmeteo = openmeteo_requests.Client(session=retry_session)
 
-    url = "https://api.open-meteo.com/v1/forecast"
-    params = {
+    hourly_vars = [
+        "temperature_2m",
+        "wind_speed_10m",
+        "relative_humidity_2m",
+        "precipitation",
+        "pressure_msl",
+        "wind_gusts_10m",
+    ]
+
+    # =========================================================================
+    # SOURCE 1A: Open-Meteo Historical Archive API (`archive-api.open-meteo.com/v1/archive`)
+    # Primary historical ground-truth dataset (ERA5 / ECMWF Reanalysis)
+    # =========================================================================
+    print("=" * 78)
+    print("[SOURCE 1A] COLLECTING PRIMARY HISTORICAL DATA FROM OPEN-METEO ARCHIVE API")
+    print("            Endpoint: https://archive-api.open-meteo.com/v1/archive")
+    print("=" * 78)
+
+    end_dt = datetime.now()
+    start_dt = end_dt - timedelta(days=92)
+    start_date_str = start_dt.strftime("%Y-%m-%d")
+    end_date_str = end_dt.strftime("%Y-%m-%d")
+
+    archive_url = "https://archive-api.open-meteo.com/v1/archive"
+    archive_params = {
         "latitude": [loc["req_lat"] for loc in LOCATION_METADATA],
         "longitude": [loc["req_lon"] for loc in LOCATION_METADATA],
-        "hourly": [
-            "temperature_2m",
-            "wind_speed_10m",
-            "relative_humidity_2m",
-            "precipitation",
-            "pressure_msl",
-            "wind_gusts_10m"
-        ],
+        "start_date": start_date_str,
+        "end_date": end_date_str,
+        "hourly": hourly_vars,
         "timezone": "Asia/Bangkok",
-        "past_days": 92,
-        "forecast_days": 1,
     }
-    responses = openmeteo.weather_api(url, params=params)
 
-    for idx, response in enumerate(responses):
+    archive_responses = openmeteo.weather_api(archive_url, params=archive_params)
+    for idx, response in enumerate(archive_responses):
         meta = LOCATION_METADATA[idx]
-        tz_name = response.Timezone().decode("utf-8") if isinstance(response.Timezone(), bytes) else str(response.Timezone())
-        hourly = response.Hourly()
-
-        hourly_data = {
-            "date": pd.date_range(
-                start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
-                end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
-                freq=pd.Timedelta(seconds=hourly.Interval()),
-                inclusive="left"
-            ).tz_convert(tz_name).astype(str),
-            "location_id": meta["location_id"],
-            "city": meta["city"],
-            "region": meta["region"],
-            "source_api": "Open-Meteo SDK",
-            "requested_lat": meta["req_lat"],
-            "requested_lon": meta["req_lon"],
-            "api_latitude": round(float(response.Latitude()), 6),
-            "api_longitude": round(float(response.Longitude()), 6),
-            "elevation_m": round(float(response.Elevation()), 1),
-            "timezone": tz_name,
-            "temperature_2m": hourly.Variables(0).ValuesAsNumpy(),
-            "wind_speed_10m": hourly.Variables(1).ValuesAsNumpy(),
-            "relative_humidity_2m": hourly.Variables(2).ValuesAsNumpy(),
-            "precipitation": hourly.Variables(3).ValuesAsNumpy(),
-            "pressure_msl": hourly.Variables(4).ValuesAsNumpy(),
-            "wind_gusts_10m": hourly.Variables(5).ValuesAsNumpy(),
-        }
-        df_om = pd.DataFrame(data=hourly_data)
-        all_frames.append(df_om)
-
-        # Update elevation in metadata for other APIs that don't return elevation
+        df_arch = _extract_om_dataframe(response, meta, "Open-Meteo SDK")
+        all_frames.append(df_arch)
         meta["elevation_m"] = round(float(response.Elevation()), 1)
 
-        raw_json_archive["open_meteo_sdk"].append({
+        raw_json_archive["open_meteo_archive_sdk"].append({
             "location_id": meta["location_id"],
             "city": meta["city"],
+            "endpoint": archive_url,
+            "start_date": start_date_str,
+            "end_date": end_date_str,
             "api_latitude": float(response.Latitude()),
             "api_longitude": float(response.Longitude()),
             "elevation_m": float(response.Elevation()),
-            "timezone": tz_name,
-            "rows_collected": len(df_om),
+            "rows_collected": len(df_arch),
         })
-        print(f"  [Open-Meteo {idx+1:02d}/20] {meta['city']:<18} -> {len(df_om):,} hourly records")
+        print(f"  [Archive API {idx+1:02d}/20] {meta['city']:<18} -> {len(df_arch):,} hourly records ({start_date_str} to {end_date_str})")
+
+    # =========================================================================
+    # SOURCE 1B: Open-Meteo Real-Time Bridge (`api.open-meteo.com/v1/forecast`)
+    # Fills the last 5 days where ERA5 Archive is still pending station assimilation
+    # =========================================================================
+    print("\n" + "=" * 78)
+    print("[SOURCE 1B] COLLECTING OPEN-METEO REAL-TIME BRIDGE (LAST 5 DAYS + TODAY)")
+    print("            Endpoint: https://api.open-meteo.com/v1/forecast")
+    print("=" * 78)
+
+    bridge_url = "https://api.open-meteo.com/v1/forecast"
+    bridge_params = {
+        "latitude": [loc["req_lat"] for loc in LOCATION_METADATA],
+        "longitude": [loc["req_lon"] for loc in LOCATION_METADATA],
+        "hourly": hourly_vars,
+        "timezone": "Asia/Bangkok",
+        "past_days": 5,
+        "forecast_days": 1,
+    }
+    bridge_responses = openmeteo.weather_api(bridge_url, params=bridge_params)
+    for idx, response in enumerate(bridge_responses):
+        meta = LOCATION_METADATA[idx]
+        df_bridge = _extract_om_dataframe(response, meta, "Open-Meteo SDK")
+        all_frames.append(df_bridge)
+        raw_json_archive["open_meteo_realtime_bridge"].append({
+            "location_id": meta["location_id"],
+            "city": meta["city"],
+            "endpoint": bridge_url,
+            "rows_collected": len(df_bridge),
+        })
+        print(f"  [Bridge API  {idx+1:02d}/20] {meta['city']:<18} -> {len(df_bridge):,} recent hourly records")
 
     # =========================================================================
     # SOURCE 2: WeatherAPI.com (/v1/forecast.json - 3 Days Hourly + Current)
@@ -192,7 +244,6 @@ def collect_all_four_weather_apis():
                 "forecast_days_count": len(f_days),
             })
 
-            # Append current observation (timestamp format: 'YYYY-MM-DD HH:MM')
             if curr and "last_updated" in curr:
                 wapi_rows.append({
                     "date": curr.get("last_updated"),
@@ -214,7 +265,6 @@ def collect_all_four_weather_apis():
                     "wind_gusts_10m": curr.get("gust_kph"),
                 })
 
-            # Append 72 hourly observations across 3 days
             hour_cnt = 0
             for day_obj in f_days:
                 for h_obj in day_obj.get("hour", []):
@@ -247,10 +297,10 @@ def collect_all_four_weather_apis():
         all_frames.append(pd.DataFrame(wapi_rows))
 
     # =========================================================================
-    # SOURCE 3: Vaisala Xweather API (/conditions 24h & /observations station)
+    # SOURCE 3: Vaisala Xweather API (/conditions 24h)
     # =========================================================================
     print("\n" + "=" * 78)
-    print("[SOURCE 3/4] COLLECTING FROM XWEATHER API (/conditions & /observations)")
+    print("[SOURCE 3/4] COLLECTING FROM XWEATHER API (/conditions)")
     print("=" * 78)
 
     xw_rows = []
@@ -338,10 +388,10 @@ def collect_all_four_weather_apis():
                     "timezone": payload.get("timezone", "Asia/Ho_Chi_Minh"),
                     "temperature_2m": curr.get("temperatureC"),
                     "wind_speed_10m": curr.get("windSpeedKmh"),
-                    "relative_humidity_2m": curr.get("humidity"),       # None in FreeOpenAPI /current schema
+                    "relative_humidity_2m": curr.get("humidity"),
                     "precipitation": curr.get("precipitationMm"),
-                    "pressure_msl": curr.get("pressureHpa"),            # None in FreeOpenAPI /current schema
-                    "wind_gusts_10m": curr.get("windGustsKmh"),         # None in FreeOpenAPI /current schema
+                    "pressure_msl": curr.get("pressureHpa"),
+                    "wind_gusts_10m": curr.get("windGustsKmh"),
                 })
             print(f"  [FreeOpenAPI {idx+1:02d}/20] {meta['city']:<18} -> 1 current obs (timestamp={curr.get('timestamp')})")
         except Exception as e:
@@ -352,7 +402,7 @@ def collect_all_four_weather_apis():
         all_frames.append(pd.DataFrame(foa_rows))
 
     # =========================================================================
-    # Combine All 4 Authentic API Outputs into Raw Dataset
+    # Combine All Authentic API Outputs into Raw Dataset
     # =========================================================================
     df_raw = pd.concat(all_frames, ignore_index=True)
 
@@ -364,7 +414,7 @@ def collect_all_four_weather_apis():
         json.dump(raw_json_archive, f, ensure_ascii=False, indent=2)
 
     print("\n" + "=" * 78)
-    print("MULTI-SOURCE REAL WEATHER DATA COLLECTION SUMMARY")
+    print("MULTI-SOURCE ARCHIVE + REAL-TIME WEATHER DATA COLLECTION SUMMARY")
     print("=" * 78)
     for src, cnt in df_raw["source_api"].value_counts().items():
         print(f"  - {src:<20}: {cnt:>7,} rows")
