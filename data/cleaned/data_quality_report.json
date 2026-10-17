@@ -1,0 +1,65 @@
+{
+  "before_cleaning": {
+    "total_rows": 46600,
+    "rows_by_source_api": {
+      "Open-Meteo SDK": 44640,
+      "WeatherAPI.com": 1460,
+      "Xweather API": 480,
+      "FreeOpenAPI.dev": 20
+    },
+    "num_locations": 20,
+    "unstandardized_timestamps": 46600,
+    "empty_api_response_rows": 15380,
+    "partial_missing_rows": 20,
+    "partial_missing_cells": 60,
+    "float32_precision_artifacts": 96525,
+    "exact_duplicates": 0,
+    "key_duplicates": 1000,
+    "missing_hourly_slots_in_active_window": 0,
+    "missing_values_by_column": {
+      "temperature_2m": 15380,
+      "wind_speed_10m": 15380,
+      "relative_humidity_2m": 15400,
+      "precipitation": 15380,
+      "pressure_msl": 15400,
+      "wind_gusts_10m": 15400
+    },
+    "total_missing_cells": 92340,
+    "physical_range_violations": {
+      "temperature_2m": 0,
+      "wind_speed_10m": 0,
+      "relative_humidity_2m": 0,
+      "precipitation": 0,
+      "pressure_msl": 0,
+      "wind_gusts_10m": 0
+    },
+    "wind_gust_inconsistencies": 94,
+    "statistical_iqr_extremes_by_column": {
+      "temperature_2m": 178,
+      "wind_speed_10m": 457,
+      "relative_humidity_2m": 185,
+      "precipitation": 351,
+      "pressure_msl": 21,
+      "wind_gusts_10m": 345
+    },
+    "total_statistical_iqr_extremes": 1537
+  },
+  "after_cleaning": {
+    "total_rows": 30220,
+    "num_locations": 20,
+    "hours_per_location": 1511,
+    "multi_source_fused_hours": 740,
+    "time_range_start": "2026-08-18 01:00:00",
+    "time_range_end": "2026-10-19 23:00:00",
+    "unstandardized_timestamps": 0,
+    "empty_api_response_rows": 0,
+    "partial_missing_rows": 0,
+    "float32_precision_artifacts": 0,
+    "exact_duplicates": 0,
+    "key_duplicates": 0,
+    "missing_hourly_slots_in_active_window": 0,
+    "total_missing_cells": 0,
+    "physical_range_violations": 0,
+    "wind_gust_inconsistencies": 0
+  }
+}
