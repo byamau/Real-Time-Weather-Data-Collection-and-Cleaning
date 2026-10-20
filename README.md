@@ -350,7 +350,7 @@ Phần này không thuộc yêu cầu của Topic 6. Nó minh họa giá trị s
   * trọng số thành phần học trên khối 70–85%;
   * XGBoost học trên phần dư **out-of-fold** của khối 70–100%;
   * hệ số co phần dư chọn trên khối 85–100%.
-* **Giảm dần về climatology:** sai số cuốn chiếu tích lũy theo thời gian. Vì vậy giá trị báo cáo là `clim + e^(−h/τ)·(dự báo − clim)`, với τ chọn cho từng biến bằng cách fit một mô hình phụ trên 85% đầu của tập train và chấm điểm trên 15% cuối. Không dùng dữ liệu test.
+* **Giảm dần về mốc neo:** sai số cuốn chiếu tích lũy theo thời gian. Vì vậy giá trị báo cáo là `neo + e^(−h/τ)·(dự báo − neo)`. Với từng biến, **mốc neo** (climatology của tập train, hoặc seasonal naive = lặp lại 24 giờ quan trắc gần nhất) và **τ** được chọn bằng cách fit một mô hình phụ trên 85% đầu của tập train và chấm điểm dự báo 168 giờ trên 15% cuối. Không dùng dữ liệu test. Vòng lặp cuốn chiếu vẫn dùng dự báo gốc; chỉ giá trị báo cáo được giảm dần.
 * **Dashboard:** trộn thêm dự báo NWP của Open-Meteo, với trọng số tăng theo lead time (0.15 → tối đa 0.55). Trọng số này là **heuristic chưa kiểm định**; dashboard hiển thị riêng cả thành phần ML.
 
 #### 2. Thiết kế đánh giá walk-forward
@@ -361,7 +361,40 @@ Phần này không thuộc yêu cầu của Topic 6. Nó minh họa giá trị s
 * Không cần embargo, vì mô hình dự báo cuốn chiếu 1 giờ/bước và mọi target train đều nằm trước cửa sổ test. Mô hình dự báo trực tiếp h giờ thì cần embargo ≥ h giờ.
 
 #### 3. Kết quả (dữ liệu Topic 6, 3 tháng)
-<!-- WF_RESULTS -->
+7 fold × 7 ngày (test 2026-08-28 → 2026-10-16), 1,760 lượt dự báo 168 giờ (20 địa điểm × mốc 00h/12h), GRU bật. Kết quả chi tiết: `models/walk_forward/`.
+
+**Nhiệt độ (°C)** — MAE trung bình qua các fold:
+
+| Thời hạn | Hybrid | Persistence | Seasonal naive | Climatology | Skill vs seasonal naive [95% CI] | Skill vs climatology [95% CI] | Tỷ lệ fold thắng naive |
+| :-- | --: | --: | --: | --: | :-: | :-: | :-: |
+| 1 giờ | **0.51** | 0.54 | 1.03 | 1.60 | +0.51 [+0.46, +0.56] | +0.67 [+0.60, +0.73] | 100% |
+| Ngày 1 (1–24 h) | 0.94 | 2.46 | 0.92 | 1.49 | -0.04 [-0.16, +0.05] | +0.34 [+0.22, +0.44] | 57% |
+| Ngày 2–3 (25–72 h) | 1.37 | 2.67 | 1.27 | 1.50 | -0.10 [-0.29, +0.05] | +0.06 [-0.13, +0.19] | 29% |
+| Ngày 4–7 (73–168 h) | 1.56 | 2.87 | 1.56 | 1.52 | -0.00 [-0.12, +0.10] | -0.04 [-0.14, +0.05] | 57% |
+
+**Các biến khác** — MAE của Hybrid / baseline tốt nhất trong 3 baseline:
+
+| Biến | 1 giờ | Ngày 1 | Ngày 2–3 | Ngày 4–7 |
+| :-- | :-: | :-: | :-: | :-: |
+| Độ ẩm (%) | **3.01** / 3.32 (persistence) | **5.37** / 5.63 (seasonal naive) | **7.27** / 7.31 (seasonal naive) | 8.39 / 8.14 (seasonal naive) |
+| Tốc độ gió (km/h) | **1.87** / 1.92 (persistence) | **2.91** / 3.30 (seasonal naive) | **3.64** / 3.84 (seasonal naive) | 4.36 / 4.21 (seasonal naive) |
+| Lượng mưa (mm/h) | 0.43 / 0.37 (persistence) | 0.58 / 0.56 (seasonal naive) | 0.64 / 0.57 (climatology) | 0.64 / 0.56 (climatology) |
+| Áp suất (hPa) | **0.27** / 0.54 (persistence) | **0.79** / 1.08 (seasonal naive) | **1.62** / 1.69 (seasonal naive) | 1.95 / 1.90 (seasonal naive) |
+
+*In đậm = Hybrid có MAE thấp hơn cả 3 baseline (cả hai bảng).*
+
+Mốc neo và τ (giờ) do fold cuối tự chọn: Nhiệt độ: climatology, τ = 96, Độ ẩm: seasonal naive, τ = 24, Tốc độ gió: seasonal naive, τ = 48, Lượng mưa: seasonal naive, τ = 6, Áp suất: seasonal naive, τ = 24.
+
+![Walk-forward MAE theo lead time](figures/fig8_walk_forward_mae_by_lead.png)
+
+**Diễn giải.**
+* **Dự báo vài giờ tới:** mô hình tốt hơn rõ rệt mọi baseline. MAE nhiệt độ ở 1 giờ là 0.51 °C, so với 1.03 °C của seasonal naive; khoảng tin cậy nằm hẳn trên 0 và mô hình thắng ở 100% fold. Con số 0.389 °C trong báo cáo cũ cũng là sai số **1 giờ tới**, chỉ trên một lần chia train/test.
+* **Từ ngày 1 đến ngày 7:** với nhiệt độ, mô hình **không tốt hơn** việc lặp lại 24 giờ gần nhất hoặc climatology; khoảng tin cậy của skill đều chứa 0. Độ ẩm, gió và áp suất tốt hơn baseline một chút trong ngày 1–3, rồi ngang baseline ở ngày 4–7. Lượng mưa theo giờ thua baseline ở mọi thời hạn.
+* **Hệ quả:** với 3 tháng dữ liệu, phần ML hữu ích cho dự báo ngắn hạn (vài giờ). Độ tin cậy của dự báo 3–7 ngày trên dashboard chủ yếu đến từ phần trộn NWP Open-Meteo, mà trọng số trộn chưa được kiểm định.
+* **Bước giảm dần (mốc neo + τ) là cần thiết:** khi chỉ neo về climatology, áp suất ở ngày 4–7 trôi tới MAE 3.57 hPa, vì climatology của tập train không theo kịp xu hướng áp suất tăng theo mùa. Cho phép chọn mốc neo seasonal naive đưa con số này về 1.95 hPa.
+* **GRU:** đóng góp nhỏ. Với cùng cấu hình damping cũ (chỉ neo về climatology), bản không GRU cho MAE nhiệt độ ngày 4–7 là 1.47 °C, bản có GRU là 1.54 °C, trong khi thời gian train mỗi fold gấp khoảng 4 lần. Nhóm giữ GRU theo thiết kế ban đầu; bỏ được bằng `--no-gru`.
+
+![Skill theo từng fold](figures/fig9_walk_forward_fold_skill.png)
 
 #### 4. Đánh giá trên nhiều năm (tùy chọn)
 Với 3 tháng dữ liệu, chỉ có vài fold trong cùng một mùa và một pha ENSO, nên chưa nói được gì về độ bền của mô hình qua các năm. Script `04_collect_multiyear_archive.py` lấy ERA5 từ 2014; giai đoạn này bao gồm El Niño mạnh 2015–16, La Niña 2020–23 và El Niño 2023–24. Sau đó `05_walk_forward_evaluation.py --data archive` chạy fold 30 ngày, refit mỗi 3 fold, và xếp tầng kết quả theo mùa và theo pha ENSO. Pha ENSO lấy từ chỉ số RONI của NOAA CPC (chỉ số chính thức từ 01/02/2026), dự phòng bằng ONI; một pha El Niño/La Niña cần ≥ 5 mùa chồng nhau vượt ±0.5 °C.
@@ -420,6 +453,6 @@ Lưu ý: walk-forward trên ERA5 đo khả năng "dự báo ERA5" chứ không p
 | Nội suy | Nội suy, ffill/bfill không giới hạn, không đánh dấu | Chỉ gap ≤ 6 giờ, có cờ `is_imputed` |
 | Thu thập theo thời gian | Một lần duy nhất | `--mode realtime --repeat` nối thêm theo `run_id` |
 | Đánh giá mô hình | Chia cố định 70/15/15; MAE 0.389 °C là sai số **1 giờ tới** nhưng được trình bày như kết quả dự báo 7 ngày | Walk-forward, MAE theo lead time 1–168 giờ, so với 3 baseline, CI theo fold |
-| Rò rỉ dữ liệu khi train | XGBoost học phần dư in-sample; trọng số kết hợp cố định 0.15/0.10/0.75/0.5 | Phần dư out-of-fold; trọng số NNLS và hệ số co chọn trên khối validation trong tập train |
+| Rò rỉ dữ liệu khi train | XGBoost học phần dư in-sample; trọng số kết hợp cố định 0.15/0.10/0.75/0.5 | Phần dư out-of-fold; trọng số NNLS, hệ số co, mốc neo và τ đều chọn trên khối validation trong tập train |
 | Train/serve skew | Train trên ERA5, inference trên trung bình nhiều nguồn; `std` khác `ddof` giữa train và inference; `location_id` là biến số | Một hàm feature dùng chung; inference dùng lịch sử Open-Meteo; bỏ `location_id` |
 | Housekeeping | Hai script `04_`; thiếu `pyarrow`; link `file:///C:/...` hỏng; WeatherAPI gọi qua `http://` | Đánh số 01–07; pin phiên bản; https; README theo khung báo cáo |

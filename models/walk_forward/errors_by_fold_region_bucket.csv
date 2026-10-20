@@ -143,42 +143,42 @@ fold,variable,model,bucket,region,n,mae
 0,temperature_2m,climatology,day4-7,North Mountain,2688,1.1413079294217685
 0,temperature_2m,climatology,day4-7,South,2688,0.6616328302154195
 0,temperature_2m,climatology,day4-7,South Central,2688,0.8498476473922904
-0,relative_humidity_2m,hybrid,h1,Central,42,4.604960770629077
-0,relative_humidity_2m,hybrid,h1,Central Highlands,42,1.8152072573221827
-0,relative_humidity_2m,hybrid,h1,Islands,28,2.5258167233740836
-0,relative_humidity_2m,hybrid,h1,Mekong Delta,28,3.5057828298995597
-0,relative_humidity_2m,hybrid,h1,North,42,4.051403711157046
-0,relative_humidity_2m,hybrid,h1,North Central,14,4.0623680302792335
-0,relative_humidity_2m,hybrid,h1,North Mountain,28,3.852532247255708
-0,relative_humidity_2m,hybrid,h1,South,28,3.4215891549612505
-0,relative_humidity_2m,hybrid,h1,South Central,28,3.327715930304458
-0,relative_humidity_2m,hybrid,day1,Central,1008,9.303852056752818
-0,relative_humidity_2m,hybrid,day1,Central Highlands,1008,3.5869857030570924
-0,relative_humidity_2m,hybrid,day1,Islands,672,5.080237455014089
-0,relative_humidity_2m,hybrid,day1,Mekong Delta,672,4.570528932983971
-0,relative_humidity_2m,hybrid,day1,North,1008,11.264508615496437
-0,relative_humidity_2m,hybrid,day1,North Central,336,8.670162493275484
-0,relative_humidity_2m,hybrid,day1,North Mountain,672,8.310712872559444
-0,relative_humidity_2m,hybrid,day1,South,672,4.119098453946978
-0,relative_humidity_2m,hybrid,day1,South Central,672,6.38478528227889
-0,relative_humidity_2m,hybrid,day2-3,Central,2016,11.029961134120029
-0,relative_humidity_2m,hybrid,day2-3,Central Highlands,2016,4.742710437148205
-0,relative_humidity_2m,hybrid,day2-3,Islands,1344,5.013700218771062
-0,relative_humidity_2m,hybrid,day2-3,Mekong Delta,1344,4.850271815829991
-0,relative_humidity_2m,hybrid,day2-3,North,2016,16.082148104956396
-0,relative_humidity_2m,hybrid,day2-3,North Central,672,9.214585915561187
-0,relative_humidity_2m,hybrid,day2-3,North Mountain,1344,12.323625394673378
-0,relative_humidity_2m,hybrid,day2-3,South,1344,4.5066565774249465
-0,relative_humidity_2m,hybrid,day2-3,South Central,1344,7.265990021920391
-0,relative_humidity_2m,hybrid,day4-7,Central,4032,14.000181773539815
-0,relative_humidity_2m,hybrid,day4-7,Central Highlands,4032,4.712325498765993
-0,relative_humidity_2m,hybrid,day4-7,Islands,2688,4.331477557980401
-0,relative_humidity_2m,hybrid,day4-7,Mekong Delta,2688,4.233647642214039
-0,relative_humidity_2m,hybrid,day4-7,North,4032,13.963285190250739
-0,relative_humidity_2m,hybrid,day4-7,North Central,1344,7.526473985677619
-0,relative_humidity_2m,hybrid,day4-7,North Mountain,2688,10.323870386161266
-0,relative_humidity_2m,hybrid,day4-7,South,2688,4.308920970924434
-0,relative_humidity_2m,hybrid,day4-7,South Central,2688,6.097918783288918
+0,relative_humidity_2m,hybrid,h1,Central,42,4.527603733607698
+0,relative_humidity_2m,hybrid,h1,Central Highlands,42,1.8165078299489303
+0,relative_humidity_2m,hybrid,h1,Islands,28,2.5507031060733825
+0,relative_humidity_2m,hybrid,h1,Mekong Delta,28,3.5429622312249145
+0,relative_humidity_2m,hybrid,h1,North,42,3.765035137402917
+0,relative_humidity_2m,hybrid,h1,North Central,14,3.8866816275887714
+0,relative_humidity_2m,hybrid,h1,North Mountain,28,3.6963447960489235
+0,relative_humidity_2m,hybrid,h1,South,28,3.3865365406296752
+0,relative_humidity_2m,hybrid,h1,South Central,28,3.223926485057767
+0,relative_humidity_2m,hybrid,day1,Central,1008,8.590373379059608
+0,relative_humidity_2m,hybrid,day1,Central Highlands,1008,2.8489769709221173
+0,relative_humidity_2m,hybrid,day1,Islands,672,4.859921140709481
+0,relative_humidity_2m,hybrid,day1,Mekong Delta,672,4.644097348887258
+0,relative_humidity_2m,hybrid,day1,North,1008,9.350248312240785
+0,relative_humidity_2m,hybrid,day1,North Central,336,8.887254256747319
+0,relative_humidity_2m,hybrid,day1,North Mountain,672,6.345998561771345
+0,relative_humidity_2m,hybrid,day1,South,672,4.029320778174144
+0,relative_humidity_2m,hybrid,day1,South Central,672,5.9983006991352665
+0,relative_humidity_2m,hybrid,day2-3,Central,2016,12.733599773837042
+0,relative_humidity_2m,hybrid,day2-3,Central Highlands,2016,3.082117036694776
+0,relative_humidity_2m,hybrid,day2-3,Islands,1344,5.34337264340822
+0,relative_humidity_2m,hybrid,day2-3,Mekong Delta,1344,5.666517487600556
+0,relative_humidity_2m,hybrid,day2-3,North,2016,13.305433163503155
+0,relative_humidity_2m,hybrid,day2-3,North Central,672,11.444166572301704
+0,relative_humidity_2m,hybrid,day2-3,North Mountain,1344,11.29387810618468
+0,relative_humidity_2m,hybrid,day2-3,South,1344,5.877410297979504
+0,relative_humidity_2m,hybrid,day2-3,South Central,1344,6.889003194568453
+0,relative_humidity_2m,hybrid,day4-7,Central,4032,14.511063612902808
+0,relative_humidity_2m,hybrid,day4-7,Central Highlands,4032,4.650144631332142
+0,relative_humidity_2m,hybrid,day4-7,Islands,2688,6.57671799165366
+0,relative_humidity_2m,hybrid,day4-7,Mekong Delta,2688,5.743716638925615
+0,relative_humidity_2m,hybrid,day4-7,North,4032,15.817065672935122
+0,relative_humidity_2m,hybrid,day4-7,North Central,1344,9.96671729990373
+0,relative_humidity_2m,hybrid,day4-7,North Mountain,2688,13.86702061835086
+0,relative_humidity_2m,hybrid,day4-7,South,2688,6.016646235999227
+0,relative_humidity_2m,hybrid,day4-7,South Central,2688,8.291263782859014
 0,relative_humidity_2m,persistence,h1,Central,42,4.242380952380953
 0,relative_humidity_2m,persistence,h1,Central Highlands,42,2.6042857142857136
 0,relative_humidity_2m,persistence,h1,Islands,28,3.1389285714285724
@@ -575,42 +575,42 @@ fold,variable,model,bucket,region,n,mae
 0,precipitation,climatology,day4-7,North Mountain,2688,0.6236164257369614
 0,precipitation,climatology,day4-7,South,2688,0.25793473639455783
 0,precipitation,climatology,day4-7,South Central,2688,0.15641652494331065
-0,pressure_msl,hybrid,h1,Central,42,0.3092316869613331
-0,pressure_msl,hybrid,h1,Central Highlands,42,0.3133115396201555
-0,pressure_msl,hybrid,h1,Islands,28,0.24008197627854802
-0,pressure_msl,hybrid,h1,Mekong Delta,28,0.2436841621797612
-0,pressure_msl,hybrid,h1,North,42,0.37312546553388465
-0,pressure_msl,hybrid,h1,North Central,14,0.23987721026817002
-0,pressure_msl,hybrid,h1,North Mountain,28,0.39582207624297894
-0,pressure_msl,hybrid,h1,South,28,0.2981273593305665
-0,pressure_msl,hybrid,h1,South Central,28,0.31398038629327274
-0,pressure_msl,hybrid,day1,Central,1008,0.7545413579747758
-0,pressure_msl,hybrid,day1,Central Highlands,1008,0.544649186109105
-0,pressure_msl,hybrid,day1,Islands,672,0.42694146946855566
-0,pressure_msl,hybrid,day1,Mekong Delta,672,0.41576866445190436
-0,pressure_msl,hybrid,day1,North,1008,0.9601990495078375
-0,pressure_msl,hybrid,day1,North Central,336,0.9491178810466763
-0,pressure_msl,hybrid,day1,North Mountain,672,0.9243227615437283
-0,pressure_msl,hybrid,day1,South,672,0.5025287730905603
-0,pressure_msl,hybrid,day1,South Central,672,0.5274812360419963
-0,pressure_msl,hybrid,day2-3,Central,2016,1.7193084998555426
-0,pressure_msl,hybrid,day2-3,Central Highlands,2016,0.9842870834216827
-0,pressure_msl,hybrid,day2-3,Islands,1344,0.7930645074541403
-0,pressure_msl,hybrid,day2-3,Mekong Delta,1344,0.8372331173544649
-0,pressure_msl,hybrid,day2-3,North,2016,2.5094935072333655
-0,pressure_msl,hybrid,day2-3,North Central,672,2.5776896314781315
-0,pressure_msl,hybrid,day2-3,North Mountain,1344,2.4558252646856795
-0,pressure_msl,hybrid,day2-3,South,1344,0.9139733974058566
-0,pressure_msl,hybrid,day2-3,South Central,1344,1.0500420494140836
-0,pressure_msl,hybrid,day4-7,Central,4032,3.281457477245683
-0,pressure_msl,hybrid,day4-7,Central Highlands,4032,1.6031113880718773
-0,pressure_msl,hybrid,day4-7,Islands,2688,1.1797859033826705
-0,pressure_msl,hybrid,day4-7,Mekong Delta,2688,1.2810244859630102
-0,pressure_msl,hybrid,day4-7,North,4032,5.562127250669362
-0,pressure_msl,hybrid,day4-7,North Central,1344,5.167206854624685
-0,pressure_msl,hybrid,day4-7,North Mountain,2688,3.8343252849516554
-0,pressure_msl,hybrid,day4-7,South,2688,1.281822216344899
-0,pressure_msl,hybrid,day4-7,South Central,2688,1.6778427433036232
+0,pressure_msl,hybrid,h1,Central,42,0.3119227910186033
+0,pressure_msl,hybrid,h1,Central Highlands,42,0.31230374442918674
+0,pressure_msl,hybrid,h1,Islands,28,0.23895407411963884
+0,pressure_msl,hybrid,h1,Mekong Delta,28,0.24231217494426005
+0,pressure_msl,hybrid,h1,North,42,0.37231008626483636
+0,pressure_msl,hybrid,h1,North Central,14,0.23477003422458761
+0,pressure_msl,hybrid,h1,North Mountain,28,0.39657459846461457
+0,pressure_msl,hybrid,h1,South,28,0.30066778270880185
+0,pressure_msl,hybrid,h1,South Central,28,0.31076938983462454
+0,pressure_msl,hybrid,day1,Central,1008,0.7308212583327965
+0,pressure_msl,hybrid,day1,Central Highlands,1008,0.5199826319667666
+0,pressure_msl,hybrid,day1,Islands,672,0.42239158997924603
+0,pressure_msl,hybrid,day1,Mekong Delta,672,0.42332268609068013
+0,pressure_msl,hybrid,day1,North,1008,0.8887112340339757
+0,pressure_msl,hybrid,day1,North Central,336,0.8472056853953964
+0,pressure_msl,hybrid,day1,North Mountain,672,0.7925935013543269
+0,pressure_msl,hybrid,day1,South,672,0.49586504479333743
+0,pressure_msl,hybrid,day1,South Central,672,0.49969926327465586
+0,pressure_msl,hybrid,day2-3,Central,2016,1.6587793174743166
+0,pressure_msl,hybrid,day2-3,Central Highlands,2016,0.8030169209837897
+0,pressure_msl,hybrid,day2-3,Islands,1344,0.6083969389544426
+0,pressure_msl,hybrid,day2-3,Mekong Delta,1344,0.6359551902533962
+0,pressure_msl,hybrid,day2-3,North,2016,2.333477156255326
+0,pressure_msl,hybrid,day2-3,North Central,672,2.3241951277342396
+0,pressure_msl,hybrid,day2-3,North Mountain,1344,2.0214546386009435
+0,pressure_msl,hybrid,day2-3,South,1344,0.72461468585942
+0,pressure_msl,hybrid,day2-3,South Central,1344,0.8569656031073691
+0,pressure_msl,hybrid,day4-7,Central,4032,3.213780098429806
+0,pressure_msl,hybrid,day4-7,Central Highlands,4032,1.1095172502599395
+0,pressure_msl,hybrid,day4-7,Islands,2688,0.6743034416400828
+0,pressure_msl,hybrid,day4-7,Mekong Delta,2688,0.7191886270981139
+0,pressure_msl,hybrid,day4-7,North,4032,5.315024588544527
+0,pressure_msl,hybrid,day4-7,North Central,1344,4.752218061221417
+0,pressure_msl,hybrid,day4-7,North Mountain,2688,3.0702904375682167
+0,pressure_msl,hybrid,day4-7,South,2688,0.8067297272425464
+0,pressure_msl,hybrid,day4-7,South Central,2688,1.2704756312546353
 0,pressure_msl,persistence,h1,Central,42,0.39523809523808767
 0,pressure_msl,persistence,h1,Central Highlands,42,0.5428571428571364
 0,pressure_msl,persistence,h1,Islands,28,0.42857142857143266
@@ -1295,42 +1295,42 @@ fold,variable,model,bucket,region,n,mae
 1,precipitation,climatology,day4-7,North Mountain,2688,0.517496507531584
 1,precipitation,climatology,day4-7,South,2688,0.4490160349854227
 1,precipitation,climatology,day4-7,South Central,2688,0.45985863095238094
-1,pressure_msl,hybrid,h1,Central,42,0.31059098517348666
-1,pressure_msl,hybrid,h1,Central Highlands,42,0.31848453203269583
-1,pressure_msl,hybrid,h1,Islands,28,0.235449812295948
-1,pressure_msl,hybrid,h1,Mekong Delta,28,0.22363134295842105
-1,pressure_msl,hybrid,h1,North,42,0.2933668218851478
-1,pressure_msl,hybrid,h1,North Central,14,0.19714329481527265
-1,pressure_msl,hybrid,h1,North Mountain,28,0.22337074781796268
-1,pressure_msl,hybrid,h1,South,28,0.2184295951888982
-1,pressure_msl,hybrid,h1,South Central,28,0.19074281579659264
-1,pressure_msl,hybrid,day1,Central,1008,2.36509760788855
-1,pressure_msl,hybrid,day1,Central Highlands,1008,0.9793071260153714
-1,pressure_msl,hybrid,day1,Islands,672,0.6727209680586073
-1,pressure_msl,hybrid,day1,Mekong Delta,672,0.6782817287605492
-1,pressure_msl,hybrid,day1,North,1008,3.1136656957509032
-1,pressure_msl,hybrid,day1,North Central,336,2.891861049472686
-1,pressure_msl,hybrid,day1,North Mountain,672,2.3742162151793753
-1,pressure_msl,hybrid,day1,South,672,0.7204792059309204
-1,pressure_msl,hybrid,day1,South Central,672,1.0750453723867468
-1,pressure_msl,hybrid,day2-3,Central,2016,4.561026533004217
-1,pressure_msl,hybrid,day2-3,Central Highlands,2016,1.5179418703589769
-1,pressure_msl,hybrid,day2-3,Islands,1344,0.9158881587079465
-1,pressure_msl,hybrid,day2-3,Mekong Delta,1344,0.9274942486859659
-1,pressure_msl,hybrid,day2-3,North,2016,7.1105329501676
-1,pressure_msl,hybrid,day2-3,North Central,672,6.330081902093026
-1,pressure_msl,hybrid,day2-3,North Mountain,1344,5.581884580239184
-1,pressure_msl,hybrid,day2-3,South,1344,1.0579688865108163
-1,pressure_msl,hybrid,day2-3,South Central,1344,1.8492403299756757
-1,pressure_msl,hybrid,day4-7,Central,4032,5.293163599019043
-1,pressure_msl,hybrid,day4-7,Central Highlands,4032,1.9557026463048208
-1,pressure_msl,hybrid,day4-7,Islands,2688,0.9196402730455164
-1,pressure_msl,hybrid,day4-7,Mekong Delta,2688,0.9707753433949561
-1,pressure_msl,hybrid,day4-7,North,4032,9.441567347461943
-1,pressure_msl,hybrid,day4-7,North Central,1344,7.715993944267423
-1,pressure_msl,hybrid,day4-7,North Mountain,2688,8.048712904204525
-1,pressure_msl,hybrid,day4-7,South,2688,1.3483356918470923
-1,pressure_msl,hybrid,day4-7,South Central,2688,2.5596243471057685
+1,pressure_msl,hybrid,h1,Central,42,0.2520322122608312
+1,pressure_msl,hybrid,h1,Central Highlands,42,0.31908482343106115
+1,pressure_msl,hybrid,h1,Islands,28,0.22943686595466165
+1,pressure_msl,hybrid,h1,Mekong Delta,28,0.22685275826095058
+1,pressure_msl,hybrid,h1,North,42,0.28260811637308
+1,pressure_msl,hybrid,h1,North Central,14,0.20370139709797286
+1,pressure_msl,hybrid,h1,North Mountain,28,0.19422106024835475
+1,pressure_msl,hybrid,h1,South,28,0.21651689455747
+1,pressure_msl,hybrid,h1,South Central,28,0.1799846265280678
+1,pressure_msl,hybrid,day1,Central,1008,1.0636474244820588
+1,pressure_msl,hybrid,day1,Central Highlands,1008,0.6189799892379495
+1,pressure_msl,hybrid,day1,Islands,672,0.523841541011984
+1,pressure_msl,hybrid,day1,Mekong Delta,672,0.5315080963725223
+1,pressure_msl,hybrid,day1,North,1008,1.3312509042724843
+1,pressure_msl,hybrid,day1,North Central,336,1.2498234113173678
+1,pressure_msl,hybrid,day1,North Mountain,672,1.1395069869152343
+1,pressure_msl,hybrid,day1,South,672,0.561371356495733
+1,pressure_msl,hybrid,day1,South Central,672,0.639070123981298
+1,pressure_msl,hybrid,day2-3,Central,2016,1.895903193461038
+1,pressure_msl,hybrid,day2-3,Central Highlands,2016,1.0929300941184164
+1,pressure_msl,hybrid,day2-3,Islands,1344,0.9344197537562708
+1,pressure_msl,hybrid,day2-3,Mekong Delta,1344,0.9657412148024322
+1,pressure_msl,hybrid,day2-3,North,2016,3.1785282003184854
+1,pressure_msl,hybrid,day2-3,North Central,672,2.831394536462103
+1,pressure_msl,hybrid,day2-3,North Mountain,1344,2.7967586322798694
+1,pressure_msl,hybrid,day2-3,South,1344,1.0234341735378845
+1,pressure_msl,hybrid,day2-3,South Central,1344,1.1301953391521276
+1,pressure_msl,hybrid,day4-7,Central,4032,2.2609251204916467
+1,pressure_msl,hybrid,day4-7,Central Highlands,4032,1.3392679764533895
+1,pressure_msl,hybrid,day4-7,Islands,2688,1.084322124889386
+1,pressure_msl,hybrid,day4-7,Mekong Delta,2688,1.1234078731011292
+1,pressure_msl,hybrid,day4-7,North,4032,4.588838135578658
+1,pressure_msl,hybrid,day4-7,North Central,1344,3.389134017675084
+1,pressure_msl,hybrid,day4-7,North Mountain,2688,4.5013410172932025
+1,pressure_msl,hybrid,day4-7,South,2688,1.1711592168844354
+1,pressure_msl,hybrid,day4-7,South Central,2688,1.4349592668737858
 1,pressure_msl,persistence,h1,Central,42,0.46904761904763637
 1,pressure_msl,persistence,h1,Central Highlands,42,0.6333333333333312
 1,pressure_msl,persistence,h1,Islands,28,0.4892857142857037
@@ -1439,42 +1439,42 @@ fold,variable,model,bucket,region,n,mae
 1,pressure_msl,climatology,day4-7,North Mountain,2688,8.064174107142847
 1,pressure_msl,climatology,day4-7,South,2688,1.3477018039358593
 1,pressure_msl,climatology,day4-7,South Central,2688,2.5567351494169124
-2,temperature_2m,hybrid,h1,Central,42,0.6704668204235438
-2,temperature_2m,hybrid,h1,Central Highlands,42,0.49297780000593877
-2,temperature_2m,hybrid,h1,Islands,28,0.4755137155266541
-2,temperature_2m,hybrid,h1,Mekong Delta,28,0.5754075719424925
-2,temperature_2m,hybrid,h1,North,42,0.5724769344397587
-2,temperature_2m,hybrid,h1,North Central,14,0.579241252576408
-2,temperature_2m,hybrid,h1,North Mountain,28,0.45415380695577395
-2,temperature_2m,hybrid,h1,South,28,0.5799772260710508
-2,temperature_2m,hybrid,h1,South Central,28,0.3206096172071585
-2,temperature_2m,hybrid,day1,Central,1008,1.2304969464271363
-2,temperature_2m,hybrid,day1,Central Highlands,1008,1.004140739585659
-2,temperature_2m,hybrid,day1,Islands,672,0.6797917834711934
-2,temperature_2m,hybrid,day1,Mekong Delta,672,0.9391550636889233
-2,temperature_2m,hybrid,day1,North,1008,1.1276825553582486
-2,temperature_2m,hybrid,day1,North Central,336,0.8731532979560187
-2,temperature_2m,hybrid,day1,North Mountain,672,1.158603440381484
-2,temperature_2m,hybrid,day1,South,672,0.8461702265594598
-2,temperature_2m,hybrid,day1,South Central,672,0.9157691637731512
-2,temperature_2m,hybrid,day2-3,Central,2016,1.4022698584824966
-2,temperature_2m,hybrid,day2-3,Central Highlands,2016,1.4711428652043244
-2,temperature_2m,hybrid,day2-3,Islands,1344,0.8500174513196441
-2,temperature_2m,hybrid,day2-3,Mekong Delta,1344,1.130177216518794
-2,temperature_2m,hybrid,day2-3,North,2016,1.5353745982647742
-2,temperature_2m,hybrid,day2-3,North Central,672,0.9864897394889626
-2,temperature_2m,hybrid,day2-3,North Mountain,1344,1.6193453815203669
-2,temperature_2m,hybrid,day2-3,South,1344,0.9524068034139981
-2,temperature_2m,hybrid,day2-3,South Central,1344,1.1009955628975105
-2,temperature_2m,hybrid,day4-7,Central,4032,1.2518280530952268
-2,temperature_2m,hybrid,day4-7,Central Highlands,4032,1.3093598885634985
-2,temperature_2m,hybrid,day4-7,Islands,2688,0.8675194030222956
-2,temperature_2m,hybrid,day4-7,Mekong Delta,2688,1.0738344615031552
-2,temperature_2m,hybrid,day4-7,North,4032,1.7495329720480413
-2,temperature_2m,hybrid,day4-7,North Central,1344,0.8253374255581385
-2,temperature_2m,hybrid,day4-7,North Mountain,2688,1.5016713258647552
-2,temperature_2m,hybrid,day4-7,South,2688,0.8949330296449602
-2,temperature_2m,hybrid,day4-7,South Central,2688,0.8746667090447114
+2,temperature_2m,hybrid,h1,Central,42,0.6706418575763762
+2,temperature_2m,hybrid,h1,Central Highlands,42,0.49392863274151316
+2,temperature_2m,hybrid,h1,Islands,28,0.4747147841183483
+2,temperature_2m,hybrid,h1,Mekong Delta,28,0.5740316805310496
+2,temperature_2m,hybrid,h1,North,42,0.5776551628916853
+2,temperature_2m,hybrid,h1,North Central,14,0.5871407841955841
+2,temperature_2m,hybrid,h1,North Mountain,28,0.4542331534506067
+2,temperature_2m,hybrid,h1,South,28,0.5756800915774029
+2,temperature_2m,hybrid,h1,South Central,28,0.3261297273074421
+2,temperature_2m,hybrid,day1,Central,1008,1.3262155197979317
+2,temperature_2m,hybrid,day1,Central Highlands,1008,1.001381094226231
+2,temperature_2m,hybrid,day1,Islands,672,0.6912950526049316
+2,temperature_2m,hybrid,day1,Mekong Delta,672,0.9456056510130595
+2,temperature_2m,hybrid,day1,North,1008,1.1845476151042282
+2,temperature_2m,hybrid,day1,North Central,336,0.9527451779300365
+2,temperature_2m,hybrid,day1,North Mountain,672,1.2002741910575874
+2,temperature_2m,hybrid,day1,South,672,0.8702881176638302
+2,temperature_2m,hybrid,day1,South Central,672,1.001317377707085
+2,temperature_2m,hybrid,day2-3,Central,2016,1.9450188492362939
+2,temperature_2m,hybrid,day2-3,Central Highlands,2016,1.4879895202569242
+2,temperature_2m,hybrid,day2-3,Islands,1344,0.9437771156434165
+2,temperature_2m,hybrid,day2-3,Mekong Delta,1344,1.2387626085407923
+2,temperature_2m,hybrid,day2-3,North,2016,1.8410060797407672
+2,temperature_2m,hybrid,day2-3,North Central,672,1.2337258289982584
+2,temperature_2m,hybrid,day2-3,North Mountain,1344,1.834386344474863
+2,temperature_2m,hybrid,day2-3,South,1344,1.1017443542084329
+2,temperature_2m,hybrid,day2-3,South Central,1344,1.4741271332464583
+2,temperature_2m,hybrid,day4-7,Central,4032,1.7038015162058746
+2,temperature_2m,hybrid,day4-7,Central Highlands,4032,1.4107027545620663
+2,temperature_2m,hybrid,day4-7,Islands,2688,1.059746829920738
+2,temperature_2m,hybrid,day4-7,Mekong Delta,2688,1.2473582003810675
+2,temperature_2m,hybrid,day4-7,North,4032,2.659308024484475
+2,temperature_2m,hybrid,day4-7,North Central,1344,1.7956215730971081
+2,temperature_2m,hybrid,day4-7,North Mountain,2688,2.0106886621329543
+2,temperature_2m,hybrid,day4-7,South,2688,1.088426006239887
+2,temperature_2m,hybrid,day4-7,South Central,2688,1.1119371395130162
 2,temperature_2m,persistence,h1,Central,42,0.6345238095238095
 2,temperature_2m,persistence,h1,Central Highlands,42,0.4749999999999999
 2,temperature_2m,persistence,h1,Islands,28,0.5339285714285714
@@ -1583,42 +1583,42 @@ fold,variable,model,bucket,region,n,mae
 2,temperature_2m,climatology,day4-7,North Mountain,2688,1.8613447332057824
 2,temperature_2m,climatology,day4-7,South,2688,1.1154629039115644
 2,temperature_2m,climatology,day4-7,South Central,2688,2.0430292038690476
-2,relative_humidity_2m,hybrid,h1,Central,42,4.028310291651946
-2,relative_humidity_2m,hybrid,h1,Central Highlands,42,2.705998124166039
-2,relative_humidity_2m,hybrid,h1,Islands,28,3.073513341746804
-2,relative_humidity_2m,hybrid,h1,Mekong Delta,28,3.673828276029518
-2,relative_humidity_2m,hybrid,h1,North,42,3.093764955865068
-2,relative_humidity_2m,hybrid,h1,North Central,14,3.0288314786868042
-2,relative_humidity_2m,hybrid,h1,North Mountain,28,2.24533827645531
-2,relative_humidity_2m,hybrid,h1,South,28,3.6116552806530065
-2,relative_humidity_2m,hybrid,h1,South Central,28,2.462144562758612
-2,relative_humidity_2m,hybrid,day1,Central,1008,4.080029596224285
-2,relative_humidity_2m,hybrid,day1,Central Highlands,1008,5.062936093467188
-2,relative_humidity_2m,hybrid,day1,Islands,672,4.546359542835717
-2,relative_humidity_2m,hybrid,day1,Mekong Delta,672,5.383026859604941
-2,relative_humidity_2m,hybrid,day1,North,1008,7.5996765306127925
-2,relative_humidity_2m,hybrid,day1,North Central,336,4.972284379819582
-2,relative_humidity_2m,hybrid,day1,North Mountain,672,6.4986187924804755
-2,relative_humidity_2m,hybrid,day1,South,672,5.179385676641722
-2,relative_humidity_2m,hybrid,day1,South Central,672,4.726704310839907
-2,relative_humidity_2m,hybrid,day2-3,Central,2016,4.294011207670803
-2,relative_humidity_2m,hybrid,day2-3,Central Highlands,2016,6.5436218855654085
-2,relative_humidity_2m,hybrid,day2-3,Islands,1344,5.4616397410155635
-2,relative_humidity_2m,hybrid,day2-3,Mekong Delta,1344,5.95149585040525
-2,relative_humidity_2m,hybrid,day2-3,North,2016,10.24624953548416
-2,relative_humidity_2m,hybrid,day2-3,North Central,672,4.56560353487747
-2,relative_humidity_2m,hybrid,day2-3,North Mountain,1344,8.153181837761654
-2,relative_humidity_2m,hybrid,day2-3,South,1344,5.570156411352435
-2,relative_humidity_2m,hybrid,day2-3,South Central,1344,5.2587865234156705
-2,relative_humidity_2m,hybrid,day4-7,Central,4032,4.913679790714562
-2,relative_humidity_2m,hybrid,day4-7,Central Highlands,4032,5.875796689947215
-2,relative_humidity_2m,hybrid,day4-7,Islands,2688,4.879506777391004
-2,relative_humidity_2m,hybrid,day4-7,Mekong Delta,2688,6.01517587521843
-2,relative_humidity_2m,hybrid,day4-7,North,4032,11.782475357116216
-2,relative_humidity_2m,hybrid,day4-7,North Central,1344,5.431525713936716
-2,relative_humidity_2m,hybrid,day4-7,North Mountain,2688,8.708015157099803
-2,relative_humidity_2m,hybrid,day4-7,South,2688,5.288011278559024
-2,relative_humidity_2m,hybrid,day4-7,South Central,2688,4.452149528048
+2,relative_humidity_2m,hybrid,h1,Central,42,4.017922401181701
+2,relative_humidity_2m,hybrid,h1,Central Highlands,42,2.710274300838499
+2,relative_humidity_2m,hybrid,h1,Islands,28,3.0733607246538
+2,relative_humidity_2m,hybrid,h1,Mekong Delta,28,3.6576434545785523
+2,relative_humidity_2m,hybrid,h1,North,42,3.105459246249108
+2,relative_humidity_2m,hybrid,h1,North Central,14,3.0309381514081477
+2,relative_humidity_2m,hybrid,h1,North Mountain,28,2.2541760129005572
+2,relative_humidity_2m,hybrid,h1,South,28,3.6121177720868167
+2,relative_humidity_2m,hybrid,h1,South Central,28,2.46516919974286
+2,relative_humidity_2m,hybrid,day1,Central,1008,4.0317885650774965
+2,relative_humidity_2m,hybrid,day1,Central Highlands,1008,4.954581262515058
+2,relative_humidity_2m,hybrid,day1,Islands,672,4.52868301985943
+2,relative_humidity_2m,hybrid,day1,Mekong Delta,672,5.2932186514054385
+2,relative_humidity_2m,hybrid,day1,North,1008,7.5261887095832245
+2,relative_humidity_2m,hybrid,day1,North Central,336,4.982140644413167
+2,relative_humidity_2m,hybrid,day1,North Mountain,672,6.461983452810436
+2,relative_humidity_2m,hybrid,day1,South,672,5.171130608706939
+2,relative_humidity_2m,hybrid,day1,South Central,672,4.864002295797458
+2,relative_humidity_2m,hybrid,day2-3,Central,2016,4.805132540488127
+2,relative_humidity_2m,hybrid,day2-3,Central Highlands,2016,6.078266041045477
+2,relative_humidity_2m,hybrid,day2-3,Islands,1344,5.649760276431967
+2,relative_humidity_2m,hybrid,day2-3,Mekong Delta,1344,5.91278124099802
+2,relative_humidity_2m,hybrid,day2-3,North,2016,11.235346776232788
+2,relative_humidity_2m,hybrid,day2-3,North Central,672,4.927927683367673
+2,relative_humidity_2m,hybrid,day2-3,North Mountain,1344,8.182493617978093
+2,relative_humidity_2m,hybrid,day2-3,South,1344,5.6986372101306815
+2,relative_humidity_2m,hybrid,day2-3,South Central,1344,5.703600172829129
+2,relative_humidity_2m,hybrid,day4-7,Central,4032,5.658046101191292
+2,relative_humidity_2m,hybrid,day4-7,Central Highlands,4032,5.3508378402243
+2,relative_humidity_2m,hybrid,day4-7,Islands,2688,6.149258595137391
+2,relative_humidity_2m,hybrid,day4-7,Mekong Delta,2688,5.850678528182347
+2,relative_humidity_2m,hybrid,day4-7,North,4032,12.771702274244584
+2,relative_humidity_2m,hybrid,day4-7,North Central,1344,7.364503102739685
+2,relative_humidity_2m,hybrid,day4-7,North Mountain,2688,7.8248580345385035
+2,relative_humidity_2m,hybrid,day4-7,South,2688,5.253355166924225
+2,relative_humidity_2m,hybrid,day4-7,South Central,2688,4.745029644490436
 2,relative_humidity_2m,persistence,h1,Central,42,3.977380952380951
 2,relative_humidity_2m,persistence,h1,Central Highlands,42,3.057380952380953
 2,relative_humidity_2m,persistence,h1,Islands,28,3.5310714285714284
@@ -1871,42 +1871,42 @@ fold,variable,model,bucket,region,n,mae
 2,wind_speed_10m,climatology,day4-7,North Mountain,2688,1.5959230176445576
 2,wind_speed_10m,climatology,day4-7,South,2688,8.037276519982994
 2,wind_speed_10m,climatology,day4-7,South Central,2688,7.058768335459183
-2,precipitation,hybrid,h1,Central,42,1.0952973434231505
-2,precipitation,hybrid,h1,Central Highlands,42,0.5718813939535715
-2,precipitation,hybrid,h1,Islands,28,0.3440982789140268
-2,precipitation,hybrid,h1,Mekong Delta,28,0.8095660318707941
-2,precipitation,hybrid,h1,North,42,0.6211461517491678
-2,precipitation,hybrid,h1,North Central,14,1.4343169937485984
-2,precipitation,hybrid,h1,North Mountain,28,0.2608604049877446
-2,precipitation,hybrid,h1,South,28,0.3090178980596616
-2,precipitation,hybrid,h1,South Central,28,0.3570449971151734
-2,precipitation,hybrid,day1,Central,1008,1.7034306625860458
-2,precipitation,hybrid,day1,Central Highlands,1008,0.626008790597489
-2,precipitation,hybrid,day1,Islands,672,0.43841665856370265
-2,precipitation,hybrid,day1,Mekong Delta,672,0.5570651648097913
-2,precipitation,hybrid,day1,North,1008,0.9161145613987987
-2,precipitation,hybrid,day1,North Central,336,1.3301415092385942
-2,precipitation,hybrid,day1,North Mountain,672,0.4832516908528502
-2,precipitation,hybrid,day1,South,672,0.37033517057552684
-2,precipitation,hybrid,day1,South Central,672,0.47903986085661204
-2,precipitation,hybrid,day2-3,Central,2016,0.9914918483440079
-2,precipitation,hybrid,day2-3,Central Highlands,2016,0.5598083609620578
-2,precipitation,hybrid,day2-3,Islands,1344,0.42510520235583715
-2,precipitation,hybrid,day2-3,Mekong Delta,1344,0.5391551422331036
-2,precipitation,hybrid,day2-3,North,2016,1.0274032604541188
-2,precipitation,hybrid,day2-3,North Central,672,1.2272457568792643
-2,precipitation,hybrid,day2-3,North Mountain,1344,0.5778613210208106
-2,precipitation,hybrid,day2-3,South,1344,0.39617224088744746
-2,precipitation,hybrid,day2-3,South Central,1344,0.3398762067278437
-2,precipitation,hybrid,day4-7,Central,4032,0.6620430666605952
-2,precipitation,hybrid,day4-7,Central Highlands,4032,0.6358623112736799
-2,precipitation,hybrid,day4-7,Islands,2688,0.6167243012902465
-2,precipitation,hybrid,day4-7,Mekong Delta,2688,0.7607504775610996
-2,precipitation,hybrid,day4-7,North,4032,0.7611278213458239
-2,precipitation,hybrid,day4-7,North Central,1344,0.6142579646944883
-2,precipitation,hybrid,day4-7,North Mountain,2688,0.552922928205741
-2,precipitation,hybrid,day4-7,South,2688,0.6274433626346255
-2,precipitation,hybrid,day4-7,South Central,2688,0.5513024863449532
+2,precipitation,hybrid,h1,Central,42,1.2081502560370712
+2,precipitation,hybrid,h1,Central Highlands,42,0.6503577981780528
+2,precipitation,hybrid,h1,Islands,28,0.36838731605339975
+2,precipitation,hybrid,h1,Mekong Delta,28,0.8418080348885475
+2,precipitation,hybrid,h1,North,42,0.6221076988492866
+2,precipitation,hybrid,h1,North Central,14,1.3603254321305236
+2,precipitation,hybrid,h1,North Mountain,28,0.25545506222624487
+2,precipitation,hybrid,h1,South,28,0.2766099979818592
+2,precipitation,hybrid,h1,South Central,28,0.35846676953649964
+2,precipitation,hybrid,day1,Central,1008,2.3330351081781306
+2,precipitation,hybrid,day1,Central Highlands,1008,0.7067288914361399
+2,precipitation,hybrid,day1,Islands,672,0.5092514878762285
+2,precipitation,hybrid,day1,Mekong Delta,672,0.6358572605447791
+2,precipitation,hybrid,day1,North,1008,1.0082156238600035
+2,precipitation,hybrid,day1,North Central,336,1.6901485347880314
+2,precipitation,hybrid,day1,North Mountain,672,0.43905629941375324
+2,precipitation,hybrid,day1,South,672,0.4230368829243648
+2,precipitation,hybrid,day1,South Central,672,0.5396576053461591
+2,precipitation,hybrid,day2-3,Central,2016,2.430037282884846
+2,precipitation,hybrid,day2-3,Central Highlands,2016,0.7076031454824313
+2,precipitation,hybrid,day2-3,Islands,1344,0.6089647446081347
+2,precipitation,hybrid,day2-3,Mekong Delta,1344,0.816250801129148
+2,precipitation,hybrid,day2-3,North,2016,1.625750321466705
+2,precipitation,hybrid,day2-3,North Central,672,1.9254621537363694
+2,precipitation,hybrid,day2-3,North Mountain,1344,0.5721617254535586
+2,precipitation,hybrid,day2-3,South,1344,0.5738624380498367
+2,precipitation,hybrid,day2-3,South Central,1344,0.592611279126516
+2,precipitation,hybrid,day4-7,Central,4032,2.2682783933948327
+2,precipitation,hybrid,day4-7,Central Highlands,4032,0.8446676589417795
+2,precipitation,hybrid,day4-7,Islands,2688,0.8745908186125553
+2,precipitation,hybrid,day4-7,Mekong Delta,2688,1.0004091611136228
+2,precipitation,hybrid,day4-7,North,4032,1.3290423830789573
+2,precipitation,hybrid,day4-7,North Central,1344,1.560713968332532
+2,precipitation,hybrid,day4-7,North Mountain,2688,0.5857141795330689
+2,precipitation,hybrid,day4-7,South,2688,0.7615327197944682
+2,precipitation,hybrid,day4-7,South Central,2688,0.7574777386678555
 2,precipitation,persistence,h1,Central,42,1.080952380952381
 2,precipitation,persistence,h1,Central Highlands,42,0.5642857142857144
 2,precipitation,persistence,h1,Islands,28,0.19285714285714287
@@ -2015,42 +2015,42 @@ fold,variable,model,bucket,region,n,mae
 2,precipitation,climatology,day4-7,North Mountain,2688,0.5529017857142856
 2,precipitation,climatology,day4-7,South,2688,0.6273331207482994
 2,precipitation,climatology,day4-7,South Central,2688,0.551187818877551
-2,pressure_msl,hybrid,h1,Central,42,0.4580203824955225
-2,pressure_msl,hybrid,h1,Central Highlands,42,0.2630334022067424
-2,pressure_msl,hybrid,h1,Islands,28,0.24640272848810696
-2,pressure_msl,hybrid,h1,Mekong Delta,28,0.31535258433948293
-2,pressure_msl,hybrid,h1,North,42,0.39263011566000505
-2,pressure_msl,hybrid,h1,North Central,14,0.392673216860073
-2,pressure_msl,hybrid,h1,North Mountain,28,0.3780135149935201
-2,pressure_msl,hybrid,h1,South,28,0.19202937188215077
-2,pressure_msl,hybrid,h1,South Central,28,0.26469544417841057
-2,pressure_msl,hybrid,day1,Central,1008,2.345744515213059
-2,pressure_msl,hybrid,day1,Central Highlands,1008,0.7502647683106038
-2,pressure_msl,hybrid,day1,Islands,672,0.5320669580121149
-2,pressure_msl,hybrid,day1,Mekong Delta,672,0.5231325336088388
-2,pressure_msl,hybrid,day1,North,1008,1.0994171321513853
-2,pressure_msl,hybrid,day1,North Central,336,1.749280686758896
-2,pressure_msl,hybrid,day1,North Mountain,672,1.6423579953662202
-2,pressure_msl,hybrid,day1,South,672,0.578450892742926
-2,pressure_msl,hybrid,day1,South Central,672,1.0453606263251782
-2,pressure_msl,hybrid,day2-3,Central,2016,3.1710912351377067
-2,pressure_msl,hybrid,day2-3,Central Highlands,2016,2.2392879158419494
-2,pressure_msl,hybrid,day2-3,Islands,1344,1.3622277981802735
-2,pressure_msl,hybrid,day2-3,Mekong Delta,1344,1.1453782191350894
-2,pressure_msl,hybrid,day2-3,North,2016,1.2047504821206199
-2,pressure_msl,hybrid,day2-3,North Central,672,1.6183470874148536
-2,pressure_msl,hybrid,day2-3,North Mountain,1344,1.8319508472579318
-2,pressure_msl,hybrid,day2-3,South,1344,1.3688690037729403
-2,pressure_msl,hybrid,day2-3,South Central,1344,2.5250982578756385
-2,pressure_msl,hybrid,day4-7,Central,4032,2.6513540171744996
-2,pressure_msl,hybrid,day4-7,Central Highlands,4032,2.4866011516070192
-2,pressure_msl,hybrid,day4-7,Islands,2688,2.015935360885624
-2,pressure_msl,hybrid,day4-7,Mekong Delta,2688,1.716496285152468
-2,pressure_msl,hybrid,day4-7,North,4032,3.6499828265938277
-2,pressure_msl,hybrid,day4-7,North Central,1344,2.970808347055452
-2,pressure_msl,hybrid,day4-7,North Mountain,2688,2.5689359835053853
-2,pressure_msl,hybrid,day4-7,South,2688,1.759722356487203
-2,pressure_msl,hybrid,day4-7,South Central,2688,2.2534536264677585
+2,pressure_msl,hybrid,h1,Central,42,0.4269082359545537
+2,pressure_msl,hybrid,h1,Central Highlands,42,0.2714478542403207
+2,pressure_msl,hybrid,h1,Islands,28,0.2433643047496576
+2,pressure_msl,hybrid,h1,Mekong Delta,28,0.3033793636622225
+2,pressure_msl,hybrid,h1,North,42,0.45965388294304366
+2,pressure_msl,hybrid,h1,North Central,14,0.3960408868418069
+2,pressure_msl,hybrid,h1,North Mountain,28,0.4513744896336748
+2,pressure_msl,hybrid,h1,South,28,0.190843528777147
+2,pressure_msl,hybrid,h1,South Central,28,0.2767961771319928
+2,pressure_msl,hybrid,day1,Central,1008,1.612136084832305
+2,pressure_msl,hybrid,day1,Central Highlands,1008,0.7172202942637046
+2,pressure_msl,hybrid,day1,Islands,672,0.4821219626724701
+2,pressure_msl,hybrid,day1,Mekong Delta,672,0.5298757482094474
+2,pressure_msl,hybrid,day1,North,1008,1.0865326287911174
+2,pressure_msl,hybrid,day1,North Central,336,1.3250646379788749
+2,pressure_msl,hybrid,day1,North Mountain,672,1.2448749041592972
+2,pressure_msl,hybrid,day1,South,672,0.6042807292692564
+2,pressure_msl,hybrid,day1,South Central,672,0.7429784872280798
+2,pressure_msl,hybrid,day2-3,Central,2016,2.2779217041000686
+2,pressure_msl,hybrid,day2-3,Central Highlands,2016,1.6556820487148265
+2,pressure_msl,hybrid,day2-3,Islands,1344,1.024710897157649
+2,pressure_msl,hybrid,day2-3,Mekong Delta,1344,1.0764080786642911
+2,pressure_msl,hybrid,day2-3,North,2016,1.6533732940735293
+2,pressure_msl,hybrid,day2-3,North Central,672,2.027414699482347
+2,pressure_msl,hybrid,day2-3,North Mountain,1344,2.2583329335612365
+2,pressure_msl,hybrid,day2-3,South,1344,1.2756958563894532
+2,pressure_msl,hybrid,day2-3,South Central,1344,1.5214393687887537
+2,pressure_msl,hybrid,day4-7,Central,4032,2.0132513045352263
+2,pressure_msl,hybrid,day4-7,Central Highlands,4032,1.5790162893596795
+2,pressure_msl,hybrid,day4-7,Islands,2688,1.2887309652184948
+2,pressure_msl,hybrid,day4-7,Mekong Delta,2688,1.279443520162524
+2,pressure_msl,hybrid,day4-7,North,4032,1.8510547165637419
+2,pressure_msl,hybrid,day4-7,North Central,1344,2.6355579038666455
+2,pressure_msl,hybrid,day4-7,North Mountain,2688,2.426011287737495
+2,pressure_msl,hybrid,day4-7,South,2688,1.3665994726260482
+2,pressure_msl,hybrid,day4-7,South Central,2688,1.4375238985577892
 2,pressure_msl,persistence,h1,Central,42,0.4595238095237976
 2,pressure_msl,persistence,h1,Central Highlands,42,0.5666666666666602
 2,pressure_msl,persistence,h1,Islands,28,0.5392857142857069
@@ -2159,42 +2159,42 @@ fold,variable,model,bucket,region,n,mae
 2,pressure_msl,climatology,day4-7,North Mountain,2688,7.791927083333316
 2,pressure_msl,climatology,day4-7,South,2688,1.911479591836736
 2,pressure_msl,climatology,day4-7,South Central,2688,3.4228382759353515
-3,temperature_2m,hybrid,h1,Central,42,0.6561694628060516
-3,temperature_2m,hybrid,h1,Central Highlands,42,0.6667456893899656
-3,temperature_2m,hybrid,h1,Islands,28,0.5446932215246338
-3,temperature_2m,hybrid,h1,Mekong Delta,28,0.7149924097328532
-3,temperature_2m,hybrid,h1,North,42,0.528168557834261
-3,temperature_2m,hybrid,h1,North Central,14,0.33178635716100074
-3,temperature_2m,hybrid,h1,North Mountain,28,0.41333030543991034
-3,temperature_2m,hybrid,h1,South,28,0.6344942599661285
-3,temperature_2m,hybrid,h1,South Central,28,0.3859278033920833
-3,temperature_2m,hybrid,day1,Central,1008,0.9161473944589775
-3,temperature_2m,hybrid,day1,Central Highlands,1008,0.7423975083144028
-3,temperature_2m,hybrid,day1,Islands,672,0.6539535179827124
-3,temperature_2m,hybrid,day1,Mekong Delta,672,0.7830077264119618
-3,temperature_2m,hybrid,day1,North,1008,1.3585437498540718
-3,temperature_2m,hybrid,day1,North Central,336,0.8731226415471041
-3,temperature_2m,hybrid,day1,North Mountain,672,1.1233079399490564
-3,temperature_2m,hybrid,day1,South,672,0.5971495191747063
-3,temperature_2m,hybrid,day1,South Central,672,0.6423426158042281
-3,temperature_2m,hybrid,day2-3,Central,2016,1.2076571483425111
-3,temperature_2m,hybrid,day2-3,Central Highlands,2016,0.9187286543212431
-3,temperature_2m,hybrid,day2-3,Islands,1344,0.7393337630206401
-3,temperature_2m,hybrid,day2-3,Mekong Delta,1344,0.9710579361728089
-3,temperature_2m,hybrid,day2-3,North,2016,2.578457268569227
-3,temperature_2m,hybrid,day2-3,North Central,672,1.4325420717810526
-3,temperature_2m,hybrid,day2-3,North Mountain,1344,2.162662626157343
-3,temperature_2m,hybrid,day2-3,South,1344,0.6309835078246319
-3,temperature_2m,hybrid,day2-3,South Central,1344,0.733603329948569
-3,temperature_2m,hybrid,day4-7,Central,4032,2.1620140750211267
-3,temperature_2m,hybrid,day4-7,Central Highlands,4032,1.3489511573287456
-3,temperature_2m,hybrid,day4-7,Islands,2688,0.9159668170491555
-3,temperature_2m,hybrid,day4-7,Mekong Delta,2688,1.1809095938815086
-3,temperature_2m,hybrid,day4-7,North,4032,3.976012108206733
-3,temperature_2m,hybrid,day4-7,North Central,1344,2.817696948572669
-3,temperature_2m,hybrid,day4-7,North Mountain,2688,3.551178251614764
-3,temperature_2m,hybrid,day4-7,South,2688,0.9391016492530442
-3,temperature_2m,hybrid,day4-7,South Central,2688,0.8811854335038299
+3,temperature_2m,hybrid,h1,Central,42,0.6555496651846101
+3,temperature_2m,hybrid,h1,Central Highlands,42,0.6659528655787005
+3,temperature_2m,hybrid,h1,Islands,28,0.5448881489454822
+3,temperature_2m,hybrid,h1,Mekong Delta,28,0.7150091487655271
+3,temperature_2m,hybrid,h1,North,42,0.5297393613672192
+3,temperature_2m,hybrid,h1,North Central,14,0.33177799584299017
+3,temperature_2m,hybrid,h1,North Mountain,28,0.4132677707777951
+3,temperature_2m,hybrid,h1,South,28,0.6347714436031966
+3,temperature_2m,hybrid,h1,South Central,28,0.3862755666645965
+3,temperature_2m,hybrid,day1,Central,1008,0.9056940569211406
+3,temperature_2m,hybrid,day1,Central Highlands,1008,0.728948309974781
+3,temperature_2m,hybrid,day1,Islands,672,0.6505100858127896
+3,temperature_2m,hybrid,day1,Mekong Delta,672,0.7794358647591892
+3,temperature_2m,hybrid,day1,North,1008,1.322704712518375
+3,temperature_2m,hybrid,day1,North Central,336,0.8611639996544825
+3,temperature_2m,hybrid,day1,North Mountain,672,1.0943907958970645
+3,temperature_2m,hybrid,day1,South,672,0.5916360203388857
+3,temperature_2m,hybrid,day1,South Central,672,0.6350973632830033
+3,temperature_2m,hybrid,day2-3,Central,2016,1.1649105916420912
+3,temperature_2m,hybrid,day2-3,Central Highlands,2016,0.8410563626829912
+3,temperature_2m,hybrid,day2-3,Islands,1344,0.737771824953335
+3,temperature_2m,hybrid,day2-3,Mekong Delta,1344,0.9792813052019237
+3,temperature_2m,hybrid,day2-3,North,2016,2.3085871855521822
+3,temperature_2m,hybrid,day2-3,North Central,672,1.3071961954633202
+3,temperature_2m,hybrid,day2-3,North Mountain,1344,1.9953483215750762
+3,temperature_2m,hybrid,day2-3,South,1344,0.6193669590020123
+3,temperature_2m,hybrid,day2-3,South Central,1344,0.7272005281523137
+3,temperature_2m,hybrid,day4-7,Central,4032,1.9535269026223416
+3,temperature_2m,hybrid,day4-7,Central Highlands,4032,1.1442142539535658
+3,temperature_2m,hybrid,day4-7,Islands,2688,1.025528771900121
+3,temperature_2m,hybrid,day4-7,Mekong Delta,2688,1.215404862484172
+3,temperature_2m,hybrid,day4-7,North,4032,3.1114730133674597
+3,temperature_2m,hybrid,day4-7,North Central,1344,2.3642049479752543
+3,temperature_2m,hybrid,day4-7,North Mountain,2688,2.932000732816137
+3,temperature_2m,hybrid,day4-7,South,2688,0.9257957925910894
+3,temperature_2m,hybrid,day4-7,South Central,2688,0.8860021598313285
 3,temperature_2m,persistence,h1,Central,42,0.6785714285714283
 3,temperature_2m,persistence,h1,Central Highlands,42,0.6666666666666667
 3,temperature_2m,persistence,h1,Islands,28,0.6250000000000001
@@ -2447,42 +2447,42 @@ fold,variable,model,bucket,region,n,mae
 3,relative_humidity_2m,climatology,day4-7,North Mountain,2688,8.73358164446334
 3,relative_humidity_2m,climatology,day4-7,South,2688,6.788437618102797
 3,relative_humidity_2m,climatology,day4-7,South Central,2688,12.13335754440665
-3,wind_speed_10m,hybrid,h1,Central,42,1.521071062198347
-3,wind_speed_10m,hybrid,h1,Central Highlands,42,2.2196877751849637
-3,wind_speed_10m,hybrid,h1,Islands,28,2.1976314545888025
-3,wind_speed_10m,hybrid,h1,Mekong Delta,28,2.173657317365773
-3,wind_speed_10m,hybrid,h1,North,42,1.9742734108951705
-3,wind_speed_10m,hybrid,h1,North Central,14,1.5839592819045802
-3,wind_speed_10m,hybrid,h1,North Mountain,28,0.6685668932021395
-3,wind_speed_10m,hybrid,h1,South,28,2.4309266795603386
-3,wind_speed_10m,hybrid,h1,South Central,28,2.195252041882036
-3,wind_speed_10m,hybrid,day1,Central,1008,2.34328916734911
-3,wind_speed_10m,hybrid,day1,Central Highlands,1008,3.6145766824710814
-3,wind_speed_10m,hybrid,day1,Islands,672,4.558309303688978
-3,wind_speed_10m,hybrid,day1,Mekong Delta,672,2.8384241561446077
-3,wind_speed_10m,hybrid,day1,North,1008,2.7051608779677117
-3,wind_speed_10m,hybrid,day1,North Central,336,2.347207242482147
-3,wind_speed_10m,hybrid,day1,North Mountain,672,1.320406354800283
-3,wind_speed_10m,hybrid,day1,South,672,3.6642532309779985
-3,wind_speed_10m,hybrid,day1,South Central,672,3.040430573356762
-3,wind_speed_10m,hybrid,day2-3,Central,2016,2.571921455524559
-3,wind_speed_10m,hybrid,day2-3,Central Highlands,2016,4.499261948858757
-3,wind_speed_10m,hybrid,day2-3,Islands,1344,6.391643491290159
-3,wind_speed_10m,hybrid,day2-3,Mekong Delta,1344,3.2475829132092233
-3,wind_speed_10m,hybrid,day2-3,North,2016,3.293789945071451
-3,wind_speed_10m,hybrid,day2-3,North Central,672,3.0384848547444783
-3,wind_speed_10m,hybrid,day2-3,North Mountain,1344,1.4455559563083094
-3,wind_speed_10m,hybrid,day2-3,South,1344,4.925620177578597
-3,wind_speed_10m,hybrid,day2-3,South Central,1344,4.4840396434149685
-3,wind_speed_10m,hybrid,day4-7,Central,4032,2.3852350263712423
-3,wind_speed_10m,hybrid,day4-7,Central Highlands,4032,5.150787199546848
-3,wind_speed_10m,hybrid,day4-7,Islands,2688,8.344103439215386
-3,wind_speed_10m,hybrid,day4-7,Mekong Delta,2688,4.346610990748874
-3,wind_speed_10m,hybrid,day4-7,North,4032,3.003846892843743
-3,wind_speed_10m,hybrid,day4-7,North Central,1344,3.6491896582500036
-3,wind_speed_10m,hybrid,day4-7,North Mountain,2688,1.4015271458618623
-3,wind_speed_10m,hybrid,day4-7,South,2688,5.847512880384815
-3,wind_speed_10m,hybrid,day4-7,South Central,2688,5.803177008271341
+3,wind_speed_10m,hybrid,h1,Central,42,1.5115257512534286
+3,wind_speed_10m,hybrid,h1,Central Highlands,42,2.1805905952672364
+3,wind_speed_10m,hybrid,h1,Islands,28,2.1789531602000274
+3,wind_speed_10m,hybrid,h1,Mekong Delta,28,2.1376427568986247
+3,wind_speed_10m,hybrid,h1,North,42,1.9712520355403664
+3,wind_speed_10m,hybrid,h1,North Central,14,1.5955501426854395
+3,wind_speed_10m,hybrid,h1,North Mountain,28,0.6569565891585448
+3,wind_speed_10m,hybrid,h1,South,28,2.2747842219641687
+3,wind_speed_10m,hybrid,h1,South Central,28,2.1878200146085565
+3,wind_speed_10m,hybrid,day1,Central,1008,2.274104782419669
+3,wind_speed_10m,hybrid,day1,Central Highlands,1008,3.391443893744962
+3,wind_speed_10m,hybrid,day1,Islands,672,4.880200788640069
+3,wind_speed_10m,hybrid,day1,Mekong Delta,672,2.9652712549507023
+3,wind_speed_10m,hybrid,day1,North,1008,2.497659816859547
+3,wind_speed_10m,hybrid,day1,North Central,336,2.1904747038822885
+3,wind_speed_10m,hybrid,day1,North Mountain,672,1.2201951956601766
+3,wind_speed_10m,hybrid,day1,South,672,3.5799085243948823
+3,wind_speed_10m,hybrid,day1,South Central,672,2.657243960849775
+3,wind_speed_10m,hybrid,day2-3,Central,2016,2.6662379205692193
+3,wind_speed_10m,hybrid,day2-3,Central Highlands,2016,4.847104020845578
+3,wind_speed_10m,hybrid,day2-3,Islands,1344,7.489462455921488
+3,wind_speed_10m,hybrid,day2-3,Mekong Delta,1344,3.6477026014014267
+3,wind_speed_10m,hybrid,day2-3,North,2016,3.275078328575936
+3,wind_speed_10m,hybrid,day2-3,North Central,672,2.6796273491920433
+3,wind_speed_10m,hybrid,day2-3,North Mountain,1344,1.540135949197721
+3,wind_speed_10m,hybrid,day2-3,South,1344,4.597616943049563
+3,wind_speed_10m,hybrid,day2-3,South Central,1344,3.4861541773494364
+3,wind_speed_10m,hybrid,day4-7,Central,4032,2.6718946675990414
+3,wind_speed_10m,hybrid,day4-7,Central Highlands,4032,5.187841053870653
+3,wind_speed_10m,hybrid,day4-7,Islands,2688,7.955761187381624
+3,wind_speed_10m,hybrid,day4-7,Mekong Delta,2688,4.270725262426539
+3,wind_speed_10m,hybrid,day4-7,North,4032,3.78864564036738
+3,wind_speed_10m,hybrid,day4-7,North Central,1344,3.1501428339035686
+3,wind_speed_10m,hybrid,day4-7,North Mountain,2688,1.8653863516393134
+3,wind_speed_10m,hybrid,day4-7,South,2688,5.129658547592584
+3,wind_speed_10m,hybrid,day4-7,South Central,2688,3.696618780665555
 3,wind_speed_10m,persistence,h1,Central,42,1.4092857142857143
 3,wind_speed_10m,persistence,h1,Central Highlands,42,2.173571428571429
 3,wind_speed_10m,persistence,h1,Islands,28,2.1571428571428575
@@ -2735,42 +2735,42 @@ fold,variable,model,bucket,region,n,mae
 3,precipitation,climatology,day4-7,North Mountain,2688,0.4664086120559335
 3,precipitation,climatology,day4-7,South,2688,0.5399116591080877
 3,precipitation,climatology,day4-7,South Central,2688,0.5743197278911564
-3,pressure_msl,hybrid,h1,Central,42,0.2415461553331641
-3,pressure_msl,hybrid,h1,Central Highlands,42,0.29541730855463094
-3,pressure_msl,hybrid,h1,Islands,28,0.379735744015952
-3,pressure_msl,hybrid,h1,Mekong Delta,28,0.388596226708732
-3,pressure_msl,hybrid,h1,North,42,0.21551494247627206
-3,pressure_msl,hybrid,h1,North Central,14,0.17602992674723542
-3,pressure_msl,hybrid,h1,North Mountain,28,0.26602200543280624
-3,pressure_msl,hybrid,h1,South,28,0.3290599346952133
-3,pressure_msl,hybrid,h1,South Central,28,0.3155071030592954
-3,pressure_msl,hybrid,day1,Central,1008,0.7604480376909813
-3,pressure_msl,hybrid,day1,Central Highlands,1008,0.7308377335591445
-3,pressure_msl,hybrid,day1,Islands,672,0.7000244764010727
-3,pressure_msl,hybrid,day1,Mekong Delta,672,0.7219985709088587
-3,pressure_msl,hybrid,day1,North,1008,1.0412979630122152
-3,pressure_msl,hybrid,day1,North Central,336,1.0721212949297134
-3,pressure_msl,hybrid,day1,North Mountain,672,1.3214681356474651
-3,pressure_msl,hybrid,day1,South,672,0.7346930241599103
-3,pressure_msl,hybrid,day1,South Central,672,0.7645146430995764
-3,pressure_msl,hybrid,day2-3,Central,2016,1.9146092372841346
-3,pressure_msl,hybrid,day2-3,Central Highlands,2016,1.4901803692477897
-3,pressure_msl,hybrid,day2-3,Islands,1344,1.4973687562036357
-3,pressure_msl,hybrid,day2-3,Mekong Delta,1344,1.3700791828448702
-3,pressure_msl,hybrid,day2-3,North,2016,2.885780800654968
-3,pressure_msl,hybrid,day2-3,North Central,672,2.5737512048157947
-3,pressure_msl,hybrid,day2-3,North Mountain,1344,4.148033265806137
-3,pressure_msl,hybrid,day2-3,South,1344,1.4038343200223726
-3,pressure_msl,hybrid,day2-3,South Central,1344,1.578212770369183
-3,pressure_msl,hybrid,day4-7,Central,4032,3.124676661042813
-3,pressure_msl,hybrid,day4-7,Central Highlands,4032,3.01833297086259
-3,pressure_msl,hybrid,day4-7,Islands,2688,2.151156053120956
-3,pressure_msl,hybrid,day4-7,Mekong Delta,2688,1.5798127810755331
-3,pressure_msl,hybrid,day4-7,North,4032,4.606827776430162
-3,pressure_msl,hybrid,day4-7,North Central,1344,3.80484826668132
-3,pressure_msl,hybrid,day4-7,North Mountain,2688,6.104533034146089
-3,pressure_msl,hybrid,day4-7,South,2688,1.7864336104181098
-3,pressure_msl,hybrid,day4-7,South Central,2688,2.1295978611530315
+3,pressure_msl,hybrid,h1,Central,42,0.23229516663526728
+3,pressure_msl,hybrid,h1,Central Highlands,42,0.29729058580310913
+3,pressure_msl,hybrid,h1,Islands,28,0.3869279749053029
+3,pressure_msl,hybrid,h1,Mekong Delta,28,0.38817843424867043
+3,pressure_msl,hybrid,h1,North,42,0.2124783142006203
+3,pressure_msl,hybrid,h1,North Central,14,0.16487213363349643
+3,pressure_msl,hybrid,h1,North Mountain,28,0.2642194324505332
+3,pressure_msl,hybrid,h1,South,28,0.3273562562310092
+3,pressure_msl,hybrid,h1,South Central,28,0.32196180655437195
+3,pressure_msl,hybrid,day1,Central,1008,0.6685661635930672
+3,pressure_msl,hybrid,day1,Central Highlands,1008,0.7950571333414305
+3,pressure_msl,hybrid,day1,Islands,672,0.7555001024980871
+3,pressure_msl,hybrid,day1,Mekong Delta,672,0.7813118555416922
+3,pressure_msl,hybrid,day1,North,1008,0.855806385632299
+3,pressure_msl,hybrid,day1,North Central,336,0.9715768789620493
+3,pressure_msl,hybrid,day1,North Mountain,672,1.1549408215134516
+3,pressure_msl,hybrid,day1,South,672,0.8171009681657734
+3,pressure_msl,hybrid,day1,South Central,672,0.8013894193683824
+3,pressure_msl,hybrid,day2-3,Central,2016,1.4338313710668016
+3,pressure_msl,hybrid,day2-3,Central Highlands,2016,1.749139665346807
+3,pressure_msl,hybrid,day2-3,Islands,1344,1.7070856344869871
+3,pressure_msl,hybrid,day2-3,Mekong Delta,1344,1.6737142912490115
+3,pressure_msl,hybrid,day2-3,North,2016,1.952141280056644
+3,pressure_msl,hybrid,day2-3,North Central,672,1.9815337502018107
+3,pressure_msl,hybrid,day2-3,North Mountain,1344,2.7298981438340437
+3,pressure_msl,hybrid,day2-3,South,1344,1.8229928273348983
+3,pressure_msl,hybrid,day2-3,South Central,1344,1.6817693991754024
+3,pressure_msl,hybrid,day4-7,Central,4032,1.5259399148838042
+3,pressure_msl,hybrid,day4-7,Central Highlands,4032,1.6997570351341678
+3,pressure_msl,hybrid,day4-7,Islands,2688,1.6026258377499862
+3,pressure_msl,hybrid,day4-7,Mekong Delta,2688,1.6085129418920938
+3,pressure_msl,hybrid,day4-7,North,4032,2.789543603913944
+3,pressure_msl,hybrid,day4-7,North Central,1344,2.548744155931195
+3,pressure_msl,hybrid,day4-7,North Mountain,2688,3.3130627075113495
+3,pressure_msl,hybrid,day4-7,South,2688,1.7304618781873446
+3,pressure_msl,hybrid,day4-7,South Central,2688,1.5020094512545716
 3,pressure_msl,persistence,h1,Central,42,0.5619047619047597
 3,pressure_msl,persistence,h1,Central Highlands,42,0.6285714285714361
 3,pressure_msl,persistence,h1,Islands,28,0.75
@@ -3167,42 +3167,42 @@ fold,variable,model,bucket,region,n,mae
 4,relative_humidity_2m,climatology,day4-7,North Mountain,2688,9.6681981292517
 4,relative_humidity_2m,climatology,day4-7,South,2688,5.411428465136055
 4,relative_humidity_2m,climatology,day4-7,South Central,2688,6.422027636054421
-4,wind_speed_10m,hybrid,h1,Central,42,1.2055002346026786
-4,wind_speed_10m,hybrid,h1,Central Highlands,42,1.4951388549113789
-4,wind_speed_10m,hybrid,h1,Islands,28,2.1837548781885876
-4,wind_speed_10m,hybrid,h1,Mekong Delta,28,2.288502238438476
-4,wind_speed_10m,hybrid,h1,North,42,1.7114330557731512
-4,wind_speed_10m,hybrid,h1,North Central,14,2.0084865289382487
-4,wind_speed_10m,hybrid,h1,North Mountain,28,1.1450492854685568
-4,wind_speed_10m,hybrid,h1,South,28,2.4986591996829306
-4,wind_speed_10m,hybrid,h1,South Central,28,1.3828200208540857
-4,wind_speed_10m,hybrid,day1,Central,1008,1.917254032360353
-4,wind_speed_10m,hybrid,day1,Central Highlands,1008,3.307206497615287
-4,wind_speed_10m,hybrid,day1,Islands,672,6.02231507980919
-4,wind_speed_10m,hybrid,day1,Mekong Delta,672,3.614928754026177
-4,wind_speed_10m,hybrid,day1,North,1008,2.311453441463855
-4,wind_speed_10m,hybrid,day1,North Central,336,2.8045888449317085
-4,wind_speed_10m,hybrid,day1,North Mountain,672,1.3265390266157517
-4,wind_speed_10m,hybrid,day1,South,672,3.9885996173960554
-4,wind_speed_10m,hybrid,day1,South Central,672,3.194583351376007
-4,wind_speed_10m,hybrid,day2-3,Central,2016,1.9653014450816768
-4,wind_speed_10m,hybrid,day2-3,Central Highlands,2016,5.541765112512896
-4,wind_speed_10m,hybrid,day2-3,Islands,1344,10.918525848333823
-4,wind_speed_10m,hybrid,day2-3,Mekong Delta,1344,6.248449112988423
-4,wind_speed_10m,hybrid,day2-3,North,2016,2.5867323075398185
-4,wind_speed_10m,hybrid,day2-3,North Central,672,3.503637691003868
-4,wind_speed_10m,hybrid,day2-3,North Mountain,1344,1.4986560151471218
-4,wind_speed_10m,hybrid,day2-3,South,1344,6.7701038666738995
-4,wind_speed_10m,hybrid,day2-3,South Central,1344,5.171113618264326
-4,wind_speed_10m,hybrid,day4-7,Central,4032,2.04983828793673
-4,wind_speed_10m,hybrid,day4-7,Central Highlands,4032,6.307355860524025
-4,wind_speed_10m,hybrid,day4-7,Islands,2688,12.226068159089865
-4,wind_speed_10m,hybrid,day4-7,Mekong Delta,2688,7.067455401474776
-4,wind_speed_10m,hybrid,day4-7,North,4032,3.3391379354398305
-4,wind_speed_10m,hybrid,day4-7,North Central,1344,3.874038874583885
-4,wind_speed_10m,hybrid,day4-7,North Mountain,2688,1.510882797239601
-4,wind_speed_10m,hybrid,day4-7,South,2688,7.8091211911178675
-4,wind_speed_10m,hybrid,day4-7,South Central,2688,5.689159432943918
+4,wind_speed_10m,hybrid,h1,Central,42,1.2262447181143006
+4,wind_speed_10m,hybrid,h1,Central Highlands,42,1.4356281753056606
+4,wind_speed_10m,hybrid,h1,Islands,28,2.144660256807467
+4,wind_speed_10m,hybrid,h1,Mekong Delta,28,2.1599320735815843
+4,wind_speed_10m,hybrid,h1,North,42,1.6925938624236456
+4,wind_speed_10m,hybrid,h1,North Central,14,2.073582784174547
+4,wind_speed_10m,hybrid,h1,North Mountain,28,1.1384224942467527
+4,wind_speed_10m,hybrid,h1,South,28,2.3843028174301564
+4,wind_speed_10m,hybrid,h1,South Central,28,1.2989495832136797
+4,wind_speed_10m,hybrid,day1,Central,1008,1.8273889763084863
+4,wind_speed_10m,hybrid,day1,Central Highlands,1008,2.371461138309282
+4,wind_speed_10m,hybrid,day1,Islands,672,3.835801415777488
+4,wind_speed_10m,hybrid,day1,Mekong Delta,672,2.399616059562578
+4,wind_speed_10m,hybrid,day1,North,1008,2.2240314030890405
+4,wind_speed_10m,hybrid,day1,North Central,336,2.484116971773967
+4,wind_speed_10m,hybrid,day1,North Mountain,672,1.3263329350734705
+4,wind_speed_10m,hybrid,day1,South,672,2.793234230226748
+4,wind_speed_10m,hybrid,day1,South Central,672,1.9142522895004024
+4,wind_speed_10m,hybrid,day2-3,Central,2016,2.0334417467751145
+4,wind_speed_10m,hybrid,day2-3,Central Highlands,2016,2.981326903026562
+4,wind_speed_10m,hybrid,day2-3,Islands,1344,4.883677057457672
+4,wind_speed_10m,hybrid,day2-3,Mekong Delta,1344,3.2929246078648995
+4,wind_speed_10m,hybrid,day2-3,North,2016,3.1866232574597855
+4,wind_speed_10m,hybrid,day2-3,North Central,672,2.6166995211913635
+4,wind_speed_10m,hybrid,day2-3,North Mountain,1344,1.812220208546219
+4,wind_speed_10m,hybrid,day2-3,South,1344,3.3934939633841585
+4,wind_speed_10m,hybrid,day2-3,South Central,1344,2.307580039949896
+4,wind_speed_10m,hybrid,day4-7,Central,4032,2.690866317047577
+4,wind_speed_10m,hybrid,day4-7,Central Highlands,4032,3.5762807124620184
+4,wind_speed_10m,hybrid,day4-7,Islands,2688,5.731786812649456
+4,wind_speed_10m,hybrid,day4-7,Mekong Delta,2688,3.9639686537567695
+4,wind_speed_10m,hybrid,day4-7,North,4032,3.884181392123972
+4,wind_speed_10m,hybrid,day4-7,North Central,1344,3.6791052848858734
+4,wind_speed_10m,hybrid,day4-7,North Mountain,2688,1.8553986088662253
+4,wind_speed_10m,hybrid,day4-7,South,2688,4.06354587683245
+4,wind_speed_10m,hybrid,day4-7,South Central,2688,3.0398932931341824
 4,wind_speed_10m,persistence,h1,Central,42,1.6561904761904762
 4,wind_speed_10m,persistence,h1,Central Highlands,42,1.5223809523809522
 4,wind_speed_10m,persistence,h1,Islands,28,2.057857142857143
@@ -3455,42 +3455,42 @@ fold,variable,model,bucket,region,n,mae
 4,precipitation,climatology,day4-7,North Mountain,2688,0.5732982568027212
 4,precipitation,climatology,day4-7,South,2688,0.3672927295918368
 4,precipitation,climatology,day4-7,South Central,2688,0.2631643282312925
-4,pressure_msl,hybrid,h1,Central,42,0.2767286190464206
-4,pressure_msl,hybrid,h1,Central Highlands,42,0.2497858558283307
-4,pressure_msl,hybrid,h1,Islands,28,0.2774246184840682
-4,pressure_msl,hybrid,h1,Mekong Delta,28,0.25444415557243716
-4,pressure_msl,hybrid,h1,North,42,0.21801355579097098
-4,pressure_msl,hybrid,h1,North Central,14,0.2234322040776939
-4,pressure_msl,hybrid,h1,North Mountain,28,0.22944562317750947
-4,pressure_msl,hybrid,h1,South,28,0.22888278182915656
-4,pressure_msl,hybrid,h1,South Central,28,0.28963364704115485
-4,pressure_msl,hybrid,day1,Central,1008,0.825909221138965
-4,pressure_msl,hybrid,day1,Central Highlands,1008,0.8593096754714532
-4,pressure_msl,hybrid,day1,Islands,672,0.7675412644263612
-4,pressure_msl,hybrid,day1,Mekong Delta,672,0.7137076149649063
-4,pressure_msl,hybrid,day1,North,1008,0.9325603841564053
-4,pressure_msl,hybrid,day1,North Central,336,0.9663753837160511
-4,pressure_msl,hybrid,day1,North Mountain,672,1.0554317468765932
-4,pressure_msl,hybrid,day1,South,672,0.7190180089413499
-4,pressure_msl,hybrid,day1,South Central,672,0.7912763955038814
-4,pressure_msl,hybrid,day2-3,Central,2016,2.5373157691997488
-4,pressure_msl,hybrid,day2-3,Central Highlands,2016,2.429806246113011
-4,pressure_msl,hybrid,day2-3,Islands,1344,2.3875826572381533
-4,pressure_msl,hybrid,day2-3,Mekong Delta,1344,2.0458155231578132
-4,pressure_msl,hybrid,day2-3,North,2016,2.1154439844965442
-4,pressure_msl,hybrid,day2-3,North Central,672,2.314850720745148
-4,pressure_msl,hybrid,day2-3,North Mountain,1344,2.276759905504385
-4,pressure_msl,hybrid,day2-3,South,1344,2.1406791247202497
-4,pressure_msl,hybrid,day2-3,South Central,1344,2.4642270264044077
-4,pressure_msl,hybrid,day4-7,Central,4032,5.645815200421871
-4,pressure_msl,hybrid,day4-7,Central Highlands,4032,4.550716307354645
-4,pressure_msl,hybrid,day4-7,Islands,2688,3.6916274382646423
-4,pressure_msl,hybrid,day4-7,Mekong Delta,2688,3.1425574335236868
-4,pressure_msl,hybrid,day4-7,North,4032,5.88431038632074
-4,pressure_msl,hybrid,day4-7,North Central,1344,6.155319119645694
-4,pressure_msl,hybrid,day4-7,North Mountain,2688,5.363374862724548
-4,pressure_msl,hybrid,day4-7,South,2688,3.293391152443096
-4,pressure_msl,hybrid,day4-7,South Central,2688,3.9437168691571562
+4,pressure_msl,hybrid,h1,Central,42,0.28952540548264477
+4,pressure_msl,hybrid,h1,Central Highlands,42,0.25330596662002425
+4,pressure_msl,hybrid,h1,Islands,28,0.26917670974167357
+4,pressure_msl,hybrid,h1,Mekong Delta,28,0.24643936794708615
+4,pressure_msl,hybrid,h1,North,42,0.24165079194132422
+4,pressure_msl,hybrid,h1,North Central,14,0.244504896156278
+4,pressure_msl,hybrid,h1,North Mountain,28,0.262307587224281
+4,pressure_msl,hybrid,h1,South,28,0.219244098919607
+4,pressure_msl,hybrid,h1,South Central,28,0.2840781936184799
+4,pressure_msl,hybrid,day1,Central,1008,0.7227506170807904
+4,pressure_msl,hybrid,day1,Central Highlands,1008,0.6909567799313686
+4,pressure_msl,hybrid,day1,Islands,672,0.6525198094261184
+4,pressure_msl,hybrid,day1,Mekong Delta,672,0.6057793537105349
+4,pressure_msl,hybrid,day1,North,1008,1.0430477535367577
+4,pressure_msl,hybrid,day1,North Central,336,1.0650738529673853
+4,pressure_msl,hybrid,day1,North Mountain,672,1.1358649577742457
+4,pressure_msl,hybrid,day1,South,672,0.5979972690749369
+4,pressure_msl,hybrid,day1,South Central,672,0.5850255828537747
+4,pressure_msl,hybrid,day2-3,Central,2016,1.2124713707457655
+4,pressure_msl,hybrid,day2-3,Central Highlands,2016,1.0427128323985677
+4,pressure_msl,hybrid,day2-3,Islands,1344,1.0260126893327215
+4,pressure_msl,hybrid,day2-3,Mekong Delta,1344,0.9908664944518164
+4,pressure_msl,hybrid,day2-3,North,2016,2.0847065334399506
+4,pressure_msl,hybrid,day2-3,North Central,672,1.8806456261425157
+4,pressure_msl,hybrid,day2-3,North Mountain,1344,2.4159412217711265
+4,pressure_msl,hybrid,day2-3,South,1344,0.9476624854729482
+4,pressure_msl,hybrid,day2-3,South Central,1344,0.9097535920074309
+4,pressure_msl,hybrid,day4-7,Central,4032,1.5801181204731205
+4,pressure_msl,hybrid,day4-7,Central Highlands,4032,1.2422768158858966
+4,pressure_msl,hybrid,day4-7,Islands,2688,1.3034214114668177
+4,pressure_msl,hybrid,day4-7,Mekong Delta,2688,1.284654727671818
+4,pressure_msl,hybrid,day4-7,North,4032,3.2824954327651064
+4,pressure_msl,hybrid,day4-7,North Central,1344,2.763432557158463
+4,pressure_msl,hybrid,day4-7,North Mountain,2688,2.9064504083711338
+4,pressure_msl,hybrid,day4-7,South,2688,1.2241925179034856
+4,pressure_msl,hybrid,day4-7,South Central,2688,1.1522640251525944
 4,pressure_msl,persistence,h1,Central,42,0.49047619047619373
 4,pressure_msl,persistence,h1,Central Highlands,42,0.42857142857142855
 4,pressure_msl,persistence,h1,Islands,28,0.42142857142855356
@@ -3743,42 +3743,42 @@ fold,variable,model,bucket,region,n,mae
 5,temperature_2m,climatology,day4-7,North Mountain,2688,2.6558383580705014
 5,temperature_2m,climatology,day4-7,South,2688,0.8791741554576374
 5,temperature_2m,climatology,day4-7,South Central,2688,1.5742612670068021
-5,relative_humidity_2m,hybrid,h1,Central,42,2.6094061569262275
-5,relative_humidity_2m,hybrid,h1,Central Highlands,42,2.7882424124602294
-5,relative_humidity_2m,hybrid,h1,Islands,28,3.4475497885961532
-5,relative_humidity_2m,hybrid,h1,Mekong Delta,28,3.3432037126188128
-5,relative_humidity_2m,hybrid,h1,North,42,2.945178046892694
-5,relative_humidity_2m,hybrid,h1,North Central,14,2.074014263211524
-5,relative_humidity_2m,hybrid,h1,North Mountain,28,2.984884826509554
-5,relative_humidity_2m,hybrid,h1,South,28,2.524755249458907
-5,relative_humidity_2m,hybrid,h1,South Central,28,2.5589612770839056
-5,relative_humidity_2m,hybrid,day1,Central,1008,5.674479988672789
-5,relative_humidity_2m,hybrid,day1,Central Highlands,1008,5.4860126248141885
-5,relative_humidity_2m,hybrid,day1,Islands,672,5.302747992353326
-5,relative_humidity_2m,hybrid,day1,Mekong Delta,672,4.416642317830793
-5,relative_humidity_2m,hybrid,day1,North,1008,10.343622522869065
-5,relative_humidity_2m,hybrid,day1,North Central,336,7.163924668241851
-5,relative_humidity_2m,hybrid,day1,North Mountain,672,7.655138918622496
-5,relative_humidity_2m,hybrid,day1,South,672,3.6057931760816446
-5,relative_humidity_2m,hybrid,day1,South Central,672,4.056767364893379
-5,relative_humidity_2m,hybrid,day2-3,Central,2016,8.494740797218215
-5,relative_humidity_2m,hybrid,day2-3,Central Highlands,2016,6.68340596841328
-5,relative_humidity_2m,hybrid,day2-3,Islands,1344,6.481402129908071
-5,relative_humidity_2m,hybrid,day2-3,Mekong Delta,1344,4.899504597682516
-5,relative_humidity_2m,hybrid,day2-3,North,2016,16.742066867067333
-5,relative_humidity_2m,hybrid,day2-3,North Central,672,8.967870449781518
-5,relative_humidity_2m,hybrid,day2-3,North Mountain,1344,10.78691980663535
-5,relative_humidity_2m,hybrid,day2-3,South,1344,4.197617109505436
-5,relative_humidity_2m,hybrid,day2-3,South Central,1344,4.608708807187996
-5,relative_humidity_2m,hybrid,day4-7,Central,4032,11.07266839137212
-5,relative_humidity_2m,hybrid,day4-7,Central Highlands,4032,5.964713617902422
-5,relative_humidity_2m,hybrid,day4-7,Islands,2688,5.928059495420923
-5,relative_humidity_2m,hybrid,day4-7,Mekong Delta,2688,4.856913557859204
-5,relative_humidity_2m,hybrid,day4-7,North,4032,14.751920801537524
-5,relative_humidity_2m,hybrid,day4-7,North Central,1344,7.287937722777587
-5,relative_humidity_2m,hybrid,day4-7,North Mountain,2688,10.382756661481555
-5,relative_humidity_2m,hybrid,day4-7,South,2688,4.4204901503812
-5,relative_humidity_2m,hybrid,day4-7,South Central,2688,5.6130766361004305
+5,relative_humidity_2m,hybrid,h1,Central,42,2.596717691984373
+5,relative_humidity_2m,hybrid,h1,Central Highlands,42,2.8127962437780565
+5,relative_humidity_2m,hybrid,h1,Islands,28,3.459683804581759
+5,relative_humidity_2m,hybrid,h1,Mekong Delta,28,3.3625838510004624
+5,relative_humidity_2m,hybrid,h1,North,42,2.9883961732893756
+5,relative_humidity_2m,hybrid,h1,North Central,14,2.0071957394856255
+5,relative_humidity_2m,hybrid,h1,North Mountain,28,2.983252086772817
+5,relative_humidity_2m,hybrid,h1,South,28,2.5129061459798945
+5,relative_humidity_2m,hybrid,h1,South Central,28,2.5557419399007304
+5,relative_humidity_2m,hybrid,day1,Central,1008,4.88970324630484
+5,relative_humidity_2m,hybrid,day1,Central Highlands,1008,4.812075583035321
+5,relative_humidity_2m,hybrid,day1,Islands,672,4.77731338924639
+5,relative_humidity_2m,hybrid,day1,Mekong Delta,672,4.40741680943744
+5,relative_humidity_2m,hybrid,day1,North,1008,9.122914308397768
+5,relative_humidity_2m,hybrid,day1,North Central,336,6.844367869418211
+5,relative_humidity_2m,hybrid,day1,North Mountain,672,7.0686571618382334
+5,relative_humidity_2m,hybrid,day1,South,672,3.469155362313536
+5,relative_humidity_2m,hybrid,day1,South Central,672,4.111026423632852
+5,relative_humidity_2m,hybrid,day2-3,Central,2016,7.606671976993553
+5,relative_humidity_2m,hybrid,day2-3,Central Highlands,2016,5.183422146649244
+5,relative_humidity_2m,hybrid,day2-3,Islands,1344,5.849212440568257
+5,relative_humidity_2m,hybrid,day2-3,Mekong Delta,1344,5.406247031940322
+5,relative_humidity_2m,hybrid,day2-3,North,2016,13.370827214822507
+5,relative_humidity_2m,hybrid,day2-3,North Central,672,11.298990762782458
+5,relative_humidity_2m,hybrid,day2-3,North Mountain,1344,9.793526768423297
+5,relative_humidity_2m,hybrid,day2-3,South,1344,4.132868848094546
+5,relative_humidity_2m,hybrid,day2-3,South Central,1344,5.0962403636886044
+5,relative_humidity_2m,hybrid,day4-7,Central,4032,11.148182022450959
+5,relative_humidity_2m,hybrid,day4-7,Central Highlands,4032,5.572262354199938
+5,relative_humidity_2m,hybrid,day4-7,Islands,2688,5.754615803211619
+5,relative_humidity_2m,hybrid,day4-7,Mekong Delta,2688,5.604218633014161
+5,relative_humidity_2m,hybrid,day4-7,North,4032,13.597871110410997
+5,relative_humidity_2m,hybrid,day4-7,North Central,1344,10.483178226945489
+5,relative_humidity_2m,hybrid,day4-7,North Mountain,2688,7.887211855987887
+5,relative_humidity_2m,hybrid,day4-7,South,2688,4.663341738402776
+5,relative_humidity_2m,hybrid,day4-7,South Central,2688,5.613865497155142
 5,relative_humidity_2m,persistence,h1,Central,42,2.665
 5,relative_humidity_2m,persistence,h1,Central Highlands,42,2.651666666666668
 5,relative_humidity_2m,persistence,h1,Islands,28,3.7903571428571423
@@ -3887,42 +3887,42 @@ fold,variable,model,bucket,region,n,mae
 5,relative_humidity_2m,climatology,day4-7,North Mountain,2688,8.463709560528757
 5,relative_humidity_2m,climatology,day4-7,South,2688,5.302082946815089
 5,relative_humidity_2m,climatology,day4-7,South Central,2688,7.89213140653989
-5,wind_speed_10m,hybrid,h1,Central,42,1.522410850278378
-5,wind_speed_10m,hybrid,h1,Central Highlands,42,1.723034609407178
-5,wind_speed_10m,hybrid,h1,Islands,28,2.232979034886142
-5,wind_speed_10m,hybrid,h1,Mekong Delta,28,2.093073559200746
-5,wind_speed_10m,hybrid,h1,North,42,2.1207386657739864
-5,wind_speed_10m,hybrid,h1,North Central,14,1.7066605086351885
-5,wind_speed_10m,hybrid,h1,North Mountain,28,1.131080690319938
-5,wind_speed_10m,hybrid,h1,South,28,1.9595143114517117
-5,wind_speed_10m,hybrid,h1,South Central,28,1.4572976546427394
-5,wind_speed_10m,hybrid,day1,Central,1008,2.394572314067392
-5,wind_speed_10m,hybrid,day1,Central Highlands,1008,2.418114679953015
-5,wind_speed_10m,hybrid,day1,Islands,672,3.355817968888436
-5,wind_speed_10m,hybrid,day1,Mekong Delta,672,2.164763192573576
-5,wind_speed_10m,hybrid,day1,North,1008,4.322022582900209
-5,wind_speed_10m,hybrid,day1,North Central,336,3.6844373265772994
-5,wind_speed_10m,hybrid,day1,North Mountain,672,1.645616766618315
-5,wind_speed_10m,hybrid,day1,South,672,2.632207838678499
-5,wind_speed_10m,hybrid,day1,South Central,672,2.5115872827559076
-5,wind_speed_10m,hybrid,day2-3,Central,2016,2.7478533598350325
-5,wind_speed_10m,hybrid,day2-3,Central Highlands,2016,3.0618880403295328
-5,wind_speed_10m,hybrid,day2-3,Islands,1344,4.780805208642041
-5,wind_speed_10m,hybrid,day2-3,Mekong Delta,1344,2.3705498338928064
-5,wind_speed_10m,hybrid,day2-3,North,2016,5.9186979039243965
-5,wind_speed_10m,hybrid,day2-3,North Central,672,5.046486506631807
-5,wind_speed_10m,hybrid,day2-3,North Mountain,1344,1.7564410695769612
-5,wind_speed_10m,hybrid,day2-3,South,1344,3.198886607008071
-5,wind_speed_10m,hybrid,day2-3,South Central,1344,2.9837532762642764
-5,wind_speed_10m,hybrid,day4-7,Central,4032,2.6687780304851314
-5,wind_speed_10m,hybrid,day4-7,Central Highlands,4032,3.661086222181075
-5,wind_speed_10m,hybrid,day4-7,Islands,2688,6.1297752406849835
-5,wind_speed_10m,hybrid,day4-7,Mekong Delta,2688,3.0043848587602815
-5,wind_speed_10m,hybrid,day4-7,North,4032,3.245821667616482
-5,wind_speed_10m,hybrid,day4-7,North Central,1344,3.3768308218186727
-5,wind_speed_10m,hybrid,day4-7,North Mountain,2688,1.546721115187017
-5,wind_speed_10m,hybrid,day4-7,South,2688,3.1902903803666653
-5,wind_speed_10m,hybrid,day4-7,South Central,2688,3.1405619163997094
+5,wind_speed_10m,hybrid,h1,Central,42,1.5141711906515642
+5,wind_speed_10m,hybrid,h1,Central Highlands,42,1.7315610595369513
+5,wind_speed_10m,hybrid,h1,Islands,28,2.216223993186678
+5,wind_speed_10m,hybrid,h1,Mekong Delta,28,2.0890277614192945
+5,wind_speed_10m,hybrid,h1,North,42,2.135235020347841
+5,wind_speed_10m,hybrid,h1,North Central,14,1.7213326419691077
+5,wind_speed_10m,hybrid,h1,North Mountain,28,1.1323974757338047
+5,wind_speed_10m,hybrid,h1,South,28,1.9515009202313502
+5,wind_speed_10m,hybrid,h1,South Central,28,1.4538582955213928
+5,wind_speed_10m,hybrid,day1,Central,1008,2.375376986952462
+5,wind_speed_10m,hybrid,day1,Central Highlands,1008,2.368769108155492
+5,wind_speed_10m,hybrid,day1,Islands,672,3.2648968987360467
+5,wind_speed_10m,hybrid,day1,Mekong Delta,672,2.1904547470856452
+5,wind_speed_10m,hybrid,day1,North,1008,4.26407877248641
+5,wind_speed_10m,hybrid,day1,North Central,336,3.657373303592615
+5,wind_speed_10m,hybrid,day1,North Mountain,672,1.6270538362836693
+5,wind_speed_10m,hybrid,day1,South,672,2.6518962495893397
+5,wind_speed_10m,hybrid,day1,South Central,672,2.5343275366538025
+5,wind_speed_10m,hybrid,day2-3,Central,2016,2.6509045503908415
+5,wind_speed_10m,hybrid,day2-3,Central Highlands,2016,3.039335358585151
+5,wind_speed_10m,hybrid,day2-3,Islands,1344,4.362317259749828
+5,wind_speed_10m,hybrid,day2-3,Mekong Delta,1344,2.2997214924488296
+5,wind_speed_10m,hybrid,day2-3,North,2016,5.873836209577764
+5,wind_speed_10m,hybrid,day2-3,North Central,672,5.409261282681306
+5,wind_speed_10m,hybrid,day2-3,North Mountain,1344,1.7252968107755626
+5,wind_speed_10m,hybrid,day2-3,South,1344,3.3502425186820517
+5,wind_speed_10m,hybrid,day2-3,South Central,1344,3.1093113785405344
+5,wind_speed_10m,hybrid,day4-7,Central,4032,3.1091929972594676
+5,wind_speed_10m,hybrid,day4-7,Central Highlands,4032,3.7598237404709125
+5,wind_speed_10m,hybrid,day4-7,Islands,2688,4.238646486007874
+5,wind_speed_10m,hybrid,day4-7,Mekong Delta,2688,2.5128930190827896
+5,wind_speed_10m,hybrid,day4-7,North,4032,4.656462295763769
+5,wind_speed_10m,hybrid,day4-7,North Central,1344,4.338748581297817
+5,wind_speed_10m,hybrid,day4-7,North Mountain,2688,1.632051909014764
+5,wind_speed_10m,hybrid,day4-7,South,2688,4.1746245159776425
+5,wind_speed_10m,hybrid,day4-7,South Central,2688,3.6856081631234394
 5,wind_speed_10m,persistence,h1,Central,42,1.6423809523809525
 5,wind_speed_10m,persistence,h1,Central Highlands,42,1.8383333333333336
 5,wind_speed_10m,persistence,h1,Islands,28,2.423928571428571
@@ -4175,42 +4175,42 @@ fold,variable,model,bucket,region,n,mae
 5,precipitation,climatology,day4-7,North Mountain,2688,0.430431064471243
 5,precipitation,climatology,day4-7,South,2688,0.3806354359925789
 5,precipitation,climatology,day4-7,South Central,2688,0.3500758542053185
-5,pressure_msl,hybrid,h1,Central,42,0.2886641345226216
-5,pressure_msl,hybrid,h1,Central Highlands,42,0.3008247459117656
-5,pressure_msl,hybrid,h1,Islands,28,0.3190284841291202
-5,pressure_msl,hybrid,h1,Mekong Delta,28,0.33160824899975083
-5,pressure_msl,hybrid,h1,North,42,0.15372787128032292
-5,pressure_msl,hybrid,h1,North Central,14,0.3005416052078301
-5,pressure_msl,hybrid,h1,North Mountain,28,0.2366852050761281
-5,pressure_msl,hybrid,h1,South,28,0.20981515334373416
-5,pressure_msl,hybrid,h1,South Central,28,0.24882001996021227
-5,pressure_msl,hybrid,day1,Central,1008,0.7997038082436795
-5,pressure_msl,hybrid,day1,Central Highlands,1008,0.6658636454572002
-5,pressure_msl,hybrid,day1,Islands,672,0.6622159032290001
-5,pressure_msl,hybrid,day1,Mekong Delta,672,0.665258560346331
-5,pressure_msl,hybrid,day1,North,1008,0.9488836251229573
-5,pressure_msl,hybrid,day1,North Central,336,0.8735963435620514
-5,pressure_msl,hybrid,day1,North Mountain,672,0.9216888555681729
-5,pressure_msl,hybrid,day1,South,672,0.6455328612346525
-5,pressure_msl,hybrid,day1,South Central,672,0.5962900745250662
-5,pressure_msl,hybrid,day2-3,Central,2016,2.129862876103546
-5,pressure_msl,hybrid,day2-3,Central Highlands,2016,1.2510869484036147
-5,pressure_msl,hybrid,day2-3,Islands,1344,1.443939432470768
-5,pressure_msl,hybrid,day2-3,Mekong Delta,1344,1.3939499459193332
-5,pressure_msl,hybrid,day2-3,North,2016,2.7868837748356183
-5,pressure_msl,hybrid,day2-3,North Central,672,2.8565592292207884
-5,pressure_msl,hybrid,day2-3,North Mountain,1344,2.755272574973826
-5,pressure_msl,hybrid,day2-3,South,1344,1.1860413632812037
-5,pressure_msl,hybrid,day2-3,South Central,1344,0.9827469571435428
-5,pressure_msl,hybrid,day4-7,Central,4032,4.1523188321737985
-5,pressure_msl,hybrid,day4-7,Central Highlands,4032,2.7298712295142726
-5,pressure_msl,hybrid,day4-7,Islands,2688,2.4722819949040913
-5,pressure_msl,hybrid,day4-7,Mekong Delta,2688,1.778342475328159
-5,pressure_msl,hybrid,day4-7,North,4032,3.8483178658678674
-5,pressure_msl,hybrid,day4-7,North Central,1344,4.133554571386179
-5,pressure_msl,hybrid,day4-7,North Mountain,2688,4.003619618301014
-5,pressure_msl,hybrid,day4-7,South,2688,1.8050346590331414
-5,pressure_msl,hybrid,day4-7,South Central,2688,1.990245109741851
+5,pressure_msl,hybrid,h1,Central,42,0.2929019711487892
+5,pressure_msl,hybrid,h1,Central Highlands,42,0.2999279764487439
+5,pressure_msl,hybrid,h1,Islands,28,0.3159099089900995
+5,pressure_msl,hybrid,h1,Mekong Delta,28,0.32966554089783323
+5,pressure_msl,hybrid,h1,North,42,0.15257403606040584
+5,pressure_msl,hybrid,h1,North Central,14,0.2919426395634121
+5,pressure_msl,hybrid,h1,North Mountain,28,0.2368063569258904
+5,pressure_msl,hybrid,h1,South,28,0.20798204416944696
+5,pressure_msl,hybrid,h1,South Central,28,0.2480550525412712
+5,pressure_msl,hybrid,day1,Central,1008,0.8458560314368038
+5,pressure_msl,hybrid,day1,Central Highlands,1008,0.6773941675168993
+5,pressure_msl,hybrid,day1,Islands,672,0.6605304750106716
+5,pressure_msl,hybrid,day1,Mekong Delta,672,0.6795277418868563
+5,pressure_msl,hybrid,day1,North,1008,0.9848382338386348
+5,pressure_msl,hybrid,day1,North Central,336,0.9441852006574348
+5,pressure_msl,hybrid,day1,North Mountain,672,0.9826321200162662
+5,pressure_msl,hybrid,day1,South,672,0.6688070710155378
+5,pressure_msl,hybrid,day1,South Central,672,0.6146917507995479
+5,pressure_msl,hybrid,day2-3,Central,2016,2.204224229614173
+5,pressure_msl,hybrid,day2-3,Central Highlands,2016,1.2578219556136236
+5,pressure_msl,hybrid,day2-3,Islands,1344,1.3958647943260996
+5,pressure_msl,hybrid,day2-3,Mekong Delta,1344,1.4284945542321845
+5,pressure_msl,hybrid,day2-3,North,2016,2.9375805473567254
+5,pressure_msl,hybrid,day2-3,North Central,672,3.0450291320916305
+5,pressure_msl,hybrid,day2-3,North Mountain,1344,2.879609370862732
+5,pressure_msl,hybrid,day2-3,South,1344,1.3065651658359558
+5,pressure_msl,hybrid,day2-3,South Central,1344,1.136135534778853
+5,pressure_msl,hybrid,day4-7,Central,4032,1.973635516971282
+5,pressure_msl,hybrid,day4-7,Central Highlands,4032,1.1153993203842605
+5,pressure_msl,hybrid,day4-7,Islands,2688,1.2091670287092835
+5,pressure_msl,hybrid,day4-7,Mekong Delta,2688,1.238593850323265
+5,pressure_msl,hybrid,day4-7,North,4032,3.260668765965761
+5,pressure_msl,hybrid,day4-7,North Central,1344,3.2549496229420676
+5,pressure_msl,hybrid,day4-7,North Mountain,2688,3.1503356465901953
+5,pressure_msl,hybrid,day4-7,South,2688,1.1233133726374742
+5,pressure_msl,hybrid,day4-7,South Central,2688,1.0136812274884082
 5,pressure_msl,persistence,h1,Central,42,0.5714285714285714
 5,pressure_msl,persistence,h1,Central Highlands,42,0.5928571428571288
 5,pressure_msl,persistence,h1,Islands,28,0.6821428571428498
@@ -4463,42 +4463,42 @@ fold,variable,model,bucket,region,n,mae
 6,temperature_2m,climatology,day4-7,North Mountain,768,1.7036368427579367
 6,temperature_2m,climatology,day4-7,South,768,0.8430530753968254
 6,temperature_2m,climatology,day4-7,South Central,768,1.6575375124007934
-6,relative_humidity_2m,hybrid,h1,Central,12,1.6922880434464116
-6,relative_humidity_2m,hybrid,h1,Central Highlands,12,2.8705031178613303
-6,relative_humidity_2m,hybrid,h1,Islands,8,2.293021537296262
-6,relative_humidity_2m,hybrid,h1,Mekong Delta,8,3.22454978866908
-6,relative_humidity_2m,hybrid,h1,North,12,2.531886411380592
-6,relative_humidity_2m,hybrid,h1,North Central,4,4.150591722875323
-6,relative_humidity_2m,hybrid,h1,North Mountain,8,2.0923785425030585
-6,relative_humidity_2m,hybrid,h1,South,8,2.3367800526161915
-6,relative_humidity_2m,hybrid,h1,South Central,8,2.4130417439431824
-6,relative_humidity_2m,hybrid,day1,Central,288,3.8388706094179574
-6,relative_humidity_2m,hybrid,day1,Central Highlands,288,4.931695925147114
-6,relative_humidity_2m,hybrid,day1,Islands,192,6.915716039203517
-6,relative_humidity_2m,hybrid,day1,Mekong Delta,192,5.05489844712686
-6,relative_humidity_2m,hybrid,day1,North,288,7.476662673769547
-6,relative_humidity_2m,hybrid,day1,North Central,96,5.175193308918297
-6,relative_humidity_2m,hybrid,day1,North Mountain,192,7.703150057806745
-6,relative_humidity_2m,hybrid,day1,South,192,3.493285794591912
-6,relative_humidity_2m,hybrid,day1,South Central,192,4.346967981676348
-6,relative_humidity_2m,hybrid,day2-3,Central,576,7.422052099147966
-6,relative_humidity_2m,hybrid,day2-3,Central Highlands,576,5.310167677105478
-6,relative_humidity_2m,hybrid,day2-3,Islands,384,6.592577552270062
-6,relative_humidity_2m,hybrid,day2-3,Mekong Delta,384,4.5197288439339625
-6,relative_humidity_2m,hybrid,day2-3,North,576,12.443638770978653
-6,relative_humidity_2m,hybrid,day2-3,North Central,192,5.29307682712756
-6,relative_humidity_2m,hybrid,day2-3,North Mountain,384,9.775455785744544
-6,relative_humidity_2m,hybrid,day2-3,South,384,3.878176057825229
-6,relative_humidity_2m,hybrid,day2-3,South Central,384,5.554853078347972
-6,relative_humidity_2m,hybrid,day4-7,Central,1152,8.71686002795903
-6,relative_humidity_2m,hybrid,day4-7,Central Highlands,1152,6.590013916295665
-6,relative_humidity_2m,hybrid,day4-7,Islands,768,4.998354241766778
-6,relative_humidity_2m,hybrid,day4-7,Mekong Delta,768,4.886204805567579
-6,relative_humidity_2m,hybrid,day4-7,North,1152,8.172312561281451
-6,relative_humidity_2m,hybrid,day4-7,North Central,384,3.7441146843885575
-6,relative_humidity_2m,hybrid,day4-7,North Mountain,768,8.065907534354295
-6,relative_humidity_2m,hybrid,day4-7,South,768,5.01617494788893
-6,relative_humidity_2m,hybrid,day4-7,South Central,768,7.603405514502278
+6,relative_humidity_2m,hybrid,h1,Central,12,1.683851944512173
+6,relative_humidity_2m,hybrid,h1,Central Highlands,12,2.960432684844697
+6,relative_humidity_2m,hybrid,h1,Islands,8,2.2002112637514735
+6,relative_humidity_2m,hybrid,h1,Mekong Delta,8,2.996962262154482
+6,relative_humidity_2m,hybrid,h1,North,12,2.4056069826061446
+6,relative_humidity_2m,hybrid,h1,North Central,4,4.256232211836
+6,relative_humidity_2m,hybrid,h1,North Mountain,8,2.14727078631321
+6,relative_humidity_2m,hybrid,h1,South,8,2.2420973455691797
+6,relative_humidity_2m,hybrid,h1,South Central,8,2.4859419304388704
+6,relative_humidity_2m,hybrid,day1,Central,288,2.8733845697452387
+6,relative_humidity_2m,hybrid,day1,Central Highlands,288,4.136132766635001
+6,relative_humidity_2m,hybrid,day1,Islands,192,6.034488835217716
+6,relative_humidity_2m,hybrid,day1,Mekong Delta,192,4.989382097996548
+6,relative_humidity_2m,hybrid,day1,North,288,5.535119595685848
+6,relative_humidity_2m,hybrid,day1,North Central,96,5.453037522080298
+6,relative_humidity_2m,hybrid,day1,North Mountain,192,6.063094874943936
+6,relative_humidity_2m,hybrid,day1,South,192,4.007909432551166
+6,relative_humidity_2m,hybrid,day1,South Central,192,4.548943715123798
+6,relative_humidity_2m,hybrid,day2-3,Central,576,7.349402332506467
+6,relative_humidity_2m,hybrid,day2-3,Central Highlands,576,4.535115271214898
+6,relative_humidity_2m,hybrid,day2-3,Islands,384,6.889133075489532
+6,relative_humidity_2m,hybrid,day2-3,Mekong Delta,384,5.032985857853542
+6,relative_humidity_2m,hybrid,day2-3,North,576,6.146877770433461
+6,relative_humidity_2m,hybrid,day2-3,North Central,192,8.296034746194874
+6,relative_humidity_2m,hybrid,day2-3,North Mountain,384,4.800735713795013
+6,relative_humidity_2m,hybrid,day2-3,South,384,5.61181067688896
+6,relative_humidity_2m,hybrid,day2-3,South Central,384,4.892844288351118
+6,relative_humidity_2m,hybrid,day4-7,Central,1152,10.088017412784255
+6,relative_humidity_2m,hybrid,day4-7,Central Highlands,1152,5.736982175887902
+6,relative_humidity_2m,hybrid,day4-7,Islands,768,5.734792213091531
+6,relative_humidity_2m,hybrid,day4-7,Mekong Delta,768,5.56532105906543
+6,relative_humidity_2m,hybrid,day4-7,North,1152,7.129114690848464
+6,relative_humidity_2m,hybrid,day4-7,North Central,384,7.775273416224114
+6,relative_humidity_2m,hybrid,day4-7,North Mountain,768,5.166922419029537
+6,relative_humidity_2m,hybrid,day4-7,South,768,6.182905348753532
+6,relative_humidity_2m,hybrid,day4-7,South Central,768,5.8785844623676935
 6,relative_humidity_2m,persistence,h1,Central,12,1.5183333333333344
 6,relative_humidity_2m,persistence,h1,Central Highlands,12,2.4375
 6,relative_humidity_2m,persistence,h1,Islands,8,4.056249999999998
@@ -4607,42 +4607,42 @@ fold,variable,model,bucket,region,n,mae
 6,relative_humidity_2m,climatology,day4-7,North Mountain,768,7.421613343253969
 6,relative_humidity_2m,climatology,day4-7,South,768,5.122473648313492
 6,relative_humidity_2m,climatology,day4-7,South Central,768,8.415335751488096
-6,wind_speed_10m,hybrid,h1,Central,12,2.196359339912886
-6,wind_speed_10m,hybrid,h1,Central Highlands,12,1.8401652410367655
-6,wind_speed_10m,hybrid,h1,Islands,8,1.4293289274772176
-6,wind_speed_10m,hybrid,h1,Mekong Delta,8,1.5879954422929066
-6,wind_speed_10m,hybrid,h1,North,12,1.624543648151792
-6,wind_speed_10m,hybrid,h1,North Central,4,1.4296445668273507
-6,wind_speed_10m,hybrid,h1,North Mountain,8,0.7904132493259975
-6,wind_speed_10m,hybrid,h1,South,8,2.2009765556910548
-6,wind_speed_10m,hybrid,h1,South Central,8,1.637885398015859
-6,wind_speed_10m,hybrid,day1,Central,288,2.175798314752312
-6,wind_speed_10m,hybrid,day1,Central Highlands,288,4.270147616854445
-6,wind_speed_10m,hybrid,day1,Islands,192,4.677277613617637
-6,wind_speed_10m,hybrid,day1,Mekong Delta,192,1.939717843586802
-6,wind_speed_10m,hybrid,day1,North,288,2.861017513979315
-6,wind_speed_10m,hybrid,day1,North Central,96,4.829607328754491
-6,wind_speed_10m,hybrid,day1,North Mountain,192,1.708793694563325
-6,wind_speed_10m,hybrid,day1,South,192,2.975475633986097
-6,wind_speed_10m,hybrid,day1,South Central,192,3.4313581468901844
-6,wind_speed_10m,hybrid,day2-3,Central,576,2.58781011496629
-6,wind_speed_10m,hybrid,day2-3,Central Highlands,576,4.342609647184518
-6,wind_speed_10m,hybrid,day2-3,Islands,384,3.925538542549308
-6,wind_speed_10m,hybrid,day2-3,Mekong Delta,384,2.091396675312453
-6,wind_speed_10m,hybrid,day2-3,North,576,2.2277921730806955
-6,wind_speed_10m,hybrid,day2-3,North Central,192,3.0761561742102885
-6,wind_speed_10m,hybrid,day2-3,North Mountain,384,1.9169502703721537
-6,wind_speed_10m,hybrid,day2-3,South,384,3.5649042556417734
-6,wind_speed_10m,hybrid,day2-3,South Central,384,3.529509330304974
-6,wind_speed_10m,hybrid,day4-7,Central,1152,2.052438830767981
-6,wind_speed_10m,hybrid,day4-7,Central Highlands,1152,2.9539666442009596
-6,wind_speed_10m,hybrid,day4-7,Islands,768,3.5516874774542764
-6,wind_speed_10m,hybrid,day4-7,Mekong Delta,768,3.7614528573424564
-6,wind_speed_10m,hybrid,day4-7,North,1152,2.7655918632918493
-6,wind_speed_10m,hybrid,day4-7,North Central,384,2.780666890607615
-6,wind_speed_10m,hybrid,day4-7,North Mountain,768,1.4853700128699332
-6,wind_speed_10m,hybrid,day4-7,South,768,4.135389254032388
-6,wind_speed_10m,hybrid,day4-7,South Central,768,3.454754915061852
+6,wind_speed_10m,hybrid,h1,Central,12,2.1921437100970578
+6,wind_speed_10m,hybrid,h1,Central Highlands,12,1.8523091219474541
+6,wind_speed_10m,hybrid,h1,Islands,8,1.4683157356554073
+6,wind_speed_10m,hybrid,h1,Mekong Delta,8,1.5834916559658074
+6,wind_speed_10m,hybrid,h1,North,12,1.6031899111498469
+6,wind_speed_10m,hybrid,h1,North Central,4,1.548964134858196
+6,wind_speed_10m,hybrid,h1,North Mountain,8,0.7664765168424404
+6,wind_speed_10m,hybrid,h1,South,8,2.288770555845879
+6,wind_speed_10m,hybrid,h1,South Central,8,1.6629236440741406
+6,wind_speed_10m,hybrid,day1,Central,288,2.2311001613497328
+6,wind_speed_10m,hybrid,day1,Central Highlands,288,3.8788321840766624
+6,wind_speed_10m,hybrid,day1,Islands,192,4.718096631741191
+6,wind_speed_10m,hybrid,day1,Mekong Delta,192,1.8577701356170566
+6,wind_speed_10m,hybrid,day1,North,288,2.7987128754211485
+6,wind_speed_10m,hybrid,day1,North Central,96,4.727747886137256
+6,wind_speed_10m,hybrid,day1,North Mountain,192,1.4909735941339965
+6,wind_speed_10m,hybrid,day1,South,192,3.066544605209179
+6,wind_speed_10m,hybrid,day1,South Central,192,3.483446810589983
+6,wind_speed_10m,hybrid,day2-3,Central,576,3.0953689774675612
+6,wind_speed_10m,hybrid,day2-3,Central Highlands,576,3.810212505144394
+6,wind_speed_10m,hybrid,day2-3,Islands,384,4.997470301097089
+6,wind_speed_10m,hybrid,day2-3,Mekong Delta,384,2.2016080527469044
+6,wind_speed_10m,hybrid,day2-3,North,576,2.353815224596555
+6,wind_speed_10m,hybrid,day2-3,North Central,192,4.616390044990636
+6,wind_speed_10m,hybrid,day2-3,North Mountain,384,1.2428165350994214
+6,wind_speed_10m,hybrid,day2-3,South,384,3.918149406748783
+6,wind_speed_10m,hybrid,day2-3,South Central,384,3.8266150759475708
+6,wind_speed_10m,hybrid,day4-7,Central,1152,2.6852782015555183
+6,wind_speed_10m,hybrid,day4-7,Central Highlands,1152,3.3671398768172707
+6,wind_speed_10m,hybrid,day4-7,Islands,768,6.187920745328668
+6,wind_speed_10m,hybrid,day4-7,Mekong Delta,768,2.9491832607256785
+6,wind_speed_10m,hybrid,day4-7,North,1152,3.306479948666536
+6,wind_speed_10m,hybrid,day4-7,North Central,384,5.859125147323566
+6,wind_speed_10m,hybrid,day4-7,North Mountain,768,1.513339793490359
+6,wind_speed_10m,hybrid,day4-7,South,768,4.572427741114778
+6,wind_speed_10m,hybrid,day4-7,South Central,768,3.6219405683261354
 6,wind_speed_10m,persistence,h1,Central,12,2.1058333333333334
 6,wind_speed_10m,persistence,h1,Central Highlands,12,1.7533333333333339
 6,wind_speed_10m,persistence,h1,Islands,8,1.4637499999999999
@@ -4751,42 +4751,42 @@ fold,variable,model,bucket,region,n,mae
 6,wind_speed_10m,climatology,day4-7,North Mountain,768,1.3098601810515873
 6,wind_speed_10m,climatology,day4-7,South,768,4.358717447916667
 6,wind_speed_10m,climatology,day4-7,South Central,768,4.036870039682539
-6,precipitation,hybrid,h1,Central,12,0.45713847559330006
-6,precipitation,hybrid,h1,Central Highlands,12,0.286727341352858
-6,precipitation,hybrid,h1,Islands,8,0.15287574814125854
-6,precipitation,hybrid,h1,Mekong Delta,8,0.5177244697243986
-6,precipitation,hybrid,h1,North,12,0.32380235223068426
-6,precipitation,hybrid,h1,North Central,4,0.29501620260948214
-6,precipitation,hybrid,h1,North Mountain,8,0.20463640631541985
-6,precipitation,hybrid,h1,South,8,0.45458387121364113
-6,precipitation,hybrid,h1,South Central,8,0.18224815289251067
-6,precipitation,hybrid,day1,Central,288,0.5766665557216686
-6,precipitation,hybrid,day1,Central Highlands,288,0.48949184915538957
-6,precipitation,hybrid,day1,Islands,192,0.3864964920493743
-6,precipitation,hybrid,day1,Mekong Delta,192,0.3772827011722257
-6,precipitation,hybrid,day1,North,288,0.5069391804456416
-6,precipitation,hybrid,day1,North Central,96,0.9575167276929136
-6,precipitation,hybrid,day1,North Mountain,192,0.35536649731274084
-6,precipitation,hybrid,day1,South,192,0.3691026173128218
-6,precipitation,hybrid,day1,South Central,192,0.29449576011259987
-6,precipitation,hybrid,day2-3,Central,576,0.4764440179150093
-6,precipitation,hybrid,day2-3,Central Highlands,576,0.5364929300634249
-6,precipitation,hybrid,day2-3,Islands,384,0.4745549771416653
-6,precipitation,hybrid,day2-3,Mekong Delta,384,0.46070456520137854
-6,precipitation,hybrid,day2-3,North,576,0.5209406336346682
-6,precipitation,hybrid,day2-3,North Central,192,0.585883438090497
-6,precipitation,hybrid,day2-3,North Mountain,384,0.40916970369015165
-6,precipitation,hybrid,day2-3,South,384,0.3146077851455616
-6,precipitation,hybrid,day2-3,South Central,384,0.33557231923591174
-6,precipitation,hybrid,day4-7,Central,1152,0.4191540063248418
-6,precipitation,hybrid,day4-7,Central Highlands,1152,0.4694149320111845
-6,precipitation,hybrid,day4-7,Islands,768,0.3925905472845403
-6,precipitation,hybrid,day4-7,Mekong Delta,768,0.45604656751480244
-6,precipitation,hybrid,day4-7,North,1152,0.5077676446457899
-6,precipitation,hybrid,day4-7,North Central,384,0.5809440059960126
-6,precipitation,hybrid,day4-7,North Mountain,768,0.4003662212795258
-6,precipitation,hybrid,day4-7,South,768,0.3965189229756265
-6,precipitation,hybrid,day4-7,South Central,768,0.3309047536238398
+6,precipitation,hybrid,h1,Central,12,0.5335333353608244
+6,precipitation,hybrid,h1,Central Highlands,12,0.2795997071513507
+6,precipitation,hybrid,h1,Islands,8,0.1843624301603871
+6,precipitation,hybrid,h1,Mekong Delta,8,0.663292691301334
+6,precipitation,hybrid,h1,North,12,0.23013792842882677
+6,precipitation,hybrid,h1,North Central,4,0.3103680301204208
+6,precipitation,hybrid,h1,North Mountain,8,0.13706457269811073
+6,precipitation,hybrid,h1,South,8,0.4596097671249604
+6,precipitation,hybrid,h1,South Central,8,0.15302346651580534
+6,precipitation,hybrid,day1,Central,288,0.8783026141386785
+6,precipitation,hybrid,day1,Central Highlands,288,0.37294867498577816
+6,precipitation,hybrid,day1,Islands,192,0.23254019094519798
+6,precipitation,hybrid,day1,Mekong Delta,192,0.4470273387685328
+6,precipitation,hybrid,day1,North,288,0.2219120011955461
+6,precipitation,hybrid,day1,North Central,96,1.5462684131338413
+6,precipitation,hybrid,day1,North Mountain,192,0.09752955340906866
+6,precipitation,hybrid,day1,South,192,0.5125687452734927
+6,precipitation,hybrid,day1,South Central,192,0.34439952933720014
+6,precipitation,hybrid,day2-3,Central,576,0.8948737793560068
+6,precipitation,hybrid,day2-3,Central Highlands,576,0.4698948399006486
+6,precipitation,hybrid,day2-3,Islands,384,0.38227976828379645
+6,precipitation,hybrid,day2-3,Mekong Delta,384,0.6459713708241694
+6,precipitation,hybrid,day2-3,North,576,0.08638238578200012
+6,precipitation,hybrid,day2-3,North Central,192,1.0070853469254504
+6,precipitation,hybrid,day2-3,North Mountain,384,0.058245497584832155
+6,precipitation,hybrid,day2-3,South,384,0.48019140923370746
+6,precipitation,hybrid,day2-3,South Central,384,0.4583936457298518
+6,precipitation,hybrid,day4-7,Central,1152,0.9201651966655378
+6,precipitation,hybrid,day4-7,Central Highlands,1152,0.3786900131539253
+6,precipitation,hybrid,day4-7,Islands,768,0.29036518070461453
+6,precipitation,hybrid,day4-7,Mekong Delta,768,0.6325002293375629
+6,precipitation,hybrid,day4-7,North,1152,0.08395081053598087
+6,precipitation,hybrid,day4-7,North Central,384,0.8154701909046236
+6,precipitation,hybrid,day4-7,North Mountain,768,0.057410392961594746
+6,precipitation,hybrid,day4-7,South,768,0.5602476026744138
+6,precipitation,hybrid,day4-7,South Central,768,0.45286457382563894
 6,precipitation,persistence,h1,Central,12,0.5416666666666666
 6,precipitation,persistence,h1,Central Highlands,12,0.2416666666666667
 6,precipitation,persistence,h1,Islands,8,0.049999999999999996
@@ -4895,42 +4895,42 @@ fold,variable,model,bucket,region,n,mae
 6,precipitation,climatology,day4-7,North Mountain,768,0.40036458333333336
 6,precipitation,climatology,day4-7,South,768,0.3965184771825397
 6,precipitation,climatology,day4-7,South Central,768,0.3309046378968254
-6,pressure_msl,hybrid,h1,Central,12,0.25423951471731243
-6,pressure_msl,hybrid,h1,Central Highlands,12,0.19674162037334023
-6,pressure_msl,hybrid,h1,Islands,8,0.23021157151106308
-6,pressure_msl,hybrid,h1,Mekong Delta,8,0.16608244637787095
-6,pressure_msl,hybrid,h1,North,12,0.1537189692865392
-6,pressure_msl,hybrid,h1,North Central,4,0.21698930444588882
-6,pressure_msl,hybrid,h1,North Mountain,8,0.26097124988102394
-6,pressure_msl,hybrid,h1,South,8,0.11939810982579502
-6,pressure_msl,hybrid,h1,South Central,8,0.18998902309888877
-6,pressure_msl,hybrid,day1,Central,288,0.7446276268357015
-6,pressure_msl,hybrid,day1,Central Highlands,288,0.49958119226067293
-6,pressure_msl,hybrid,day1,Islands,192,0.8942381345257951
-6,pressure_msl,hybrid,day1,Mekong Delta,192,0.920560285117079
-6,pressure_msl,hybrid,day1,North,288,0.5380680818530068
-6,pressure_msl,hybrid,day1,North Central,96,0.7606235277938017
-6,pressure_msl,hybrid,day1,North Mountain,192,0.7539776932782143
-6,pressure_msl,hybrid,day1,South,192,0.5902623366017069
-6,pressure_msl,hybrid,day1,South Central,192,0.573318254525411
-6,pressure_msl,hybrid,day2-3,Central,576,2.9485434190975095
-6,pressure_msl,hybrid,day2-3,Central Highlands,576,1.5698110335852524
-6,pressure_msl,hybrid,day2-3,Islands,384,1.27300796112908
-6,pressure_msl,hybrid,day2-3,Mekong Delta,384,1.2226386102192235
-6,pressure_msl,hybrid,day2-3,North,576,3.1031563604836863
-6,pressure_msl,hybrid,day2-3,North Central,192,3.7167730491576214
-6,pressure_msl,hybrid,day2-3,North Mountain,384,3.1555264223754684
-6,pressure_msl,hybrid,day2-3,South,384,0.8565173334280617
-6,pressure_msl,hybrid,day2-3,South Central,384,1.005978313461798
-6,pressure_msl,hybrid,day4-7,Central,1152,6.235639757259294
-6,pressure_msl,hybrid,day4-7,Central Highlands,1152,5.035155268424553
-6,pressure_msl,hybrid,day4-7,Islands,768,3.044523320124076
-6,pressure_msl,hybrid,day4-7,Mekong Delta,768,2.6788735003063047
-6,pressure_msl,hybrid,day4-7,North,1152,5.641644198424836
-6,pressure_msl,hybrid,day4-7,North Central,384,6.199384705975131
-6,pressure_msl,hybrid,day4-7,North Mountain,768,6.567621754108476
-6,pressure_msl,hybrid,day4-7,South,768,2.542182747984994
-6,pressure_msl,hybrid,day4-7,South Central,768,2.999925126189724
+6,pressure_msl,hybrid,h1,Central,12,0.3010334658497887
+6,pressure_msl,hybrid,h1,Central Highlands,12,0.21705986477627448
+6,pressure_msl,hybrid,h1,Islands,8,0.28947448223647143
+6,pressure_msl,hybrid,h1,Mekong Delta,8,0.17407972718261533
+6,pressure_msl,hybrid,h1,North,12,0.1705715890021414
+6,pressure_msl,hybrid,h1,North Central,4,0.2081127593799863
+6,pressure_msl,hybrid,h1,North Mountain,8,0.283989569379429
+6,pressure_msl,hybrid,h1,South,8,0.11503553992979221
+6,pressure_msl,hybrid,h1,South Central,8,0.19150781810093065
+6,pressure_msl,hybrid,day1,Central,288,0.7469492601502002
+6,pressure_msl,hybrid,day1,Central Highlands,288,0.6274313672464741
+6,pressure_msl,hybrid,day1,Islands,192,1.0494112375037095
+6,pressure_msl,hybrid,day1,Mekong Delta,192,1.0745870995788536
+6,pressure_msl,hybrid,day1,North,288,0.43659412938403835
+6,pressure_msl,hybrid,day1,North Central,96,0.7501140218236344
+6,pressure_msl,hybrid,day1,North Mountain,192,0.5733350395533966
+6,pressure_msl,hybrid,day1,South,192,0.7458785601941541
+6,pressure_msl,hybrid,day1,South Central,192,0.6367624427946629
+6,pressure_msl,hybrid,day2-3,Central,576,1.8059804416936376
+6,pressure_msl,hybrid,day2-3,Central Highlands,576,1.596713606262765
+6,pressure_msl,hybrid,day2-3,Islands,384,1.8157689793643117
+6,pressure_msl,hybrid,day2-3,Mekong Delta,384,1.9424386984763917
+6,pressure_msl,hybrid,day2-3,North,576,0.8849190589934164
+6,pressure_msl,hybrid,day2-3,North Central,192,1.5414324154133474
+6,pressure_msl,hybrid,day2-3,North Mountain,384,1.1265712169825832
+6,pressure_msl,hybrid,day2-3,South,384,1.5830234311189384
+6,pressure_msl,hybrid,day2-3,South Central,384,1.4046845951244837
+6,pressure_msl,hybrid,day4-7,Central,1152,1.6949080978908988
+6,pressure_msl,hybrid,day4-7,Central Highlands,1152,1.6702323655348552
+6,pressure_msl,hybrid,day4-7,Islands,768,1.352919535390029
+6,pressure_msl,hybrid,day4-7,Mekong Delta,768,1.4432553349299078
+6,pressure_msl,hybrid,day4-7,North,1152,1.3753070402734895
+6,pressure_msl,hybrid,day4-7,North Central,384,1.2654642684183297
+6,pressure_msl,hybrid,day4-7,North Mountain,768,1.816426837629202
+6,pressure_msl,hybrid,day4-7,South,768,1.4904681784166485
+6,pressure_msl,hybrid,day4-7,South Central,768,1.6460270520803923
 6,pressure_msl,persistence,h1,Central,12,0.6333333333333258
 6,pressure_msl,persistence,h1,Central Highlands,12,0.49166666666668374
 6,pressure_msl,persistence,h1,Islands,8,0.6625000000000085
