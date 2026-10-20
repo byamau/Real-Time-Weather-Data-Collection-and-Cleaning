@@ -11,9 +11,10 @@ Design decisions (see README, Chapter 4)
     hour-of-day for >= 1 year). This lets long recursive forecasts relax towards climatology.
   * Features are built by ONE function for training and for live inference (identical lag,
     rolling-window and ddof conventions), and location_id is not used as a numeric feature.
-  * Recursive errors compound, so the reported forecast is damped towards climatology with a
-    lead-dependent factor exp(-lead / tau); tau is chosen per variable on the last 15 % of the
-    training window (an inner model is fitted on the first 85 %). Never on test data.
+  * Recursive errors compound, so the reported forecast is damped towards an anchor with a
+    lead-dependent factor exp(-lead / tau). Per variable, the anchor (training climatology or
+    seasonal naive = the last 24 observed hours repeated) and tau are chosen on the last 15 % of
+    the training window (an inner model is fitted on the first 85 %). Never on test data.
   * Hybrid = weighted members (Ridge, HistGradientBoosting, optional GRU) + XGBoost residual.
     Member weights (non-negative least squares) and the residual shrinkage are chosen on
     chronologically later inner-validation blocks, and XGBoost learns OUT-OF-FOLD residuals.
@@ -180,6 +181,12 @@ def build_step_features(buffers: dict[str, np.ndarray], target_ts, static: np.nd
     return X, clim_t
 
 
+def seasonal_naive_anchor(buffer: np.ndarray, horizon: int) -> np.ndarray:
+    """Repeat the last 24 observed hours: (N, L) -> (N, horizon)."""
+    last24 = buffer[:, -24:]
+    return np.tile(last24, (1, horizon // 24 + 1))[:, :horizon]
+
+
 # =============================================================================
 # GRU member (PyTorch for training, exported to NumPy for inference)
 # =============================================================================
@@ -344,6 +351,7 @@ class WeatherForecaster:
         df = df.copy()
         df["timestamp"] = pd.to_datetime(df["timestamp"])
         self.damping_tau = {v: np.inf for v in TARGET_VARS}
+        self.damping_anchor = {v: "climatology" for v in TARGET_VARS}
         self.damping_info = {"calibrated": False}
         if calibrate_damping:
             self._calibrate_damping(df, train_stride, horizon, verbose)
@@ -411,19 +419,22 @@ class WeatherForecaster:
         n_pairs = int(fut_ok.sum())
         for v in TARGET_VARS:
             y = np.where(fut_ok, cube[v][li[:, None], fut], np.nan)
-            c = clim[v].reshape(len(last), horizon)
-            best, best_mae = np.inf, np.inf
-            for tau in self.DAMPING_TAUS:
-                lam = np.exp(-leads / tau) if np.isfinite(tau) else np.ones_like(leads, dtype=float)
-                mae = np.nanmean(np.abs(c + lam * (raw[v] - c) - y))
-                if mae < best_mae - 1e-9:
-                    best, best_mae = tau, mae
-            self.damping_tau[v] = float(best)
+            anchors = {"climatology": clim[v].reshape(len(last), horizon),
+                       "seasonal_naive": seasonal_naive_anchor(bufs[v], horizon)}
+            best, best_mae = ("climatology", np.inf), np.inf
+            for name, c in anchors.items():
+                for tau in self.DAMPING_TAUS:
+                    lam = np.exp(-leads / tau) if np.isfinite(tau) else np.ones_like(leads, dtype=float)
+                    mae = np.nanmean(np.abs(c + lam * (raw[v] - c) - y))
+                    if mae < best_mae - 1e-9:
+                        best, best_mae = (name, tau), mae
+            self.damping_anchor[v], self.damping_tau[v] = best[0], float(best[1])
         self.damping_info = {"calibrated": True, "inner_train_end": str(cut), "origins": len(origins),
                              "trajectories": int(len(last)), "scored_pairs": n_pairs,
+                             "anchor": dict(self.damping_anchor),
                              "tau_hours": {v: (None if np.isinf(t) else t) for v, t in self.damping_tau.items()}}
         if verbose:
-            print(f"      damping tau (h): {self.damping_info['tau_hours']}")
+            print(f"      damping: {self.damping_info['anchor']} tau(h)={self.damping_info['tau_hours']}")
 
     def static_for(self, loc_ids) -> np.ndarray:
         return self.static.loc[np.asarray(loc_ids), STATIC_COLS].to_numpy(dtype=float)
@@ -438,6 +449,8 @@ class WeatherForecaster:
         static = self.static_for(loc_ids)
         out = {v: np.zeros((len(last), horizon)) for v in TARGET_VARS}
         taus = getattr(self, "damping_tau", {v: np.inf for v in TARGET_VARS})
+        anchor_kind = getattr(self, "damping_anchor", {v: "climatology" for v in TARGET_VARS})
+        naive = {v: seasonal_naive_anchor(bufs[v], horizon) for v in TARGET_VARS}
         for step in range(1, horizon + 1):
             ts = last + pd.Timedelta(hours=step)
             X, clim_t = build_step_features(bufs, ts, static, loc_ids, self.climatology, self.use_doy)
@@ -448,7 +461,8 @@ class WeatherForecaster:
                 # only the reported value is damped towards climatology
                 bufs[v] = np.concatenate([bufs[v][:, 1:], raw[:, None]], axis=1)
                 lam = np.exp(-step / taus[v]) if np.isfinite(taus[v]) else 1.0
-                out[v][:, step - 1] = np.clip(clim_t[v] + lam * (raw - clim_t[v]), lo, hi)
+                anchor = clim_t[v] if anchor_kind[v] == "climatology" else naive[v][:, step - 1]
+                out[v][:, step - 1] = np.clip(anchor + lam * (raw - anchor), lo, hi)
         return out
 
     def describe(self) -> dict:
