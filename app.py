@@ -1,10 +1,11 @@
-"""
+r"""
 Topic 6: Real-Time Weather Data Collection, Cleaning & 7-Day Forecast Dashboard
 Run command: .\.venv\Scripts\python.exe -m streamlit run app.py
 """
 
 import importlib.util
 import json
+import sys
 from pathlib import Path
 import joblib
 import numpy as np
@@ -19,8 +20,9 @@ CLEAN_DIR = BASE_DIR / "data" / "cleaned"
 MODEL_DIR = BASE_DIR / "models"
 FIG_DIR = BASE_DIR / "figures"
 
+sys.path.insert(0, str(BASE_DIR / "src"))  # forecast_core must be importable to load the model bundle
 spec = importlib.util.spec_from_file_location(
-    "realtime_inference", str(BASE_DIR / "src" / "05_realtime_inference.py")
+    "realtime_inference", str(BASE_DIR / "src" / "07_realtime_inference.py")
 )
 rt_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(rt_module)
@@ -34,8 +36,7 @@ st.set_page_config(
 
 @st.cache_resource
 def load_saved_weights():
-    weights_path = MODEL_DIR / "weather_forecast_weights.joblib"
-    return joblib.load(weights_path)
+    return rt_module.load_bundle(MODEL_DIR / "weather_forecast_weights.joblib")
 
 
 @st.cache_data
@@ -110,11 +111,11 @@ st.title(f"Hệ Thống Thu Thập, Làm Sạch Và Dự Báo Thời Tiết Th�
 st.markdown(
     f"**Tọa độ:** `{selected_loc['requested_lat']}°N, {selected_loc['requested_lon']}°E` | "
     f"**Độ cao:** `{selected_loc['elevation_m']} m` | "
-    f"**Mô hình:** `Hybrid GRU + XGBoost Residual` | "
+    f"**Mô hình:** `Hybrid (Ridge + HistGB + GRU) + XGBoost residual, trộn NWP Open-Meteo` | "
     f"**Thời gian phân tích:** `{infer_ms} ms`"
 )
 
-latest_obs = df_clean_live.iloc[-1]
+latest_obs = df_clean_live.ffill().iloc[-1]  # a provider may lack some variables in the latest hour
 kpi1, kpi2, kpi3, kpi4, kpi5, kpi6 = st.columns(6)
 kpi1.metric("Nhiệt Độ Hiện Tại", f"{latest_obs['temperature_2m']:.1f} °C", f"Dự báo 24h tới: {df_hr_fc.iloc[23]['temperature_2m']:.1f} °C")
 kpi2.metric("Độ Ẩm Tương Đối", f"{latest_obs['relative_humidity_2m']:.0f} %", f"TB {forecast_days} ngày: {df_hr_fc['relative_humidity_2m'].mean():.0f} %")
@@ -165,7 +166,8 @@ with tab1:
 
     # Subplot 1: Temperature
     axes[0].plot(hist_tail["timestamp"], hist_tail["temperature_2m"], color="#1e293b", linewidth=2.2, label="Lịch sử thực tế 72 giờ qua")
-    axes[0].plot(df_hr_fc["timestamp"], df_hr_fc["temperature_2m"], color="#d94801", linewidth=2.2, linestyle="--", marker="o", markevery=12, label=f"Dự báo Hybrid GRU + XGBoost Residual {forecast_days} ngày tới")
+    axes[0].plot(df_hr_fc["timestamp"], df_hr_fc["temperature_2m"], color="#d94801", linewidth=2.2, linestyle="--", marker="o", markevery=12, label=f"Dự báo {forecast_days} ngày tới (ML + NWP)")
+    axes[0].plot(df_hr_fc["timestamp"], df_hr_fc["temperature_2m_ml"], color="#7c3aed", linewidth=1.2, linestyle=":", label="Thành phần ML (chưa trộn NWP)")
     axes[0].axvline(hist_tail["timestamp"].max(), color="#dc2626", linestyle=":", linewidth=1.8, label="Thời điểm hiện tại")
     axes[0].set_ylabel("Nhiệt độ - °C", fontsize=11, fontweight="bold")
     axes[0].set_title(f"Chuỗi Thời Gian Thực Tế Và Dự Báo {forecast_days} Ngày Tới — {selected_loc['city']}", fontsize=13, fontweight="bold")
@@ -269,38 +271,42 @@ with tab3:
     b_info = quality_report["before_cleaning"]
     a_info = quality_report["after_cleaning"]
 
+    m_info = quality_report["missing_api_responses"]
     q_df = pd.DataFrame({
         "Chỉ Số Đánh Giá Chất Lượng": [
-            "Tổng số dòng quan trắc",
-            "Số lượng địa điểm khảo sát",
-            "Bản ghi chưa chuẩn hóa định dạng thời gian",
-            "Bản ghi vượt quá thời điểm hiện tại bị loại bỏ",
-            "Dòng khuyết cục bộ do khác biệt cấu trúc dữ liệu",
-            "Tổng số ô dữ liệu bị khuyết",
-            "Bản ghi trùng lặp thời gian giữa các API",
-            "Số ô bị nhiễu dấu chấm động",
-            "Bản ghi bất nhất vật lý tốc độ gió",
+            "Tổng số dòng",
+            "Số lượng địa điểm",
+            "Response API bị thiếu (nguồn × địa điểm)",
+            "Timestamp chưa chuẩn hóa",
+            "Bản ghi dự báo chưa xảy ra lúc thu thập",
+            "Trùng lặp hoàn toàn (cùng nhà cung cấp)",
+            "Trùng lặp cùng nguồn, cùng giờ",
+            "Trùng lặp giữa các nguồn (đã hợp nhất)",
+            "Ô dữ liệu bị khuyết",
+            "Bất nhất vật lý gió giật < gió trung bình",
         ],
         "Trước Khi Làm Sạch": [
             f"{b_info['total_rows']:,}",
             f"{b_info['num_locations']}",
+            f"{m_info['requests_missing_or_failed']} / {m_info['requests_checked']}",
             f"{b_info['unstandardized_timestamps']:,}",
-            f"{b_info['empty_api_response_rows']:,}",
-            f"{b_info['partial_missing_rows']:,}",
+            f"{b_info['not_yet_observed_forecast_rows']:,}",
+            f"{b_info['exact_duplicates']:,}",
+            f"{b_info['same_source_family_duplicates']:,}",
+            f"{b_info['cross_source_duplicates']:,}",
             f"{b_info['total_missing_cells']:,}",
-            f"{b_info['key_duplicates']:,}",
-            f"{b_info['float32_precision_artifacts']:,}",
-            f"{b_info['wind_gust_inconsistencies']:,}",
+            f"{a_info['wind_gust_inconsistencies_fixed']:,}",
         ],
         "Sau Khi Làm Sạch": [
             f"{a_info['total_rows']:,}",
             f"{a_info['num_locations']}",
+            "phát hiện & ghi nhận (bù bằng nguồn khác)",
             f"{a_info['unstandardized_timestamps']}",
-            f"{a_info['empty_api_response_rows']}",
-            f"{a_info['partial_missing_rows']}",
-            f"{a_info['total_missing_cells']}",
+            "0",
+            f"{a_info['exact_duplicates']}",
+            "0",
             f"{a_info['key_duplicates']}",
-            f"{a_info['float32_precision_artifacts']}",
+            f"{a_info['total_missing_cells']}",
             f"{a_info['wind_gust_inconsistencies']}",
         ],
     })
@@ -317,67 +323,54 @@ with tab3:
         st.image(str(FIG_DIR / "fig3_temperature_timeseries.png"), caption="Hình 3: Chuỗi thời gian nhiệt độ trung bình ngày của 8 địa điểm đại diện", use_container_width=True)
         st.image(str(FIG_DIR / "fig5_multivariate_and_precipitation.png"), caption="Hình 5: Tương quan đa biến Nhiệt độ - Độ ẩm - Áp suất và Tổng lượng mưa", use_container_width=True)
     with g2:
-        st.image(str(FIG_DIR / "fig6_multi_api_source_comparison.png"), caption="Hình 6: Đối sánh trực tiếp 4 nguồn Real-Time API", use_container_width=True)
-        st.image(str(FIG_DIR / "fig2_range_validation_boxplots.png"), caption="Hình 2: Phân phối Boxplot 6 biến khí tượng trên 44,540 quan trắc", use_container_width=True)
+        st.image(str(FIG_DIR / "fig6_multi_api_source_comparison.png"), caption="Hình 6: Độ lệch hệ thống giữa các nguồn tại cùng giờ", use_container_width=True)
+        st.image(str(FIG_DIR / "fig2_range_validation_boxplots.png"), caption="Hình 2: Phân phối Boxplot 6 biến khí tượng sau làm sạch", use_container_width=True)
         st.image(str(FIG_DIR / "fig4_all_20_cities_temperature_range.png"), caption="Hình 4: So sánh nhiệt độ trung bình và biên độ nhiệt của 20 địa điểm", use_container_width=True)
+    st.image(str(FIG_DIR / "fig7_api_coverage_heatmap.png"), caption="Hình 7: Độ phủ response của từng API theo địa điểm (phát hiện response bị thiếu)", use_container_width=True)
 
 # -----------------------------------------------------------------------------
-# TAB 4: MODEL EVALUATION (LARGE CHART ON TOP, CONTENT BELOW)
+# TAB 4: MODEL EVALUATION (WALK-FORWARD, BY LEAD TIME)
 # -----------------------------------------------------------------------------
 with tab4:
-    st.subheader("Biểu Đồ Đánh Giá Mô Hình Hybrid GRU Và Học Phần Dư XGBoost")
-    st.image(
-        str(FIG_DIR / "fig7_model_training_and_forecast_eval.png"),
-        caption="Hình 7: So sánh sai số các mô hình và đường dự báo thực tế trên tập kiểm thử",
-        use_container_width=True,
-    )
-
-    st.markdown("---")
-    st.subheader("Kết Quả Đánh Giá Định Lượng Trên Tập Kiểm Thử")
-    col_m1, col_m2 = st.columns([1, 1])
-    with col_m1:
-        st.markdown("#### 1. So Sánh Các Phương Pháp Dự Báo Nhiệt Độ")
-        comp_rows = []
-        for m_name, m_val in model_report["temperature_model_comparison"].items():
-            comp_rows.append({
-                "Mô Hình": m_name,
-                "Val MAE": m_val["val_mae"],
-                "Test MAE": m_val["test_mae"],
-                "Khoảng Tin Cậy 95%": f"[{m_val['test_mae_95ci'][0]}, {m_val['test_mae_95ci'][1]}]",
-                "Test RMSE": m_val["test_rmse"],
-                "Test R²": m_val["test_r2"],
-            })
-        st.table(pd.DataFrame(comp_rows))
-
-    with col_m2:
-        st.markdown("#### 2. Sai Số Dự Báo Đa Mục Tiêu Cho Cả 5 Biến Khí Tượng")
-        mt_rows = []
-        for t_var, t_val in model_report["multi_target_test_metrics"].items():
-            mt_rows.append({
-                "Biến Dự Báo": t_var,
-                "Test MAE": t_val["test_mae"],
-                "Test RMSE": t_val["test_rmse"],
-                "Test R²": t_val["test_r2"],
-            })
-        st.table(pd.DataFrame(mt_rows))
-
-    st.markdown("---")
-    st.subheader("Kiến Trúc Mô Hình Hybrid GRU Kết Hợp Học Phần Dư XGBoost")
+    wf = model_report.get("walk_forward_evaluation")
+    st.subheader("Đánh Giá Walk-Forward Theo Thời Hạn Dự Báo (Lead Time)")
     st.markdown(
-        """
-        1. **Tầng 1 — Mô hình cơ sở kết hợp mạng nơ-ron hồi quy GRU, xu hướng tuyến tính và cấu trúc chu kỳ:**
-           - Kết hợp mạng nơ-ron có cổng `GRU Neural Network` học động lực chuỗi thời gian đa biến qua 8 mốc trễ từ `t-72h` đến `t-1h`, tự hồi quy tuyến tính `Ridge Autoregressive` và `HistGradientBoosting` trên 58 đặc trưng khí tượng:
-             $$\\hat{y}_{\\text{base}}(X_t) = 0.15 \\cdot \\hat{y}_{\\text{GRU}}(X_t) + 0.10 \\cdot \\hat{y}_{\\text{Ridge}}(X_t) + 0.75 \\cdot \\hat{y}_{\\text{HistGB}}(X_t)$$
-           - Từ đó trích xuất chuỗi **phần dư**:
-             $$r_t = y_t - \\hat{y}_{\\text{base}}(X_t)$$
+        "Mô hình dự báo 1 giờ/lần và được chạy **cuốn chiếu 168 bước** cho dự báo 7 ngày, nên được đánh giá "
+        "theo từng lead time trên nhiều cửa sổ kiểm thử trượt dần (walk-forward), so với 3 baseline: "
+        "persistence, seasonal naive (lặp lại 24 giờ gần nhất) và climatology của tập train."
+    )
+    if wf is None:
+        st.warning("Chưa có kết quả walk-forward. Chạy `python src/05_walk_forward_evaluation.py`.")
+    else:
+        cfg = wf["config"]
+        st.caption(f"{cfg['n_folds']} fold × {cfg['fold_days']} ngày, {cfg['n_trajectories_total']:,} lượt dự báo 168 giờ, "
+                   f"dữ liệu `{cfg['data']}` ({cfg['test_period'][0][:10]} → {cfg['test_period'][1][:10]}).")
+        st.image(str(FIG_DIR / "fig8_walk_forward_mae_by_lead.png"), caption="Hình 8: MAE theo lead time", use_container_width=True)
+        names = {"h1": "1 giờ", "day1": "Ngày 1", "day2-3": "Ngày 2–3", "day4-7": "Ngày 4–7"}
+        units = {"temperature_2m": "°C", "relative_humidity_2m": "%", "wind_speed_10m": "km/h", "precipitation": "mm/h", "pressure_msl": "hPa"}
+        var_sel = st.selectbox("Biến:", list(wf["by_variable"].keys()), index=0)
+        rows = []
+        for bk, e in wf["by_variable"][var_sel].items():
+            rows.append({
+                "Thời hạn": names.get(bk, bk),
+                f"Hybrid MAE ({units[var_sel]})": e["hybrid_mae"],
+                "Seasonal naive": e["seasonal_naive_mae"],
+                "Persistence": e["persistence_mae"],
+                "Climatology": e["climatology_mae"],
+                "Skill vs naive [95% CI]": f"{e['skill_vs_seasonal_naive']:+.3f} {e['skill_vs_seasonal_naive_ci95']}",
+                "Tỷ lệ fold thắng naive": e["share_folds_beating_seasonal_naive"],
+            })
+        st.table(pd.DataFrame(rows))
+        st.image(str(FIG_DIR / "fig9_walk_forward_fold_skill.png"), caption="Hình 9: Skill theo từng fold", use_container_width=True)
 
-        2. **Tầng 2 — Mô hình XGBoost học phần dư phi tuyến:**
-           - Đưa chuỗi phần dư $r_t$ vào huấn luyện mô hình `XGBRegressor` để chuyên biệt hóa việc bắt các biến động vi khí hậu cục bộ và các sai số phi tuyến bậc cao mà mô hình cơ sở chưa giải thích hết:
-             $$\\hat{r}_t = f_{\\text{XGBoost}}(X_t)$$
-
-        3. **Tầng 3 — Tổng hợp dự báo Hybrid và suy luận thời gian thực:**
-           - Dự báo cuối cùng là tổng của dự báo cơ sở và phần dư hiệu chỉnh từ `XGBoost`:
-             $$\\hat{y}_{\\text{Hybrid}}(X_t) = \\hat{y}_{\\text{base}}(X_t) + 0.50 \\cdot \\hat{r}_t$$
-           - Toàn bộ trọng số của cả 4 thành phần `GRU`, `Ridge`, `HistGradientBoosting` và `XGBoost Residual` được đóng gói vào file `models/weather_forecast_weights.joblib` để nạp trực tiếp khi gọi API thời gian thực.
-        """
+    st.markdown("---")
+    st.subheader("Cấu Hình Mô Hình Production")
+    prod = model_report["production_model"]
+    st.json({"train": prod["train"], "damping": prod["damping"],
+             "weights_per_variable": {v: m["weights"] for v, m in prod["models"].items()},
+             "residual_alpha": {v: m["residual_alpha"] for v, m in prod["models"].items()}})
+    st.info(
+        "Dự báo trên Tab 1 = thành phần ML ở trên trộn với dự báo NWP của Open-Meteo, trọng số NWP tăng dần theo lead time "
+        f"({rt_module.NWP_WEIGHT_START:.2f} → tối đa {rt_module.NWP_WEIGHT_MAX:.2f}). Trọng số trộn này là heuristic, "
+        "chưa được kiểm định vì cần dữ liệu dự báo NWP lưu trữ tại từng thời điểm phát dự báo."
     )

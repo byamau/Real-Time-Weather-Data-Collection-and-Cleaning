@@ -1,21 +1,76 @@
 {
-  "before_cleaning": {
-    "total_rows": 49109,
+  "collection": {
+    "runs": [
+      "legacy-run"
+    ],
+    "num_locations": 20,
     "rows_by_source_api": {
-      "Open-Meteo SDK": 47520,
+      "Open-Meteo Archive": 44640,
+      "Open-Meteo Forecast": 2880,
       "WeatherAPI.com": 1095,
       "Xweather API": 480,
       "FreeOpenAPI.dev": 14
     },
+    "rows_by_record_type": {
+      "reanalysis_hourly": 44640,
+      "model_hourly": 2880,
+      "forecast_hourly": 1080,
+      "conditions_hourly": 480,
+      "current_conditions": 29
+    },
+    "legacy_rows_labelled_from_collection_order": 49109
+  },
+  "missing_api_responses": {
+    "requests_checked": 100,
+    "requests_ok": 89,
+    "requests_missing_or_failed": 11,
+    "missing_by_source": {
+      "FreeOpenAPI.dev": 6,
+      "WeatherAPI.com": 5
+    },
+    "missing_location_ids_by_source": {
+      "FreeOpenAPI.dev": [
+        12,
+        13,
+        14,
+        17,
+        18,
+        19
+      ],
+      "WeatherAPI.com": [
+        1,
+        7,
+        9,
+        16,
+        17
+      ]
+    },
+    "incomplete_responses": 0,
+    "evidence": [
+      "inferred_from_raw_rows"
+    ]
+  },
+  "before_cleaning": {
+    "total_rows": 49109,
     "num_locations": 20,
+    "timestamp_formats": {
+      "YYYY-MM-DD HH:MM:SS+07:00": 47520,
+      "YYYY-MM-DDTHH:MM:SS+07:00": 480,
+      "YYYY-MM-DDTHH:MM:SS (no offset)": 14,
+      "YYYY-MM-DD HH:MM (no offset)": 1095
+    },
     "unstandardized_timestamps": 49109,
-    "empty_api_response_rows": 995,
-    "partial_missing_rows": 14,
-    "partial_missing_cells": 42,
-    "float32_precision_artifacts": 158173,
-    "exact_duplicates": 2780,
-    "key_duplicates": 3574,
-    "missing_hourly_slots_in_active_window": 0,
+    "timestamps_with_utc_offset": 48000,
+    "timestamps_without_offset": 1109,
+    "unparseable_timestamps": 0,
+    "sub_hourly_records_aligned": 26,
+    "empty_records_all_vars_missing": 0,
+    "not_yet_observed_forecast_rows": 995,
+    "not_yet_observed_by_source": {
+      "WeatherAPI.com": 795,
+      "Open-Meteo Archive": 100,
+      "Open-Meteo Forecast": 100
+    },
     "missing_values_by_column": {
       "temperature_2m": 0,
       "wind_speed_10m": 0,
@@ -25,7 +80,107 @@
       "wind_gusts_10m": 14
     },
     "total_missing_cells": 42,
+    "variables_not_provided_by_source": {
+      "FreeOpenAPI.dev": [
+        "relative_humidity_2m",
+        "pressure_msl",
+        "wind_gusts_10m"
+      ]
+    },
     "physical_range_violations": {
+      "temperature_2m": 0,
+      "relative_humidity_2m": 0,
+      "wind_speed_10m": 0,
+      "precipitation": 0,
+      "pressure_msl": 0,
+      "wind_gusts_10m": 0
+    },
+    "wind_gust_inconsistencies_record_level": 135,
+    "exact_duplicates": 2780,
+    "exact_duplicates_by_source": {
+      "Open-Meteo Forecast": 2780
+    },
+    "same_source_family_duplicates": 15,
+    "same_source_family_duplicates_by_family": {
+      "WeatherAPI.com": 15
+    },
+    "cross_source_duplicates": 779,
+    "float32_precision_artifacts": 158173
+  },
+  "integration": {
+    "fused_location_hours": 44540,
+    "multi_source_location_hours": 514,
+    "cross_source_conflict_hours": 113,
+    "cross_source_conflict_by_variable": {
+      "temperature_2m": 113,
+      "relative_humidity_2m": 13,
+      "pressure_msl": 0
+    },
+    "conflict_thresholds": {
+      "temperature_2m": 3.0,
+      "relative_humidity_2m": 20.0,
+      "pressure_msl": 5.0
+    },
+    "difference_vs_open_meteo": {
+      "FreeOpenAPI.dev": {
+        "matched_hours": 14,
+        "temperature_2m": {
+          "mean_diff": 0.15,
+          "mean_abs_diff": 0.16
+        },
+        "wind_speed_10m": {
+          "mean_diff": 0.0,
+          "mean_abs_diff": 0.3
+        }
+      },
+      "WeatherAPI.com": {
+        "matched_hours": 285,
+        "temperature_2m": {
+          "mean_diff": -0.61,
+          "mean_abs_diff": 1.44
+        },
+        "relative_humidity_2m": {
+          "mean_diff": 0.01,
+          "mean_abs_diff": 5.67
+        },
+        "pressure_msl": {
+          "mean_diff": -0.69,
+          "mean_abs_diff": 0.77
+        },
+        "wind_speed_10m": {
+          "mean_diff": 0.43,
+          "mean_abs_diff": 3.45
+        }
+      },
+      "Xweather API": {
+        "matched_hours": 480,
+        "temperature_2m": {
+          "mean_diff": 1.49,
+          "mean_abs_diff": 1.72
+        },
+        "relative_humidity_2m": {
+          "mean_diff": -4.05,
+          "mean_abs_diff": 5.71
+        },
+        "pressure_msl": {
+          "mean_diff": -0.21,
+          "mean_abs_diff": 0.48
+        },
+        "wind_speed_10m": {
+          "mean_diff": -0.64,
+          "mean_abs_diff": 3.19
+        }
+      }
+    }
+  },
+  "after_cleaning": {
+    "total_rows": 44540,
+    "num_locations": 20,
+    "hours_per_location": 2227,
+    "time_range_start": "2026-07-17 00:00:00",
+    "time_range_end": "2026-10-17 18:00:00",
+    "missing_hourly_slots_filled": 0,
+    "imputed_cells_by_variable": {
       "temperature_2m": 0,
       "wind_speed_10m": 0,
       "relative_humidity_2m": 0,
@@ -33,33 +188,30 @@
       "pressure_msl": 0,
       "wind_gusts_10m": 0
     },
-    "wind_gust_inconsistencies": 125,
-    "statistical_iqr_extremes_by_column": {
-      "temperature_2m": 199,
-      "wind_speed_10m": 673,
-      "relative_humidity_2m": 300,
-      "precipitation": 479,
-      "pressure_msl": 40,
-      "wind_gusts_10m": 474
+    "rows_with_imputed_values": 0,
+    "total_missing_cells": 0,
+    "missing_cells_left_in_long_gaps": {
+      "temperature_2m": 0,
+      "wind_speed_10m": 0,
+      "relative_humidity_2m": 0,
+      "precipitation": 0,
+      "pressure_msl": 0,
+      "wind_gusts_10m": 0
     },
-    "total_statistical_iqr_extremes": 2165
-  },
-  "after_cleaning": {
-    "total_rows": 44540,
-    "num_locations": 20,
-    "hours_per_location": 2227,
-    "multi_source_fused_hours": 514,
-    "time_range_start": "2026-07-17 00:00:00",
-    "time_range_end": "2026-10-17 18:00:00",
     "unstandardized_timestamps": 0,
-    "empty_api_response_rows": 0,
-    "partial_missing_rows": 0,
-    "float32_precision_artifacts": 0,
     "exact_duplicates": 0,
     "key_duplicates": 0,
-    "missing_hourly_slots_in_active_window": 0,
-    "total_missing_cells": 0,
     "physical_range_violations": 0,
-    "wind_gust_inconsistencies": 0
+    "wind_gust_inconsistencies_fixed": 125,
+    "wind_gust_inconsistencies": 0,
+    "float32_precision_artifacts": 0,
+    "statistical_iqr_extremes_kept": {
+      "temperature_2m": 198,
+      "wind_speed_10m": 674,
+      "relative_humidity_2m": 302,
+      "precipitation": 479,
+      "pressure_msl": 38,
+      "wind_gusts_10m": 472
+    }
   }
 }

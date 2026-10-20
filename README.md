@@ -1,347 +1,425 @@
-# Đề Tài 6 (Topic 6): Thu Thập, Làm Sạch Và Dự Báo Dữ Liệu Thời Tiết Thời Gian Thực (Real-Time Weather Data Collection, Cleaning & 7-Day Forecasting)
+# Đề Tài 6 (Topic 6): Thu Thập Và Làm Sạch Dữ Liệu Thời Tiết Thời Gian Thực (Real-Time Weather Data Collection and Cleaning)
 
-Tài liệu này tổng hợp toàn bộ **luồng xử lý kỹ thuật (`Collect` $\rightarrow$ `Clean` $\rightarrow$ `Visualize` $\rightarrow$ `Train` $\rightarrow$ `Forecast`)**, **bảng đối chiếu 12 tiêu chí chấm điểm của đề bài Topic 6 (Trang 5–6)** và **nội dung báo cáo theo đúng khung chuẩn (Trang 9–10)** để tất cả thành viên trong nhóm đọc, nắm vững kiến trúc và chuẩn bị thuyết trình bảo vệ đồ án.
+Repo này là toàn bộ đồ án Topic 6. Phần chính là luồng **Thu thập (`Collect`) → Làm sạch (`Clean`) → Đánh giá chất lượng (`Evaluate`)** dữ liệu thời tiết từ 4 nhà cung cấp Web API cho 20 địa điểm tại Việt Nam. Phần mở rộng (không bắt buộc theo đề) là mô hình dự báo 7 ngày, được đánh giá bằng **walk-forward theo từng lead time**.
 
----
-
-## Mục Lục Nhanh Cho Thành Viên Nhóm
-1. [Hướng Dẫn Chạy Nhanh Dự Án (Chỉ Với 1 File `run_dashboard.bat`)](#1-hướng-dẫn-chạy-nhanh-dự-án-chỉ-với-1-file-run_dashboardbat)
-2. [Sơ Đồ Tổng Quan Luồng Xử Lý Hệ Thống (`Collect` $\rightarrow$ `Clean` $\rightarrow$ `Train` $\rightarrow$ `Forecast`)](#2-sơ-đồ-tổng-quan-luồng-xử-lý-hệ-thống-collect--clean--train--forecast)
-3. [Cấu Trúc Thư Mục Dự Án](#3-cấu-trúc-thư-mục-dự-án)
-4. [Bảng Đối Chiếu 12 Yêu Cầu Bắt Buộc Của Đề Bài Topic 6 (Trang 5–6)](#4-bảng-đối-chiếu-12-yêu-cầu-bắt-buộc-của-đề-bài-topic-6-trang-56)
-5. [Nội Dung Chi Tiết Theo Khung Báo Cáo Cuối Kỳ (Trang 9–10)](#5-nội-dung-chi-tiết-theo-khung-báo-cáo-cuối-kỳ-trang-910)
-   - [Abstract / Introduction](#51-abstract--introduction-tóm-tắt--giới-thiệu-đề-tài)
-   - [Chapter 1: Data Collection and Dataset Description (`COLLECT`)](#52-chapter-1-data-collection-and-dataset-description-luồng-collect)
-   - [Chapter 2: Data Cleaning and Preprocessing (`CLEAN`)](#53-chapter-2-data-cleaning-and-preprocessing-luồng-clean)
-   - [Chapter 3: Results and Data Quality Evaluation (`EVALUATE & VISUALIZE`)](#54-chapter-3-results-and-data-quality-evaluation-luồng-evaluate--visualize)
-   - [Chapter 4 (Mở rộng): Huấn Luyện Mô Hình Hybrid GRU + XGBoost Residual & Dự Báo 7 Ngày (`TRAIN` & `FORECAST`)](#55-chapter-4-phần-mở-rộng-nâng-cao-huấn-luyện-hybrid-gru--xgboost-residual--dự-báo-7-ngày-luồng-train--forecast)
-   - [Conclusion, Limitations, Future Work & References](#56-conclusion-limitations-future-work--references)
+README được viết theo đúng khung báo cáo gợi ý ở trang 9–10 của đề (Abstract → Chapter 1 → Chapter 2 → Chapter 3 → Conclusion → References), để cả nhóm đọc, nắm kiến trúc và chuẩn bị bảo vệ.
 
 ---
 
-## 1. Hướng Dẫn Chạy Nhanh Dự Án (Chỉ Với 1 File `run_dashboard.bat`)
+## Mục Lục
+0. [Trang bìa (nhóm tự điền)](#0-trang-bìa-nhóm-tự-điền)
+1. [Hướng dẫn chạy](#1-hướng-dẫn-chạy)
+2. [Sơ đồ luồng xử lý](#2-sơ-đồ-luồng-xử-lý)
+3. [Cấu trúc thư mục](#3-cấu-trúc-thư-mục)
+4. [Đối chiếu yêu cầu của đề Topic 6](#4-đối-chiếu-yêu-cầu-của-đề-topic-6)
+5. [Báo cáo theo khung trang 9–10](#5-báo-cáo-theo-khung-trang-910)
+   - [Abstract / Introduction](#51-abstract--introduction)
+   - [Chapter 1: Data Collection and Dataset Description](#52-chapter-1-data-collection-and-dataset-description)
+   - [Chapter 2: Data Cleaning and Preprocessing](#53-chapter-2-data-cleaning-and-preprocessing)
+   - [Chapter 3: Results and Data Quality Evaluation](#54-chapter-3-results-and-data-quality-evaluation)
+   - [Chapter 4 (mở rộng): Dự báo 7 ngày và đánh giá walk-forward](#55-chapter-4-mở-rộng-dự-báo-7-ngày-và-đánh-giá-walk-forward)
+   - [Conclusion, Limitations & Future Work](#56-conclusion-limitations--future-work)
+   - [References](#57-references)
+6. [Những thay đổi so với phiên bản trước](#6-những-thay-đổi-so-với-phiên-bản-trước)
 
-Dự án chỉ sử dụng **1 file `.bat` duy nhất** là `run_dashboard.bat` để tất cả thành viên trong nhóm có thể chạy trên bất kỳ máy Windows nào:
+---
 
-### Cách 1: Nhấn đúp chuột vào `run_dashboard.bat` (Mở ngay Web Dashboard)
-* File `run_dashboard.bat` sẽ tự động:
-  1. Dò tìm trình thông dịch Python khả dụng trên máy (`.venv\Scripts\python.exe` $\rightarrow$ `python` $\rightarrow$ `py`).
-  2. Kiểm tra các thư viện bắt buộc (`streamlit`, `xgboost`, `torch`, `openmeteo_requests`, `scikit-learn`, `statsmodels`) và **tự động cài đặt từ `requirements.txt` nếu máy thành viên chưa có**.
-  3. Khởi động thẳng giao diện Web Dashboard Streamlit (`app.py`) tại địa chỉ **`http://localhost:8501`** (sử dụng ngay dữ liệu sạch `data/cleaned/cleaned_weather_data.csv` và bộ trọng số `models/weather_forecast_weights.joblib` đã có sẵn).
+## 0. Trang Bìa (nhóm tự điền)
 
-### Cách 2: Chạy lại từ đầu toàn bộ Pipeline (Collect $\rightarrow$ Clean $\rightarrow$ Visualize $\rightarrow$ Train) rồi mở Web
-Nếu thành viên muốn tự chạy lại cả 4 bước xử lý dữ liệu và huấn luyện mô hình từ đầu bằng chính file `.bat` đó, mở Terminal tại thư mục dự án và gõ:
+| Mục | Nội dung |
+| :-- | :-- |
+| Trường / Khoa | `...` |
+| Học phần | `...` |
+| Đề tài | Topic 6 — Real-Time Weather Data Collection and Cleaning |
+| Thành viên (Họ tên — MSSV) | `...` |
+
+---
+
+## 1. Hướng Dẫn Chạy
+
+### 1.1. Cài đặt
+```powershell
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+```
+Tạo file `.env` ở thư mục gốc (file này đã nằm trong `.gitignore`, **không commit**):
+```text
+WEATHERAPI_KEY=...
+XWEATHER_CLIENT_ID=...
+XWEATHER_CLIENT_SECRET=...
+FREE_OPENAPI_DEV_KEY=...
+```
+Open-Meteo không cần key. Thiếu key nào thì request của nguồn đó được ghi là `missing_key` trong log; pipeline vẫn chạy tiếp.
+
+> `scikit-learn` và `xgboost` được pin phiên bản trong `requirements.txt`, vì file trọng số `models/weather_forecast_weights.joblib` là pickle và chỉ load ổn định với đúng phiên bản đã train. Nếu nâng cấp thư viện thì chạy lại bước 6.
+
+### 1.2. Mở dashboard (dùng dữ liệu và trọng số có sẵn)
+Nhấp đúp `run_dashboard.bat`, hoặc:
+```powershell
+python -m streamlit run app.py
+```
+
+### 1.3. Chạy lại toàn bộ pipeline
 ```powershell
 .\run_dashboard.bat --pipeline
 ```
-
-### Cách 3: Chạy lẻ từng file Python trên Terminal (Nếu muốn kiểm tra riêng từng bước)
+hoặc chạy từng bước:
 ```powershell
-pip install -r requirements.txt
-python src/01_collect_weather_data.py      # Bước 1: Thu thập dữ liệu (COLLECT)
-python src/02_clean_and_preprocess.py      # Bước 2: Làm sạch dữ liệu (CLEAN)
-python src/03_evaluate_and_visualize.py    # Bước 3: Thống kê & vẽ biểu đồ fig1 -> fig6
-python src/04_train_and_save_weights.py    # Bước 4: Huấn luyện Hybrid GRU + XGBoost Residual (TRAIN)
-python src/05_realtime_inference.py        # Bước 5: Dự báo 7 ngày trên CLI (FORECAST)
-python -m streamlit run app.py             # Mở giao diện Web Dashboard
+python src/01_collect_weather_data.py            # 1. Thu thập (mode full)  -> data/raw/
+python src/02_clean_and_preprocess.py            # 2. Làm sạch & hợp nhất   -> data/cleaned/
+python src/03_evaluate_and_visualize.py          # 3. Thống kê + fig1 -> fig7
+python src/05_walk_forward_evaluation.py         # 5. (mở rộng) Walk-forward -> models/walk_forward/, fig8, fig9
+python src/06_train_production_model.py          # 6. (mở rộng) Train mô hình cho dashboard
+python src/07_realtime_inference.py              # 7. (mở rộng) Dự báo 7 ngày trên CLI
 ```
+
+### 1.4. Thu thập lặp lại theo thời gian (khuyến nghị cho tiêu chí "real-time")
+Chế độ `realtime` chỉ gọi *current conditions* của cả 4 nguồn. Mỗi lần gọi là một `run_id` riêng và được **nối thêm (append)** vào `data/raw/raw_weather_data.csv`:
+```powershell
+# 72 lần, mỗi giờ 1 lần (3 ngày) — để chạy nền trên một máy luôn bật
+python src/01_collect_weather_data.py --mode realtime --repeat 72 --interval-min 60
+python src/02_clean_and_preprocess.py
+```
+Dùng `--fresh` nếu muốn ghi đè thay vì nối thêm.
+
+### 1.5. (Tùy chọn) Dữ liệu ERA5 nhiều năm cho walk-forward
+```powershell
+python src/04_collect_multiyear_archive.py               # 2014 -> nay, có giới hạn tốc độ & chạy tiếp được
+python src/05_walk_forward_evaluation.py --data archive  # fold 30 ngày, refit mỗi 3 fold, xếp tầng theo ENSO
+python src/06_train_production_model.py --data archive
+```
+Tập này **không** thuộc bộ dữ liệu nộp cho Topic 6 (xem mục 4, dòng 12).
 
 ---
 
-## 2. Sơ Đồ Tổng Quan Luồng Xử Lý Hệ Thống (`Collect` $\rightarrow$ `Clean` $\rightarrow$ `Train` $\rightarrow$ `Forecast`)
+## 2. Sơ Đồ Luồng Xử Lý
 
 ```mermaid
 flowchart TD
-    subgraph STEP1["1. LUỒNG THU THẬP DỮ LIỆU (COLLECT - src/01_collect_weather_data.py)"]
-        A1["Open-Meteo Historical Archive API\n(ERA5/ECMWF Reanalysis - 92 ngày)"]
-        A2["Open-Meteo Real-Time Bridge\n(5 ngày gần nhất bù độ trễ ERA5)"]
-        A3["WeatherAPI.com\n(/v1/forecast.json & current)"]
-        A4["Vaisala Xweather API\n(/conditions 24 giờ gần nhất)"]
-        A5["FreeOpenAPI.dev\n(/api/v1/weather/current)"]
-        RAW["Dữ liệu thô: data/raw/raw_weather_data.csv\n(49,109 dòng × 20 tỉnh/thành phố)"]
+    subgraph S1["1. COLLECT — src/01_collect_weather_data.py"]
+        A1["Open-Meteo Archive (ERA5)\nreanalysis_hourly"]
+        A2["Open-Meteo Forecast (past_days)\nmodel_hourly / current"]
+        A3["WeatherAPI.com\ncurrent_conditions + forecast_hourly"]
+        A4["Vaisala Xweather /conditions\nconditions_hourly"]
+        A5["FreeOpenAPI.dev /weather/current\ncurrent_conditions"]
+        LOG["api_request_log.csv\n(status, HTTP code, latency,\nrecords expected vs returned)"]
+        RAW["raw_weather_data.csv\n(append theo run_id, collected_at)"]
         A1 & A2 & A3 & A4 & A5 --> RAW
+        A1 & A2 & A3 & A4 & A5 --> LOG
     end
 
-    subgraph STEP2["2. LUỒNG LÀM SẠCH & HỢP NHẤT (CLEAN - src/02_clean_and_preprocess.py)"]
-        C1["Chuẩn hóa 4 định dạng thời gian về UTC+7\n(YYYY-MM-DD HH:MM:SS & ép lưới giờ .floor('h'))"]
-        C2["Lọc bỏ 995 bản ghi vượt quá giờ hiện tại\n(Giữ nghiêm ngặt dữ liệu quá khứ <= NOW)"]
-        C3["Hợp nhất đa nguồn (Multi-API Sensor Fusion)\nXử lý 3,574 bản ghi trùng & bù chéo 42 ô NaN"]
-        C4["Kiểm tra miền vật lý & xử lý 125 bản ghi\nbất nhất tốc độ gió (wind_gusts < wind_speed)"]
-        C5["Khử 158,173 ô nhiễu dấu chấm động Float32\n& đồng bộ lưới thời gian liên tục 2,227 giờ/tỉnh"]
-        CLEAN["Dữ liệu sạch: data/cleaned/cleaned_weather_data.csv\n(44,540 dòng sạch = 20 tỉnh × 2,227 giờ, 0 NaN)"]
-        RAW --> C1 --> C2 --> C3 --> C4 --> C5 --> CLEAN
+    subgraph S2["2. CLEAN — src/02_clean_and_preprocess.py"]
+        C1["Phát hiện response API bị thiếu\n(request log + coverage)"]
+        C2["Chuẩn hóa timestamp có múi giờ\n→ UTC+7, làm tròn về giờ gần nhất"]
+        C3["Bỏ bản ghi rỗng & giá trị dự báo\nchưa xảy ra lúc thu thập"]
+        C4["Kiểm tra miền giá trị vật lý"]
+        C5["Trùng lặp 3 cấp:\nexact / cùng nguồn / giữa các nguồn"]
+        C6["Hợp nhất đa nguồn + độ lệch\n+ cờ xung đột"]
+        C7["Lưới giờ liên tục, nội suy gap ≤ 6h\n(có cờ), gió giật ≥ gió TB"]
+        CLEAN["cleaned_weather_data.csv\n+ api_coverage_report.csv\n+ data_quality_report.json"]
+        RAW --> C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> C7 --> CLEAN
+        LOG --> C1
     end
 
-    subgraph STEP3["3. LUỒNG PHÂN TÍCH & TRỰC QUAN HÓA (ANALYZE - src/03_evaluate_and_visualize.py)"]
-        V1["Thống kê mô tả 20 địa điểm\n(city_summary_statistics.csv)"]
-        V2["Xuất 6 biểu đồ kiểm toán chất lượng & khí tượng\n(figures/fig1 -> fig6)"]
-        CLEAN --> V1 & V2
+    subgraph S3["3. EVALUATE — src/03_evaluate_and_visualize.py"]
+        V["city_summary_statistics.csv\nfig1 → fig7"]
+        CLEAN --> V
     end
 
-    subgraph STEP4["4. LUỒNG HUẤN LUYỆN MÔ HÌNH (TRAIN - src/04_train_and_save_weights.py)"]
-        T1["Kỹ thuật đặc trưng chuỗi thời gian (58 Features)\n8 độ trễ (1h..72h) + Rolling 24h + Chu kỳ sin/cos + Địa lý"]
-        T2["Chia tập dữ liệu theo thời gian (Không rò rỉ tương lai)\nTrain (70%: 30,180) | Val (15%: 6,460) | Test (15%: 6,460)"]
-        T3["Tầng 1 (Base Trend): Kết hợp 3 mô hình\nGRU Neural Net (PyTorch) + Ridge + HistGradientBoosting"]
-        T4["Tầng 2 (Residual Learning): XGBoost Regressor\nhọc phần dư phi tuyến r_t = y_t - y_base(X_t)"]
-        WEIGHTS["Bộ trọng số: models/weather_forecast_weights.joblib\n(2,341.4 KB) & Biểu đồ đánh giá fig7"]
-        CLEAN --> T1 --> T2 --> T3 --> T4 --> WEIGHTS
-    end
-
-    subgraph STEP5["5. LUỒNG DỰ BÁO THỜI GIAN THỰC (FORECAST - src/05_realtime_inference.py & app.py)"]
-        F1["Gọi trực tiếp 4 API thời gian thực\ncho tỉnh/thành phố người dùng chọn"]
-        F2["Làm sạch trực tiếp tại chỗ (On-the-fly Cleaning)\nTách 96 giờ lịch sử quan trắc + Xu thế Synoptic NWP"]
-        F3["Suy luận cuốn chiếu 168 bước (7 ngày tới)\nNạp trọng số GRU + Ridge + HistGB + XGBoost Residual"]
-        DASH["Giao diện Streamlit Dashboard (app.py)\nHiển thị thẻ thời tiết 7 ngày, biểu đồ & kiểm toán trực tiếp"]
-        WEIGHTS --> F3
-        F1 --> F2 --> F3 --> DASH
+    subgraph S4["MỞ RỘNG — dự báo 7 ngày"]
+        F0["forecast_core.py\n(feature dùng chung train & inference)"]
+        F1["05 walk-forward theo lead time\nfig8, fig9, summary.json"]
+        F2["06 train production\nweather_forecast_weights.joblib"]
+        F3["07 inference + app.py\n(ML + NWP Open-Meteo)"]
+        CLEAN --> F1 & F2
+        F0 --> F1 & F2 & F3
+        F2 --> F3
     end
 ```
 
 ---
 
-## 3. Cấu Trúc Thư Mục Dự Án
+## 3. Cấu Trúc Thư Mục
 
 ```text
-Real-Time-Weather-Data-Collection-and-Cleaning/
-├── app.py                              # Giao diện Web Dashboard Streamlit (4 Tab trực quan)
-├── run_dashboard.bat                   # File .bat duy nhất: tự động kiểm tra thư viện, chạy pipeline (nếu cần) & mở Web
-├── requirements.txt                    # Danh sách thư viện Python (pandas, scikit-learn, xgboost, torch, streamlit...)
-├── .env                                # Chứa API Keys của các dịch vụ thời tiết thời gian thực
+├── app.py                               # Dashboard Streamlit (4 tab)
+├── run_dashboard.bat                    # Mở dashboard; --pipeline để chạy lại toàn bộ
+├── requirements.txt
+├── .env                                 # API keys (không commit)
 ├── src/
-│   ├── 01_collect_weather_data.py      # Bước 1 (COLLECT)  : Gọi Archive API + 4 API Real-Time thu thập 49,109 dòng thô
-│   ├── 02_clean_and_preprocess.py      # Bước 2 (CLEAN)    : Làm sạch 6 bước, xuất 44,540 dòng sạch & báo cáo JSON
-│   ├── 03_evaluate_and_visualize.py    # Bước 3 (VISUALIZE): Tính thống kê 20 tỉnh & vẽ bộ biểu đồ fig1 -> fig6
-│   ├── 04_train_and_save_weights.py    # Bước 4 (TRAIN)    : Huấn luyện Hybrid GRU + XGBoost Residual & lưu trọng số
-│   └── 05_realtime_inference.py        # Bước 5 (FORECAST) : Gọi 4 API trực tiếp, làm sạch & dự báo 168 giờ (7 ngày)
+│   ├── 01_collect_weather_data.py       # COLLECT: mode full / realtime, request log
+│   ├── 02_clean_and_preprocess.py       # CLEAN: 9 bước, báo cáo chất lượng
+│   ├── 03_evaluate_and_visualize.py     # EVALUATE: thống kê 20 địa điểm, fig1 -> fig7
+│   ├── 04_collect_multiyear_archive.py  # (tùy chọn) ERA5 nhiều năm cho walk-forward
+│   ├── 05_walk_forward_evaluation.py    # (mở rộng) đánh giá walk-forward theo lead time
+│   ├── 06_train_production_model.py     # (mở rộng) train mô hình cho dashboard
+│   ├── 07_realtime_inference.py         # (mở rộng) gọi API trực tiếp + dự báo 7 ngày
+│   └── forecast_core.py                 # (mở rộng) feature, mô hình hybrid, dự báo cuốn chiếu
 ├── data/
 │   ├── raw/
-│   │   ├── raw_weather_data.csv        # Dữ liệu thô đa nguồn (49,109 dòng)
-│   │   └── raw_weather_responses.json  # Metadata JSON phản hồi từ các API
-│   └── cleaned/
-│       ├── cleaned_weather_data.csv    # Dữ liệu sạch chuẩn hóa (44,540 dòng = 20 địa điểm × 2,227 giờ liên tục)
-│       ├── multi_source_comparison.csv # Bảng đối sánh trực tiếp các khung giờ giao nhau giữa các API
-│       ├── city_summary_statistics.csv # Bảng thống kê mô tả khí tượng của 20 tỉnh/thành phố
-│       └── data_quality_report.json    # Báo cáo kiểm toán chất lượng dữ liệu Trước & Sau khi làm sạch
+│   │   ├── raw_weather_data.csv         # dữ liệu thô, nối thêm theo từng lần thu thập
+│   │   ├── api_request_log.csv          # 1 dòng / request (tạo từ lần thu thập đầu tiên với code mới)
+│   │   ├── responses/<run_id>.json      # trích đoạn JSON gốc theo từng lần chạy (không chứa key)
+│   │   └── raw_weather_responses.json   # trích đoạn JSON của lần thu thập 17/10/2026
+│   ├── cleaned/
+│   │   ├── cleaned_weather_data.csv     # 44,540 dòng = 20 địa điểm × 2,227 giờ
+│   │   ├── multi_source_comparison.csv  # các giờ có >= 2 nguồn báo cáo
+│   │   ├── api_coverage_report.csv      # bản ghi trả về / kỳ vọng theo nguồn × địa điểm
+│   │   ├── city_summary_statistics.csv
+│   │   └── data_quality_report.json     # chỉ số Trước / Sau của từng bước
+│   └── archive/                         # (tùy chọn) ERA5 nhiều năm — không thuộc bộ dữ liệu nộp
 ├── models/
-│   ├── weather_forecast_weights.joblib # Bộ trọng số đã huấn luyện (GRU + Ridge + HistGB + XGBoost + StandardScaler)
-│   └── model_evaluation_report.json    # Kết quả đánh giá MAE, RMSE, R², 95% Bootstrap CI trên tập Val & Test
-└── figures/                            # 7 biểu đồ phân tích chất lượng dữ liệu & đánh giá mô hình (fig1 -> fig7)
+│   ├── weather_forecast_weights.joblib  # mô hình production (pickle)
+│   ├── model_evaluation_report.json     # mô tả mô hình + kết quả walk-forward
+│   └── walk_forward/                    # folds.csv, errors_by_fold_lead.csv, summary.json, ...
+└── figures/                             # fig1 -> fig7 (dữ liệu), fig8 -> fig9 (mô hình)
 ```
 
 ---
 
-## 4. Bảng Đối Chiếu 12 Yêu Cầu Bắt Buộc Của Đề Bài Topic 6 (Trang 5–6)
+## 4. Đối Chiếu Yêu Cầu Của Đề Topic 6
 
-Bảng dưới đây đối chiếu từng dòng yêu cầu trong đề thi **Topic 6: Real-Time Weather Data Collection and Cleaning** với kết quả thực tế của nhóm:
+| # | Yêu cầu (đề trang 5–6) | Kết quả của nhóm | Bằng chứng |
+| :-: | :-- | :-- | :-- |
+| 1 | Collect weather observations through a web API, construct a time-series dataset | 4 nhà cung cấp (5 endpoint), chuỗi theo giờ liên tục 2,227 giờ × 20 địa điểm | `src/01_*`, `cleaned_weather_data.csv` |
+| 2 | Suggested libraries: requests, json, pandas, datetime, matplotlib | Dùng đủ (`urllib`/`requests`, `json`, `pandas`, `datetime`, `matplotlib`) và thêm SDK `openmeteo_requests` | `requirements.txt` |
+| 3 | ≥ 6 cities or locations | 20 địa điểm, gồm đủ 6 địa điểm gợi ý (HCMC, Hà Nội, Đà Nẵng, Cần Thơ, Đà Lạt, Phú Quốc) | `LOCATION_METADATA` |
+| 4 | ≥ 600 observations | 49,109 dòng thô → 44,540 dòng sạch | `data_quality_report.json` |
+| 5 | Time, Temperature, Humidity, Wind speed, Precipitation, Pressure | Có đủ 6 cột theo đúng tên của đề (`time`, `temperature`, `humidity`, `wind_speed`, `precipitation`, `pressure`), kèm tên chuẩn khí tượng (`temperature_2m`, …) và gió giật | `cleaned_weather_data.csv` |
+| 6 | Parse JSON responses | Bóc tách JSON lồng nhau của WeatherAPI, Xweather, FreeOpenAPI và Open-Meteo `current`; lưu trích đoạn JSON gốc | `data/raw/responses/`, `raw_weather_responses.json` |
+| 7 | Standardize timestamps | 4 định dạng (có/không có UTC offset) được parse **theo múi giờ** và quy về `YYYY-MM-DD HH:MM:SS` (UTC+7) | Chương 2, bước 2 |
+| 8 | Detect missing API responses | **11/100** cặp nguồn × địa điểm không trả dữ liệu (WeatherAPI 5, FreeOpenAPI 6), cộng 42 ô thiếu do khác schema. Từ nay mỗi request được ghi status/HTTP code | `api_coverage_report.csv`, `fig7` |
+| 9 | Detect duplicated observations | 2,780 trùng hoàn toàn + 15 trùng cùng nguồn + 779 trùng giữa các nguồn | Chương 2, bước 6 |
+| 10 | Validate measurement ranges | Ngưỡng vật lý cho 6 biến (0 vi phạm), 125 giờ gió giật < gió TB đã sửa, 113 giờ các nguồn lệch nhau vượt ngưỡng được gắn cờ | Chương 2, bước 5 & 9 |
+| 11 | Combine observations over time | Lưới giờ liên tục per địa điểm; chế độ `--mode realtime --repeat` để gom quan trắc qua nhiều lần gọi | Chương 2, bước 8 |
+| 12 | Dataset generated by the students' own API collection code; historical datasets downloaded elsewhere are not accepted | Toàn bộ dữ liệu do code của nhóm gọi API sinh ra; không tải file có sẵn. **Lưu ý trung thực:** 44,640/49,109 dòng thô (91%) là ERA5 reanalysis lấy qua Open-Meteo Archive API. Các nguồn thời gian thực đóng góp 4,469 dòng (7.4× mức tối thiểu 600). Nên chạy thêm mục 1.4 trước khi nộp để tăng phần quan trắc thực sự gom theo thời gian | Chương 1 |
 
-| STT | Yêu Cầu Trong Đề Bài (Topic 6 — Trang 5 & 6) | Mức Yêu Cầu Của Đề | Kết Quả Đạt Được Của Nhóm | Đánh Giá |
-| :---: | :--- | :--- | :--- | :---: |
-| **1** | **Problem Description:** Collect weather observations through a web API and construct a time-series dataset | Gọi Web API thu thập thời tiết & tạo chuỗi thời gian | Viết code Python gọi trực tiếp **4 hệ thống Web API** và xây dựng chuỗi thời gian theo giờ liên tục (`2,227` giờ $\times$ `20` địa điểm). | **Hoàn thành 100%** |
-| **2** | **Suggested Libraries** | `requests`, `json`, `pandas`, `datetime`, `matplotlib` | Dùng đầy đủ `requests`/`urllib`, `openmeteo_requests`, `json`, `pandas`, `datetime`, `matplotlib`, và mở rộng thêm `numpy`, `scikit-learn`, `xgboost`, `torch` (PyTorch GRU), `statsmodels`, `streamlit`. | **Vượt yêu cầu** |
-| **3** | **Select at least 6 cities or locations** *(Suggested: Ho Chi Minh City, Hanoi, Da Nang, Can Tho, Da Lat, Phu Quoc)* | Tối thiểu **6 địa điểm** | Khảo sát **20 địa điểm** (gấp **3.3 lần** yêu cầu), bao gồm **đầy đủ cả 6 địa điểm gợi ý** của đề và mở rộng thêm 14 tỉnh/thành đại diện đủ 7 vùng khí hậu Việt Nam. | **Vượt yêu cầu (20 / 6 tỉnh)** |
-| **4** | **Collect at least 600 observations** | Tối thiểu **600 dòng quan trắc** | - Tổng dữ liệu thô: **`49,109` dòng** (gấp **81 lần** yêu cầu).<br>- Tổng dữ liệu sạch: **`44,540` dòng** (gấp **74 lần** yêu cầu).<br>- Riêng 4 luồng Real-Time API (chưa tính Archive): **`4,469` dòng** (gấp **7.4 lần** yêu cầu 600 dòng). | **Vượt xa yêu cầu (44,540 / 600 dòng)** |
-| **5** | **Collected Attributes:** `Time`, `Temperature`, `Humidity`, `Wind speed`, `Precipitation`, `Pressure` | Đủ 6 thuộc tính khí tượng | File `data/cleaned/cleaned_weather_data.csv` có đầy đủ cả 6 cột đúng tên chuẩn (`time`, `temperature`, `humidity`, `wind_speed`, `precipitation`, `pressure`) cùng các cột chuẩn khoa học (`temperature_2m`, `relative_humidity_2m`, `wind_speed_10m`, `wind_gusts_10m`, `pressure_msl`) và tọa độ/độ cao. | **Hoàn thành 100%** |
-| **6** | **Parse JSON responses** | Phân tích cú pháp JSON trả về từ API | Bóc tách trực tiếp các phản hồi JSON lồng nhau của `WeatherAPI.com`, `Xweather API`, `FreeOpenAPI.dev` và lưu trữ bằng chứng phản hồi gốc tại `data/raw/raw_weather_responses.json`. | **Hoàn thành 100%** |
-| **7** | **Standardize timestamps** | Chuẩn hóa định dạng thời gian | Chuẩn hóa `49,109` bản ghi từ 4 định dạng thời gian khác nhau về `YYYY-MM-DD HH:MM:SS` (`UTC+7`) trong CSV và `DD/MM/YYYY` trên giao diện. Sau làm sạch: **`0` dòng lỗi thời gian**. | **Hoàn thành 100%** |
-| **8** | **Detect missing API responses** | Phát hiện & xử lý dữ liệu bị khuyết từ API | - Phát hiện và lọc bỏ **`995` dòng** vượt quá thời điểm hiện tại / rỗng ở cuối ngày.<br>- Phát hiện **`14` dòng (`42` ô `NaN`)** của `FreeOpenAPI.dev` bị thiếu `humidity`, `pressure`, `wind_gusts` và bù khuyết chéo từ 3 API còn lại. Sau làm sạch: **`0` ô `NaN`**. | **Hoàn thành 100%** |
-| **9** | **Detect duplicated observations** | Phát hiện & xử lý các quan trắc trùng lặp | Phát hiện **`2,780` dòng trùng hoàn toàn** và **`3,574` dòng trùng khóa `(location_id, time)`** giữa 4 API; giải quyết bằng kỹ thuật *Multi-API Sensor Fusion* và xuất bảng đối sánh tại `data/cleaned/multi_source_comparison.csv`. | **Hoàn thành 100%** |
-| **10** | **Validate measurement ranges** | Kiểm tra miền giá trị & tính hợp lệ vật lý | Kiểm tra miền giá trị vật lý (`VALID_RANGES`) của cả 6 biến, phát hiện và sửa **`125` bản ghi bất nhất vật lý** (`wind_gusts_10m < wind_speed_10m`), phân tích `2,165` điểm cực trị `1.5×IQR` và vẽ Boxplot (`fig2`). | **Hoàn thành 100%** |
-| **11** | **Combine observations over time** | Kết hợp các quan trắc theo chuỗi thời gian | Đồng bộ thành chuỗi thời gian liên tục `2,227` giờ/địa điểm (`2026-07-17 00:00` $\rightarrow$ `2026-10-17 18:00`), xuất riêng **Raw Data** (`raw_weather_data.csv`) và **Cleaned Data** (`cleaned_weather_data.csv`). | **Hoàn thành 100%** |
-| **12** | **Data Collection Requirement:** *Generated by executing students' own API collection code. Historical datasets downloaded elsewhere are not accepted.* | Tự chạy code gọi API, không tải file CSV có sẵn từ Kaggle/UCI | **100% dữ liệu** được sinh ra bằng cách chạy code Python của nhóm (`src/01_collect_weather_data.py` & `src/05_realtime_inference.py`). Có nút gọi trực tiếp 4 API ngay trên giao diện Streamlit khi chấm bài. | **Đạt chuẩn tuyệt đối** |
-
-> [!IMPORTANT]
-> **Ghi chú dành cho thành viên khi trả lời câu hỏi phản biện của Giảng viên:**
-> * **Câu hỏi:** *"Tại sao trong đề ghi không nhận historical datasets downloaded elsewhere mà nhóm có dùng Open-Meteo Archive API?"*
-> * **Trả lời:** Quy định trong đề nhằm cấm sinh viên tải các file CSV làm sẵn trên Kaggle/UCI/GitHub về nộp mà không tự viết code gọi API. Trong đồ án của nhóm:
->   1. **100% dữ liệu được thu thập bằng chính code Python `src/01_collect_weather_data.py` gọi qua giao thức HTTP/SDK tới các Web API** chứ không tải bất kỳ file CSV có sẵn nào từ bên ngoài.
->   2. Chỉ tính riêng 4 luồng API thời gian thực (`Open-Meteo Forecast Bridge`, `WeatherAPI.com`, `Xweather API`, `FreeOpenAPI.dev`), code của nhóm đã thu thập **`4,469` dòng quan trắc thực tế** — tức đã **gấp 7.4 lần** yêu cầu tối thiểu 600 dòng của đề bài.
->   3. Việc nhóm chủ động viết code gọi thêm endpoint `archive-api.open-meteo.com/v1/archive` là để mở rộng độ dài chuỗi thời gian lên **`44,540` dòng sạch** (3 tháng liên tục) nhằm phục vụ **phần mở rộng nâng cao**: huấn luyện mạng nơ-ron hồi quy **PyTorch `GRU` kết hợp `XGBoost Residual`** và xây dựng hệ thống dự báo 7 ngày trên Web Dashboard.
+> **Câu hỏi phản biện thường gặp:** *"Đề không nhận historical dataset, sao nhóm dùng Open-Meteo Archive?"*
+> Quy định nhằm cấm tải file CSV làm sẵn (Kaggle/UCI/GitHub). Nhóm tự viết code gọi API và tự làm sạch mọi dòng, nên vẫn đúng tinh thần đề. Tuy vậy phần lớn số dòng là dữ liệu lịch sử. Vì vậy nhóm (1) tách bạch nguồn bằng cột `source_api`/`record_type`, (2) giữ tập ERA5 nhiều năm của phần mở rộng **ngoài** bộ dữ liệu nộp, và (3) bổ sung chế độ thu thập real-time lặp lại theo giờ.
 
 ---
 
-## 5. Nội Dung Chi Tiết Theo Khung Báo Cáo Cuối Kỳ (Trang 9–10)
+## 5. Báo Cáo Theo Khung Trang 9–10
 
-Dưới đây là nội dung chi tiết bám sát đúng dàn ý gợi ý ở **Trang 9–10 của đề thi** (`Abstract` $\rightarrow$ `Chapter 1` $\rightarrow$ `Chapter 2` $\rightarrow$ `Chapter 3` $\rightarrow$ `Chapter 4 Mở rộng` $\rightarrow$ `Conclusion & References`).
+### 5.1. Abstract / Introduction
+* **Mục đích:** xây dựng quy trình tự động thu thập dữ liệu thời tiết từ nhiều Web API cho 20 địa điểm ở Việt Nam, phát hiện và xử lý các vấn đề chất lượng, rồi hợp nhất thành một chuỗi thời gian theo giờ đáng tin cậy.
+* **Bài toán dữ liệu:** mỗi API trả về một định dạng thời gian khác nhau (có/không có UTC offset, lệch phút), cấu trúc trường khác nhau (FreeOpenAPI không có độ ẩm, áp suất, gió giật), có những request không trả dữ liệu, các endpoint trùng giờ với nhau, có giá trị *dự báo* lẫn trong dữ liệu *quan trắc*, và các nhà cung cấp lệch nhau có hệ thống.
+* **Nguồn dữ liệu:** Open-Meteo (Archive ERA5 + Forecast), WeatherAPI.com, Vaisala Xweather, FreeOpenAPI.dev.
+* **Kết quả:** 49,109 dòng thô → 44,540 dòng sạch (20 × 2,227 giờ, 17/07/2026 00:00 → 17/10/2026 18:00), 0 ô khuyết, 0 trùng lặp. Phát hiện 11 response API bị thiếu, 995 giá trị dự báo chưa xảy ra lúc thu thập, 3,574 bản ghi trùng (3 cấp) và độ lệch hệ thống giữa các nguồn. Phần mở rộng là mô hình dự báo 7 ngày, được đánh giá walk-forward theo lead time.
+
+### 5.2. Chapter 1: Data Collection and Dataset Description
+*(Code: `src/01_collect_weather_data.py`)*
+
+#### 1. Phương pháp thu thập
+Chương trình Python gửi HTTP GET tới từng API; với Open-Meteo hourly thì dùng SDK chính thức `openmeteo_requests`, có cache và retry. API key đọc từ `.env` và được che (`key=***`) trong mọi log. Mỗi lần chạy có `run_id` và `collected_at`. Mỗi request được ghi vào `api_request_log.csv` với trạng thái `ok / empty / http_error / network_error / parse_error / missing_key`, mã HTTP, độ trễ, và số bản ghi kỳ vọng so với số trả về.
+
+Hai chế độ:
+* `--mode full`: 1 lần thu thập đầy đủ (bảng dưới).
+* `--mode realtime --repeat N --interval-min M`: gọi *current conditions* của cả 4 nguồn mỗi M phút, N lần; dữ liệu được nối thêm vào file thô.
+
+#### 2. Nguồn dữ liệu và số bản ghi (lần thu thập ngày 17/10/2026)
+
+| Nguồn (`source_api`) | Endpoint | `record_type` | Bản ghi thô |
+| :-- | :-- | :-- | --: |
+| Open-Meteo Archive | `archive-api.open-meteo.com/v1/archive` (93 ngày) | `reanalysis_hourly` (ERA5) | 44,640 |
+| Open-Meteo Forecast | `api.open-meteo.com/v1/forecast?past_days=5&forecast_days=1` | `model_hourly` | 2,880 |
+| WeatherAPI.com | `/v1/forecast.json?days=3` | `current_conditions` (15) + `forecast_hourly` (1,080) | 1,095 |
+| Vaisala Xweather | `/conditions/{lat},{lon}?from=-24hours` | `conditions_hourly` | 480 |
+| FreeOpenAPI.dev | `/api/v1/weather/current` | `current_conditions` | 14 |
+| **Tổng** | | | **49,109** |
+
+Lần thu thập này được chạy bằng phiên bản code đầu tiên, khi chưa có `run_id`/`record_type`/request log. Bước 2 khôi phục nhãn **chính xác** dựa vào thứ tự ghi cố định của code cũ: 20 khối archive, rồi 20 khối forecast; với WeatherAPI, dòng đầu mỗi khối là `current`. Thời điểm thu thập được xác định là 17/10/2026 18:00, tức giờ của snapshot `current` muộn nhất.
+
+#### 3. Cấu trúc dữ liệu thô
+`raw_weather_data.csv`, mỗi dòng gồm:
+* **Định danh lần chạy:** `run_id`, `collected_at`
+* **Thời gian:** `date` (chuỗi gốc của API), `timezone`
+* **Địa điểm:** `location_id`, `city`, `region`, `requested_lat/lon`, `api_latitude/longitude`, `elevation_m`
+* **Nguồn:** `source_api`, `source_family`, `record_type`, `endpoint`
+* **6 biến:** `temperature_2m` (°C), `relative_humidity_2m` (%), `wind_speed_10m` (km/h), `wind_gusts_10m` (km/h), `precipitation` (mm), `pressure_msl` (hPa)
+
+#### 4. Đặc điểm dữ liệu thô
+* **4 định dạng thời gian:** `2026-10-17 11:00:00+07:00` (47,520), `2026-10-17T11:00:00+07:00` (480), `2026-10-17T17:45:00` không offset (14), `2026-10-17 11:00` không offset (1,095).
+* **Response thiếu:** WeatherAPI không trả dữ liệu cho 5 địa điểm (Phu Loc - Hue, Hanoi, Phu Quoc, Ca Mau, Con Dao). FreeOpenAPI không trả cho 6 địa điểm (Vinh, Hue City, Phan Thiet, Con Dao, Pleiku, Buon Ma Thuot).
+* **Khác schema:** FreeOpenAPI không có `relative_humidity_2m`, `pressure_msl`, `wind_gusts_10m` (42 ô trống).
+* **Giá trị dự báo lẫn trong dữ liệu:** 995 dòng có giờ muộn hơn thời điểm thu thập (WeatherAPI 795, Open-Meteo 200).
+* **Nhiễu biểu diễn Float32:** 158,173 ô (ví dụ `28.100000381469727`), do SDK giải mã FlatBuffers.
+
+### 5.3. Chapter 2: Data Cleaning and Preprocessing
+*(Code: `src/02_clean_and_preprocess.py`; số liệu: `data/cleaned/data_quality_report.json`)*
+
+| Bước | Vấn đề | Phương pháp | Kết quả |
+| :-: | :-- | :-- | :-- |
+| 1 | **Response API bị thiếu** | Với lần chạy có request log: đọc `status`. Với lần chạy cũ: so số bản ghi trả về với số kỳ vọng của từng request (archive: số giờ của batch; forecast: 144; WeatherAPI: 73; Xweather: 24; FreeOpenAPI: 1) | 11/100 cặp nguồn × địa điểm thiếu → `api_coverage_report.csv`, `fig7`. Giờ đó được bù bằng các nguồn còn lại |
+| 2 | **Timestamp không đồng nhất** | Chuỗi có offset (`+07:00`, `Z`) được chuyển từ đúng offset đó; chuỗi không offset được hiểu theo `timezone` mà API báo cho dòng đó; tất cả quy về `Asia/Ho_Chi_Minh` rồi làm tròn về **giờ gần nhất** (snapshot 17:45 → 18:00) | 49,109 → 0 timestamp chưa chuẩn; 26 bản ghi lệch phút được căn giờ |
+| 3 | **Bản ghi rỗng** | Bỏ dòng mà cả 6 biến đều trống | 0 dòng (lần chạy này) |
+| 4 | **Giá trị chưa xảy ra lúc thu thập** | Bỏ dòng có giờ > `collected_at` của chính lần chạy đó. Mốc là thời điểm thu thập, không phải lúc chạy bước làm sạch, nên chạy lại bước 2 vào hôm sau không biến dự báo thành "quan trắc" | 995 dòng |
+| 5 | **Miền giá trị** | Nhiệt −10…50 °C; ẩm 0…100 %; gió 0…200 km/h; giật 0…250; mưa 0…300 mm; áp 850…1080 hPa. Ngoài ngưỡng → missing | 0 vi phạm |
+| 6a | **Trùng hoàn toàn** | Cùng nhà cung cấp, địa điểm, giờ và cùng giá trị | 2,780 (endpoint Forecast của Open-Meteo trả y hệt Archive ở 6 ngày chồng nhau) |
+| 6b | **Trùng cùng nguồn, cùng giờ** | Giữ bản ghi theo thứ hạng `reanalysis > conditions > current > model > forecast`, cùng hạng thì lấy lần thu thập mới nhất; lấy theo từng biến (biến nào thiếu thì lấy từ bản ghi hạng kế tiếp) | 15 (WeatherAPI `current` trùng giờ với `forecast_hourly`) |
+| 6c / 7 | **Trùng giữa các nguồn → hợp nhất** | Trung bình các nguồn tại cùng (địa điểm, giờ); lưu `num_sources`, `source_api`, `record_types`, độ lệch `spread_*`; gắn `cross_source_conflict` nếu lệch nhiệt > 3 °C, ẩm > 20 % hoặc áp > 5 hPa | 779 bản ghi → 514 giờ đa nguồn; 113 giờ xung đột được gắn cờ |
+| 8 | **Ghép theo thời gian** | Lưới 1 giờ liên tục cho mỗi địa điểm; chỉ nội suy theo thời gian các khoảng trống ≤ 6 giờ (cột `is_imputed`, `imputed_vars`); khoảng trống dài hơn để trống (NaN) | 20 × 2,227 giờ; 0 ô phải nội suy |
+| 9 | **Nhất quán giữa các biến & làm tròn** | `wind_gusts ≥ wind_speed`; làm tròn 2 chữ số; thêm cột tên theo đề (`temperature`, `humidity`, `wind_speed`, `pressure`) | 125 giờ được sửa; 158,173 ô nhiễu Float32 được làm tròn |
+
+Giá trị cực trị theo 1.5×IQR (nhiệt 198, gió 674, ẩm 302, mưa > 5 mm/h 479, áp 38, gió giật 472) **được giữ lại**, vì đều nằm trong ngưỡng vật lý và là thời tiết thật: mưa lớn, gió mùa, vùng núi cao.
+
+### 5.4. Chapter 3: Results and Data Quality Evaluation
+*(Code: `src/03_evaluate_and_visualize.py`)*
+
+#### 1. So sánh trước và sau khi làm sạch
+
+| Chỉ số | Trước | Sau |
+| :-- | :-: | :-: |
+| Tổng số dòng | 49,109 | **44,540** (20 × 2,227 giờ) |
+| Số địa điểm | 20 | 20 |
+| Response API bị thiếu (nguồn × địa điểm) | 11 / 100 | phát hiện & ghi nhận; giờ đó bù bằng nguồn khác |
+| Timestamp chưa chuẩn hóa | 49,109 (4 định dạng) | 0 |
+| Giá trị dự báo chưa xảy ra lúc thu thập | 995 | 0 |
+| Trùng hoàn toàn | 2,780 | 0 |
+| Trùng cùng nguồn, cùng giờ | 15 | 0 |
+| Trùng giữa các nguồn | 779 | 0 (hợp nhất thành 514 giờ đa nguồn) |
+| Ô khuyết | 42 | 0 |
+| Vi phạm ngưỡng vật lý | 0 | 0 |
+| Gió giật < gió trung bình | 125 | 0 |
+| Giờ các nguồn lệch nhau vượt ngưỡng | — | 113 (gắn cờ, không xóa) |
+| Ô nhiễu Float32 | 158,173 | 0 |
+
+#### 2. Độ lệch hệ thống giữa các nguồn (cùng địa điểm, cùng giờ, so với Open-Meteo)
+
+| Nguồn | Số giờ khớp | Nhiệt độ | Độ ẩm | Áp suất | Gió |
+| :-- | --: | --: | --: | --: | --: |
+| Xweather API | 480 | **+1.49 °C** | −4.05 % | −0.21 hPa | −0.64 km/h |
+| WeatherAPI.com | 285 | −0.61 °C | +0.01 % | −0.69 hPa | +0.43 km/h |
+| FreeOpenAPI.dev | 14 | +0.15 °C | — | — | 0.00 km/h |
+
+Xweather ấm hơn Open-Meteo trung bình 1.5 °C. Dịch giờ ±1–3 giờ không làm sai khác giảm, tức đây không phải lỗi lệch múi giờ mà là lệch mức. Nguyên nhân hợp lý là khác biệt đại diện: trạm/phân tích điểm so với ô lưới reanalysis. Các địa điểm có ô lưới cao hoặc địa hình phức tạp có nhiều giờ xung đột nhất: Dien Bien Phu 26/26 giờ đa nguồn, Phu Loc - Hue (ô lưới 1,002 m) 24/25. Lấy trung bình nhiều nguồn vì vậy tạo một "bậc" nhỏ ở khoảng 26 giờ cuối chuỗi. Bộ dữ liệu giữ `num_sources` và `spread_*` để người dùng tự lọc khi cần.
+
+#### 3. Thống kê mô tả 20 địa điểm (`city_summary_statistics.csv`)
+*(17/07/2026 00:00 → 17/10/2026 18:00, 2,227 giờ/địa điểm. Cột cuối: số giờ đa nguồn / số giờ xung đột)*
+
+| ID | Địa điểm | Vùng | Độ cao ô lưới (m) | Nhiệt TB ± SD (°C) | Min – Max (°C) | Ẩm TB (%) | Gió TB / Max (km/h) | Tổng mưa (mm) | Áp TB (hPa) | Đa nguồn / xung đột |
+| :-: | :-- | :-- | :-: | :-: | :-: | :-: | :-: | --: | :-: | :-: |
+| 1 | **Phu Loc - Hue** | Central | 1002 | `21.87 ± 3.16` | `15.41 – 31.01` | 84.84 | `5.47 / 17.33` | 1,089.31 | 1009.29 | 25 / 24 |
+| 2 | **Da Lat - Lam Dong** | Central Highlands | 707 | `23.07 ± 2.08` | `19.39 – 30.14` | 91.44 | `7.12 / 22.38` | 903.54 | 1012.30 | 26 / 10 |
+| 3 | **Nam Dinh** | North | 3 | `27.83 ± 2.68` | `20.30 – 34.90` | 82.19 | `8.18 / 28.23` | 1,118.59 | 1007.35 | 26 / 0 |
+| 4 | **Ho Chi Minh City** | South | 6 | `27.68 ± 2.39` | `23.90 – 34.15` | 83.33 | `8.44 / 22.87` | 800.58 | 1009.90 | 26 / 3 |
+| 5 | **Nha Trang** | South Central | 10 | `29.16 ± 2.81` | `24.66 – 37.41` | 75.77 | `6.22 / 26.81` | 471.55 | 1008.53 | 26 / 0 |
+| 6 | **Da Nang** | Central | 11 | `29.48 ± 3.36` | `23.65 – 39.70` | 73.55 | `7.15 / 23.23` | 962.61 | 1007.55 | 26 / 2 |
+| 7 | **Hanoi** | North | 20 | `27.94 ± 2.83` | `19.80 – 35.65` | 80.83 | `7.40 / 24.31` | 1,034.60 | 1007.50 | 25 / 0 |
+| 8 | **Can Tho** | Mekong Delta | 9 | `27.39 ± 1.97` | `23.80 – 32.95` | 84.78 | `10.11 / 26.83` | 758.38 | 1010.14 | 26 / 5 |
+| 9 | **Phu Quoc** | Islands | 180 | `26.53 ± 1.94` | `23.00 – 32.20` | 87.60 | `11.26 / 27.98` | 1,080.21 | 1010.49 | 25 / 1 |
+| 10 | **Ha Long** | North | 7 | `28.08 ± 2.56` | `20.35 – 36.65` | 79.00 | `8.68 / 30.95` | 1,016.04 | 1007.39 | 26 / 8 |
+| 11 | **Sa Pa** | North Mountain | 1545 | `18.95 ± 2.74` | `11.40 – 26.50` | 89.35 | `3.43 / 11.59` | 1,053.35 | 1012.97 | 26 / 11 |
+| 12 | **Vinh** | North Central | 8 | `28.20 ± 2.81` | `21.50 – 37.25` | 79.60 | `9.37 / 38.01` | 1,293.08 | 1007.38 | 26 / 1 |
+| 13 | **Hue City** | Central | 8 | `28.75 ± 3.48` | `22.45 – 39.00` | 76.94 | `7.53 / 30.22` | 874.84 | 1007.59 | 26 / 8 |
+| 14 | **Phan Thiet** | South Central | 9 | `27.95 ± 2.28` | `24.20 – 35.40` | 80.54 | `14.30 / 32.94` | 620.08 | 1009.66 | 26 / 6 |
+| 15 | **Vung Tau** | South | 13 | `28.42 ± 1.77` | `24.70 – 34.50` | 78.83 | `16.01 / 34.43` | 612.18 | 1009.96 | 26 / 0 |
+| 16 | **Ca Mau** | Mekong Delta | 7 | `27.72 ± 1.97` | `23.90 – 32.90` | 82.93 | `10.09 / 29.34` | 858.78 | 1010.32 | 25 / 0 |
+| 17 | **Con Dao** | Islands | 92 | `28.26 ± 0.88` | `25.50 – 30.80` | 75.20 | `23.19 / 44.40` | 531.37 | 1010.40 | 24 / 2 |
+| 18 | **Pleiku** | Central Highlands | 761 | `22.66 ± 2.07` | `18.80 – 30.25` | 90.86 | `14.08 / 35.69` | 1,234.88 | 1011.42 | 26 / 3 |
+| 19 | **Buon Ma Thuot** | Central Highlands | 462 | `25.15 ± 2.34` | `21.10 – 31.20` | 85.19 | `9.15 / 25.60` | 941.03 | 1010.67 | 26 / 3 |
+| 20 | **Dien Bien Phu** | North Mountain | 482 | `25.90 ± 2.86` | `17.74 – 33.94` | 83.68 | `3.26 / 17.71` | 713.91 | 1009.59 | 26 / 26 |
+
+#### 4. Biểu đồ (`figures/`)
+* `fig1_data_quality_before_after.png`: số lỗi phát hiện (thô) so với còn lại (sạch), và các cực trị được giữ lại.
+* `fig2_range_validation_boxplots.png`: phân phối 6 biến sau làm sạch.
+* `fig3_temperature_timeseries.png`: nhiệt độ trung bình ngày của 8 địa điểm đại diện.
+* `fig4_all_20_cities_temperature_range.png`: dải nhiệt Min–TB–Max của 20 địa điểm.
+* `fig5_multivariate_and_precipitation.png`: Nhiệt–Ẩm–Áp và tổng lượng mưa.
+* `fig6_multi_api_source_comparison.png`: độ lệch hệ thống giữa các nguồn, và đường nhiệt độ của từng nguồn tại TP.HCM.
+* `fig7_api_coverage_heatmap.png`: % bản ghi trả về / kỳ vọng theo nguồn × địa điểm (ô `MISSING` = response bị thiếu).
+
+### 5.5. Chapter 4 (mở rộng): Dự báo 7 ngày và đánh giá walk-forward
+*(Code: `src/forecast_core.py`, `05_walk_forward_evaluation.py`, `06_train_production_model.py`, `07_realtime_inference.py`)*
+
+Phần này không thuộc yêu cầu của Topic 6. Nó minh họa giá trị sử dụng của bộ dữ liệu sạch.
+
+#### 1. Mô hình
+* **Mục tiêu:** dự báo giá trị 1 giờ tới của 5 biến. Dự báo 7 ngày được tạo bằng cách chạy **cuốn chiếu 168 bước**, mỗi bước dùng dự báo của bước trước làm đầu vào.
+* **Feature** (một hàm dùng chung cho train và inference, đã kiểm tra khớp nhau đến 1e-7):
+  * tọa độ và độ cao;
+  * giờ trong ngày (sin/cos); thêm ngày trong năm khi dữ liệu ≥ 1 năm;
+  * lag 1, 2, 3, 6, 12, 24, 48, 72 giờ của 5 biến;
+  * trung bình và độ lệch chuẩn trượt 24 giờ;
+  * climatology tại giờ dự báo, và độ lệch so với climatology tại t−1 và t−24.
+
+  `location_id` **không** được dùng làm biến số.
+* **Biến mục tiêu:** độ lệch so với climatology, được fit **chỉ trên dữ liệu train**. Với dữ liệu < 1 năm: trung bình theo địa điểm × giờ trong ngày. Với ≥ 1 năm: hàm điều hòa theo ngày-trong-năm và giờ-trong-ngày.
+* **Hybrid:** kết hợp Ridge, HistGradientBoosting và GRU (PyTorch) với trọng số không âm (NNLS), rồi cộng phần dư do XGBoost học. Toàn bộ siêu tham số kết hợp được chọn trên **khối validation nằm sau** trong chính tập train:
+  * trọng số thành phần học trên khối 70–85%;
+  * XGBoost học trên phần dư **out-of-fold** của khối 70–100%;
+  * hệ số co phần dư chọn trên khối 85–100%.
+* **Giảm dần về climatology:** sai số cuốn chiếu tích lũy theo thời gian. Vì vậy giá trị báo cáo là `clim + e^(−h/τ)·(dự báo − clim)`, với τ chọn cho từng biến bằng cách fit một mô hình phụ trên 85% đầu của tập train và chấm điểm trên 15% cuối. Không dùng dữ liệu test.
+* **Dashboard:** trộn thêm dự báo NWP của Open-Meteo, với trọng số tăng theo lead time (0.15 → tối đa 0.55). Trọng số này là **heuristic chưa kiểm định**; dashboard hiển thị riêng cả thành phần ML.
+
+#### 2. Thiết kế đánh giá walk-forward
+* Mỗi fold là một cửa sổ test 7 ngày, trượt dần; train trên **toàn bộ dữ liệu trước fold** (expanding window), refit mỗi fold.
+* Trong mỗi fold, phát dự báo 168 giờ từ mọi mốc 00h và 12h, cho cả 20 địa điểm, rồi tính MAE theo **từng lead time 1…168 giờ**.
+* So với 3 baseline: *persistence* (giữ giá trị cuối), *seasonal naive* (lặp lại 24 giờ gần nhất), *climatology* của tập train.
+* Skill = 1 − MAE<sub>model</sub>/MAE<sub>baseline</sub>, tính cho từng fold. Khoảng tin cậy 95% bootstrap **theo fold** (fold là một khối thời gian, không phải từng giờ độc lập).
+* Không cần embargo, vì mô hình dự báo cuốn chiếu 1 giờ/bước và mọi target train đều nằm trước cửa sổ test. Mô hình dự báo trực tiếp h giờ thì cần embargo ≥ h giờ.
+
+#### 3. Kết quả (dữ liệu Topic 6, 3 tháng)
+<!-- WF_RESULTS -->
+
+#### 4. Đánh giá trên nhiều năm (tùy chọn)
+Với 3 tháng dữ liệu, chỉ có vài fold trong cùng một mùa và một pha ENSO, nên chưa nói được gì về độ bền của mô hình qua các năm. Script `04_collect_multiyear_archive.py` lấy ERA5 từ 2014; giai đoạn này bao gồm El Niño mạnh 2015–16, La Niña 2020–23 và El Niño 2023–24. Sau đó `05_walk_forward_evaluation.py --data archive` chạy fold 30 ngày, refit mỗi 3 fold, và xếp tầng kết quả theo mùa và theo pha ENSO. Pha ENSO lấy từ chỉ số RONI của NOAA CPC (chỉ số chính thức từ 01/02/2026), dự phòng bằng ONI; một pha El Niño/La Niña cần ≥ 5 mùa chồng nhau vượt ±0.5 °C.
+
+Lưu ý: walk-forward trên ERA5 đo khả năng "dự báo ERA5" chứ không phải dự báo trạm. Muốn kiểm định cả phần trộn NWP thì cần dự báo NWP lưu trữ tại đúng thời điểm phát dự báo.
+
+### 5.6. Conclusion, Limitations & Future Work
+**Kết luận.** Quy trình 9 bước biến 49,109 bản ghi thô từ 4 nhà cung cấp thành 44,540 giờ sạch, liên tục, 0 khuyết, 0 trùng. Mọi quyết định đều truy vết được qua cột nguồn, cờ xung đột, cờ nội suy và báo cáo chất lượng. Ngoài các lỗi định dạng và trùng lặp, quy trình phát hiện ra hai vấn đề mà phiên bản đầu bỏ sót: **11 response API bị thiếu**, và **giá trị dự báo lẫn vào dữ liệu quan trắc** nếu lấy mốc cắt theo lúc làm sạch thay vì lúc thu thập.
+
+**Hạn chế.**
+* Phần lớn số dòng là ERA5 reanalysis, không phải quan trắc trạm; phần real-time trong lần thu thập hiện có chỉ phủ khoảng 26 giờ cuối.
+* Các nguồn lệch nhau có hệ thống (Xweather +1.5 °C), nên trung bình đa nguồn tạo bậc nhỏ ở cuối chuỗi.
+* WeatherAPI `forecast.json` cho các giờ đã qua trong ngày vẫn là giá trị mô hình (`forecast_hourly`), không phải quan trắc.
+* Mô hình dự báo chỉ được đánh giá trên 3 tháng dữ liệu.
+
+**Hướng phát triển.**
+* Chạy `--mode realtime` theo giờ trong nhiều ngày để có chuỗi quan trắc thật.
+* Hiệu chỉnh độ lệch từng nguồn (bias correction) trước khi hợp nhất, thay cho trung bình đơn giản.
+* Walk-forward trên ERA5 nhiều năm.
+* Kiểm định trọng số trộn NWP bằng dự báo lưu trữ.
+* Mô hình riêng cho mưa (hurdle / Tweedie), vì mưa theo giờ thưa và lệch phải.
+
+### 5.7. References
+**API & tài liệu dữ liệu**
+1. Open-Meteo — Historical Weather API: https://open-meteo.com/en/docs/historical-weather-api
+2. Open-Meteo — Weather Forecast API: https://open-meteo.com/en/docs
+3. Zippenfenig, P. (2024). *Open-Meteo.com Weather API* (v1.4.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.14582479
+4. Hersbach, H., Bell, B., Berrisford, P., et al. (2020). The ERA5 global reanalysis. *Quarterly Journal of the Royal Meteorological Society, 146*(730), 1999–2049. https://doi.org/10.1002/qj.3803
+5. WeatherAPI.com — API documentation: https://www.weatherapi.com/docs/
+6. Vaisala Xweather — Conditions endpoint: https://www.xweather.com/docs/weather-api/endpoints/conditions
+7. FreeOpenAPI.dev: https://www.freeopenapi.dev/
+
+**ENSO**
+
+8. NOAA Climate Prediction Center — Relative Oceanic Niño Index (RONI): https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/roni/ ; data: https://www.cpc.ncep.noaa.gov/data/indices/RONI.ascii.txt
+9. National Weather Service (2026). *Public Information Statement 26-05: CPC to use the Relative Oceanic Niño Index*. https://www.weather.gov/media/notification/pdf_2026/pns26-05_Relative_ONI.pdf
+
+**Phương pháp đánh giá dự báo**
+
+10. Tashman, L. J. (2000). Out-of-sample tests of forecasting accuracy: an analysis and review. *International Journal of Forecasting, 16*(4), 437–450. https://doi.org/10.1016/S0169-2070(00)00065-0
+
+**Thư viện:** `pandas`, `numpy`, `matplotlib`, `requests`/`urllib`, `openmeteo-requests`, `scikit-learn`, `xgboost`, `scipy`, `torch`, `streamlit`.
 
 ---
 
-### 5.1. Abstract / Introduction (Tóm Tắt & Giới Thiệu Đề Tài)
-* **Mục đích dự án (`Purpose`):** Xây dựng một hệ thống tự động thu thập, làm sạch, chuẩn hóa và hợp nhất dữ liệu thời tiết thời gian thực từ nhiều Web API khác nhau cho 20 tỉnh/thành phố tại Việt Nam, từ đó kiến tạo bộ dữ liệu chuỗi thời gian chất lượng cao phục vụ phân tích khí tượng và dự báo thời tiết 7 ngày tới.
-* **Bài toán thu thập & làm sạch dữ liệu (`Problem Statement`):** Dữ liệu thời tiết thu thập trực tiếp từ các Web API thực tế thường xuyên gặp phải sự bất đồng nhất về định dạng thời gian (ISO-8601, lệch phút `:15/:30`, lệch múi giờ), khác biệt cấu trúc trường dữ liệu (thiếu trường độ ẩm/áp suất ở một số API), trùng lặp bản ghi giữa các nguồn tại cùng thời điểm, dư thừa các bản ghi dự báo tương lai chưa xảy ra, nhiễu dấu chấm động nhị phân `Float32` và mâu thuẫn vật lý giữa tốc độ gió trung bình và gió giật.
-* **Nguồn dữ liệu lựa chọn (`Selected Data Sources`):** Tích hợp 4 nguồn API công khai hợp pháp: `Open-Meteo API` (Historical Archive ERA5/ECMWF + Real-Time Bridge), `WeatherAPI.com`, `Vaisala Xweather API` và `FreeOpenAPI.dev`.
-* **Kết quả đạt được (`Expected & Achieved Outcomes`):**
-  1. Thu thập **`49,109` dòng dữ liệu thô** và làm sạch thành công **`44,540` dòng dữ liệu chuỗi thời gian theo giờ liên tục** (`20` địa điểm $\times$ `2,227` giờ, `0` giá trị khuyết, `0` bản ghi trùng lặp).
-  2. Xây dựng mô hình học máy lai **Hybrid (`GRU + Ridge + HistGradientBoosting`) + Học phần dư `XGBoost` (`XGBoost Residual`)** trên 58 đặc trưng trễ, đạt sai số dự báo nhiệt độ trên tập kiểm thử độc lập $\text{Test MAE} = 0.389^\circ\text{C}$, $\text{Test RMSE} = 0.593^\circ\text{C}$ và hệ số xác định $R^2 = 0.9743$.
-  3. Triển khai ứng dụng **Web Dashboard Streamlit (`app.py`)** cho phép gọi trực tiếp 4 API thời gian thực, làm sạch tại chỗ và dự báo thời tiết 7 ngày tới (`168` giờ).
+## 6. Những Thay Đổi So Với Phiên Bản Trước
 
----
-
-### 5.2. Chapter 1: Data Collection and Dataset Description (Luồng `COLLECT`)
-*(Tương ứng với file code: [`src/01_collect_weather_data.py`](file:///c:/Users/Windows/Downloads/%C4%90%E1%BB%93%20%C3%81n%20Clean%20Data/src/01_collect_weather_data.py))*
-
-#### 1. Phương pháp thu thập dữ liệu (`Data Collection Method`)
-Nhóm xây dựng chương trình thu thập tự động bằng Python sử dụng `openmeteo_requests` (kết hợp `requests_cache` và `retry_requests` với cơ chế exponential backoff) và `urllib.request` để gửi yêu cầu HTTP GET tới 4 hệ thống API thời tiết. Khóa xác thực (API Keys) của các dịch vụ được quản lý tách biệt trong file cấu hình `.env`.
-
-#### 2. Chi tiết các nguồn API và số lượng bản ghi thu thập (`Data Sources & Volume`)
-* **Nguồn 1 — `Open-Meteo API` (`47,520` dòng):**
-  * **1A. Historical Archive API (`https://archive-api.open-meteo.com/v1/archive`):** Lấy chuỗi quan trắc lịch sử tái phân tích **ERA5 / ECMWF** trong 92 ngày cho 20 địa điểm (`44,640` dòng).
-  * **1B. Real-Time Forecast Bridge (`https://api.open-meteo.com/v1/forecast?past_days=5&forecast_days=1`):** Bù đắp 5 ngày gần nhất khi kho lưu trữ ERA5 quốc tế đang trong thời gian chờ đồng hóa trạm (`2,880` dòng).
-* **Nguồn 2 — `WeatherAPI.com` (`1,095` dòng):** Gọi endpoint `/v1/forecast.json?days=3` thu thập chuỗi quan trắc theo giờ trong 3 ngày gần nhất và trạng thái `current` tức thời tại 20 địa điểm.
-* **Nguồn 3 — `Vaisala Xweather API` (`480` dòng):** Gọi endpoint `/conditions/{lat},{lon}?from=-24hours&to=now&plimit=24` lấy 24 giờ quan trắc trạm khí tượng gần nhất cho từng địa điểm (`20 × 24 = 480` dòng).
-* **Nguồn 4 — `FreeOpenAPI.dev` (`14` dòng):** Gọi endpoint `/api/v1/weather/current` kèm header `X-Api-Key` lấy dữ liệu thời tiết hiện tại.
-* **Tổng cộng dữ liệu thô (`data/raw/raw_weather_data.csv`):** **`49,109` dòng** trên **20 địa điểm**. Toàn bộ phản hồi JSON gốc được lưu trữ tại `data/raw/raw_weather_responses.json`.
-
-#### 3. Mô tả cấu trúc thuộc tính dữ liệu thô (`Collected Attributes & Raw Schema`)
-Mỗi bản ghi trong `raw_weather_data.csv` gồm **17 trường**:
-* **Định danh & Không gian (`9` trường):** `location_id` (1 $\rightarrow$ 20), `city`, `region`, `source_api`, `requested_lat`, `requested_lon`, `api_latitude`, `api_longitude`, `elevation_m`.
-* **Thời gian (`2` trường):** `date` (chuỗi thời gian gốc từ API), `timezone` (`Asia/Bangkok` / `Asia/Ho_Chi_Minh`).
-* **Biến khí tượng mục tiêu (`6` trường):**
-  1. `temperature_2m`: Nhiệt độ không khí ở độ cao 2m (`°C`).
-  2. `relative_humidity_2m`: Độ ẩm tương đối ở độ cao 2m (`%`).
-  3. `wind_speed_10m`: Tốc độ gió trung bình ở độ cao 10m (`km/h`).
-  4. `wind_gusts_10m`: Tốc độ gió giật cực đại ở độ cao 10m (`km/h`).
-  5. `precipitation`: Lượng mưa tích lũy theo giờ (`mm`).
-  6. `pressure_msl`: Áp suất khí quyển quy về mực nước biển (`hPa`).
-
----
-
-### 5.3. Chapter 2: Data Cleaning and Preprocessing (Luồng `CLEAN`)
-*(Tương ứng với file code: [`src/02_clean_and_preprocess.py`](file:///c:/Users/Windows/Downloads/%C4%90%E1%BB%93%20%C3%81n%20Clean%20Data/src/02_clean_and_preprocess.py))*
-
-Quá trình kiểm toán bộ dữ liệu thô `49,109` dòng phát hiện **6 nhóm vấn đề chất lượng dữ liệu** và được xử lý tuần tự qua 6 bước:
-
-1. **Chuẩn hóa định dạng thời gian hỗn hợp (`49,109` dòng):**
-   * *Vấn đề:* 4 API trả về 4 kiểu chuỗi thời gian khác nhau (`"2026-10-17 11:00:00+07:00"`, `"2026-10-17 11:00"`, `"2026-10-17 11:30"`, `"2026-10-17T11:00:00+07:00"`, `"2026-10-17T11:30:00"`).
-   * *Phương pháp xử lý:* Loại bỏ ký tự phân tách `T` và hậu tố `+07:00`, chuyển đổi bằng `pd.to_datetime(..., format="mixed")`, làm tròn xuống đầu giờ bằng `.dt.floor("h")` để đồng bộ các bản ghi `current` (phút `:15`, `:30`, `:45`) về đúng lưới giờ chuẩn `YYYY-MM-DD HH:MM:SS`.
-2. **Loại bỏ bản ghi tương lai chưa xảy ra & bản ghi rỗng (`995` dòng):**
-   * *Vấn đề:* Khi truy vấn đến ngày hiện tại, các API trả về cả các khung giờ cuối ngày chưa diễn ra (`timestamp > now_cutoff`).
-   * *Phương pháp xử lý:* Thiết lập mốc cắt thực tế `now_cutoff = pd.Timestamp.now().floor("h")` (`2026-10-17 18:00:00`) và loại bỏ toàn bộ `995` bản ghi vượt quá giờ hiện tại, đảm bảo **100% dữ liệu sau làm sạch là dữ liệu lịch sử thực tế đã quan trắc**.
-3. **Xử lý dữ liệu khuyết cục bộ do bất đồng nhất Schema (`14` dòng / `42` ô `NaN`):**
-   * *Vấn đề:* `FreeOpenAPI.dev` không cung cấp 3 trường `relative_humidity_2m`, `pressure_msl` và `wind_gusts_10m`, sinh ra `42` ô `NaN`.
-   * *Phương pháp xử lý:* Kết hợp dữ liệu theo khóa `(location_id, timestamp)` để bù khuyết chéo từ 3 nguồn `Open-Meteo SDK`, `WeatherAPI.com` và `Xweather API` tại cùng thời điểm; các khe thời gian đơn lẻ (nếu có) được nội suy tuyến tính theo thời gian (`interpolate(method="time")`).
-4. **Khử trùng lặp và Hợp nhất đa cảm biến — Multi-API Sensor Fusion (`3,574` bản ghi trùng):**
-   * *Vấn đề:* Giữa 4 API có `2,780` bản ghi trùng hoàn toàn và `3,574` bản ghi trùng khóa `(location_id, time)` tại các khung giờ giao nhau.
-   * *Phương pháp xử lý:*
-     * Tách riêng các khung giờ có $\ge 2$ API cùng báo cáo lưu vào `data/cleaned/multi_source_comparison.csv` để phân tích độ lệch đa nguồn.
-     * Thực hiện **Multi-Sensor Fusion**: lấy giá trị trung bình cộng (`mean`) của tất cả các API hợp lệ tại cùng `(location_id, timestamp)`, đồng thời ghi nhận số lượng API đóng góp vào cột `num_sources` và tên các API vào cột `source_api`.
-5. **Kiểm tra miền giá trị vật lý và xử lý bất nhất tốc độ gió (`125` bản ghi):**
-   * *Vấn đề:* Phát hiện `125` bản ghi có tốc độ gió giật nhỏ hơn tốc độ gió trung bình (`wind_gusts_10m < wind_speed_10m`) do sai khác thời điểm lấy mẫu giữa các nguồn.
-   * *Phương pháp xử lý:* Áp dụng ngưỡng vật lý `VALID_RANGES` cho 6 biến và cưỡng bức quy칙 vật lý `wind_gusts_10m = np.maximum(wind_gusts_10m, wind_speed_10m)`. Đối với `2,165` điểm ngoại lai thống kê theo quy tắc $1.5 \times \text{IQR}$ (như các đợt mưa lớn nhiệt đới hoặc sương lạnh vùng núi cao Sa Pa), do đều nằm trong ngưỡng vật lý hợp lệ nên được bảo toàn.
-6. **Khử nhiễu dấu chấm động `Float32` (`158,173` ô) & Tái lập lưới thời gian liên tục:**
-   * *Vấn đề:* Dữ liệu giải mã từ FlatBuffers sinh ra `158,173` ô có sai số biểu diễn nhị phân `Float32` (ví dụ `28.100000381469727`).
-   * *Phương pháp xử lý:* Làm tròn chuẩn 2 chữ số thập phân (`.round(2)`), đồng bộ lưới thời gian `1h` liên tục (`reindex`) cho cả 20 địa điểm và tạo thêm các cột bí danh chuẩn Topic 6 (`temperature`, `humidity`, `wind_speed`, `pressure`, `wind_gusts`).
-
----
-
-### 5.4. Chapter 3: Results and Data Quality Evaluation (Luồng `EVALUATE & VISUALIZE`)
-*(Tương ứng với file code: [`src/03_evaluate_and_visualize.py`](file:///c:/Users/Windows/Downloads/%C4%90%E1%BB%93%20%C3%81n%20Clean%20Data/src/03_evaluate_and_visualize.py) và báo cáo [`data/cleaned/data_quality_report.json`](file:///c:/Users/Windows/Downloads/%C4%90%E1%BB%93%20%C3%81n%20Clean%20Data/data/cleaned/data_quality_report.json))*
-
-#### 1. Bảng So Sánh Chất Lượng Dữ Liệu Trước Và Sau Khi Làm Sạch
-
-| Chỉ Số Đánh Giá Chất Lượng (`Data Quality Indicator`) | Trước Khi Làm Sạch (`Raw Data`) | Sau Khi Làm Sạch (`Cleaned Data`) | Mức Độ Cải Thiện |
-| :--- | :---: | :---: | :--- |
-| **Tổng số dòng quan trắc (`Total Rows`)** | `49,109` | **`44,540`** | Chuẩn hóa thành `20` tỉnh $\times$ `2,227` giờ liên tục |
-| **Số lượng địa điểm khảo sát (`Locations`)** | `20` | **`20`** | Bảo toàn 100% địa điểm |
-| **Bản ghi chưa chuẩn hóa thời gian (`Unstandardized Timestamps`)** | `49,109` | **`0`** | Chuẩn hóa 100% về `YYYY-MM-DD HH:MM:SS` |
-| **Bản ghi vượt quá giờ hiện tại bị loại bỏ (`Future/Empty Rows`)** | `995` | **`0`** | Loại bỏ 100% dữ liệu tương lai chưa xảy ra |
-| **Dòng khuyết cục bộ do khác biệt Schema (`Partial Missing Rows`)** | `14` dòng | **`0`** | Bù khuyết chéo 100% giữa 4 API |
-| **Tổng số ô bị khuyết (`Total Missing Cells - NaN`)** | `42` ô | **`0`** | Không còn bất kỳ ô `NaN` nào |
-| **Bản ghi trùng hoàn toàn (`Exact Duplicates`)** | `2,780` | **`0`** | Khử trùng 100% |
-| **Bản ghi trùng khóa thời gian (`Key Duplicates (location_id, time)`)** | `3,574` | **`0`** | Hợp nhất thành **`514` giờ đa cảm biến** |
-| **Bản ghi bất nhất vật lý tốc độ gió (`wind_gusts < wind_speed`)** | `125` | **`0`** | Khắc phục 100% mâu thuẫn vật lý |
-| **Số ô nhiễu dấu chấm động (`Float32 Precision Artifacts`)** | `158,173` | **`0`** | Làm tròn chuẩn 2 chữ số thập phân |
-
-#### 2. Bảng Thống Kê Mô Tả Khí Tượng 20 Tỉnh/Thành Phố (`data/cleaned/city_summary_statistics.csv`)
-*(Giai đoạn khảo sát: `17/07/2026 00:00` $\rightarrow$ `17/10/2026 18:00` — `2,227` giờ/địa điểm)*
-
-| ID | Tỉnh / Thành Phố | Vùng Khí Hậu | Độ Cao (`m`) | Nhiệt Độ TB $\pm$ SD (`°C`) | Min – Max (`°C`) | Độ Ẩm TB (`%`) | Gió TB / Max (`km/h`) | Tổng Mưa (`mm`) | Áp Suất TB (`hPa`) |
-| :-: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | **Phu Loc - Hue** | Central | 1002.0 | `21.86 ± 3.16` | `15.41 – 31.01` | 84.86 | `5.48 / 17.33` | 1,089.29 | 1009.29 |
-| 2 | **Da Lat - Lam Dong** | Central Highlands | 707.0 | `23.06 ± 2.07` | `19.39 – 30.14` | 91.45 | `7.12 / 22.38` | 903.77 | 1012.31 |
-| 3 | **Nam Dinh** | North | 3.0 | `27.83 ± 2.68` | `20.30 – 34.90` | 82.20 | `8.18 / 28.23` | 1,118.62 | 1007.35 |
-| 4 | **Ho Chi Minh City** | South | 6.0 | `27.67 ± 2.39` | `23.90 – 34.15` | 83.34 | `8.45 / 22.87` | 800.44 | 1009.90 |
-| 5 | **Nha Trang** | South Central | 10.0 | `29.16 ± 2.81` | `24.66 – 37.41` | 75.77 | `6.22 / 26.81` | 471.61 | 1008.53 |
-| 6 | **Da Nang** | Central | 11.0 | `29.48 ± 3.36` | `23.65 – 39.70` | 73.56 | `7.14 / 23.23` | 962.77 | 1007.55 |
-| 7 | **Hanoi** | North | 20.0 | `27.94 ± 2.82` | `19.80 – 35.65` | 80.84 | `7.40 / 24.31` | 1,034.64 | 1007.50 |
-| 8 | **Can Tho** | Mekong Delta | 9.0 | `27.39 ± 1.97` | `23.80 – 32.95` | 84.79 | `10.11 / 26.83` | 758.98 | 1010.14 |
-| 9 | **Phu Quoc** | Islands | 180.0 | `26.53 ± 1.94` | `23.00 – 32.20` | 87.60 | `11.26 / 27.98` | 1,080.54 | 1010.49 |
-| 10 | **Ha Long** | North | 7.0 | `28.08 ± 2.56` | `20.35 – 36.65` | 79.00 | `8.69 / 30.95` | 1,016.11 | 1007.39 |
-| 11 | **Sa Pa** | North Mountain | 1545.0 | `18.95 ± 2.74` | `11.40 – 26.50` | 89.35 | `3.43 / 11.59` | 1,052.46 | 1012.97 |
-| 12 | **Vinh** | North Central | 8.0 | `28.20 ± 2.81` | `21.50 – 37.25` | 79.61 | `9.36 / 38.01` | 1,293.10 | 1007.38 |
-| 13 | **Hue City** | Central | 8.0 | `28.75 ± 3.48` | `22.45 – 39.00` | 76.94 | `7.53 / 30.22` | 874.66 | 1007.59 |
-| 14 | **Phan Thiet** | South Central | 9.0 | `27.95 ± 2.28` | `24.20 – 35.40` | 80.54 | `14.31 / 32.94` | 619.83 | 1009.66 |
-| 15 | **Vung Tau** | South | 13.0 | `28.42 ± 1.77` | `24.70 – 34.50` | 78.83 | `16.00 / 34.43` | 610.86 | 1009.96 |
-| 16 | **Ca Mau** | Mekong Delta | 7.0 | `27.72 ± 1.97` | `23.90 – 32.90` | 82.94 | `10.08 / 29.34` | 858.70 | 1010.32 |
-| 17 | **Con Dao** | Islands | 92.0 | `28.26 ± 0.88` | `25.50 – 30.80` | 75.20 | `23.19 / 44.40` | 530.42 | 1010.40 |
-| 18 | **Pleiku** | Central Highlands | 761.0 | `22.66 ± 2.07` | `18.80 – 30.25` | 90.87 | `14.09 / 35.69` | 1,234.39 | 1011.42 |
-| 19 | **Buon Ma Thuot** | Central Highlands | 462.0 | `25.15 ± 2.34` | `21.10 – 31.20` | 85.19 | `9.16 / 25.60` | 940.09 | 1010.67 |
-| 20 | **Dien Bien Phu** | North Mountain | 482.0 | `25.90 ± 2.86` | `17.74 – 33.94` | 83.68 | `3.26 / 17.71` | 713.65 | 1009.59 |
-
-#### 3. Hệ Thống 6 Biểu Đồ Phân Tích Chất Lượng Dữ Liệu & Khí Tượng (`figures/fig1` $\rightarrow$ `fig6`)
-* **`figures/fig1_data_quality_before_after.png`:** Biểu đồ cột so sánh trực tiếp số lượng lỗi Trước và Sau khi làm sạch.
-* **`figures/fig2_range_validation_boxplots.png`:** Biểu đồ Boxplot kiểm tra phân phối và miền giá trị của 6 biến khí tượng.
-* **`figures/fig3_temperature_timeseries.png`:** Diễn biến chuỗi thời gian nhiệt độ trung bình ngày của 8 địa điểm đại diện.
-* **`figures/fig4_all_20_cities_temperature_range.png`:** Biểu đồ dải nhiệt độ (`Min – Mean – Max`) của 20 địa điểm sắp xếp theo nền nhiệt.
-* **`figures/fig5_multivariate_and_precipitation.png`:** Tương quan đa biến Nhiệt độ – Độ ẩm – Áp suất và tổng lượng mưa tích lũy.
-* **`figures/fig6_multi_api_source_comparison.png`:** Đối sánh trực tiếp số liệu của 4 nguồn API tại cùng khung giờ.
-
----
-
-### 5.5. Chapter 4 (Phần Mở Rộng Nâng Cao): Huấn Luyện Hybrid GRU + XGBoost Residual & Dự Báo 7 Ngày (Luồng `TRAIN` & `FORECAST`)
-*(Tương ứng với file code: [`src/04_train_and_save_weights.py`](file:///c:/Users/Windows/Downloads/%C4%90%E1%BB%93%20%C3%81n%20Clean%20Data/src/04_train_and_save_weights.py), [`src/05_realtime_inference.py`](file:///c:/Users/Windows/Downloads/%C4%90%E1%BB%93%20%C3%81n%20Clean%20Data/src/05_realtime_inference.py) và [`app.py`](file:///c:/Users/Windows/Downloads/%C4%90%E1%BB%93%20%C3%81n%20Clean%20Data/app.py))*
-
-#### 1. Kỹ thuật đặc trưng (`58` Features) & Phân chia tập dữ liệu theo thời gian
-* Tạo **58 đặc trưng đầu vào** gồm: `4` biến tọa độ/độ cao + `4` biến chu kỳ lượng giác (`hour_sin, hour_cos, doy_sin, doy_cos`) + `40` biến độ trễ đa biến (`lag 1h, 2h, 3h, 6h, 12h, 24h, 48h, 72h` của 5 biến) + `10` biến trung bình/độ lệch chuẩn trượt 24 giờ (`roll24_mean, roll24_std`).
-* Chia `43,100` mẫu hoàn chỉnh theo đúng thứ tự thời gian (không đảo trộn ngẫu nhiên để tránh rò rỉ dữ liệu tương lai):
-  * **Tập Train (70%):** `30,180` dòng (`20/07/2026 00:00` $\rightarrow$ `20/09/2026 20:00`)
-  * **Tập Validation (15%):** `6,460` dòng (`20/09/2026 21:00` $\rightarrow$ `04/10/2026 07:00`)
-  * **Tập Test (15%):** `6,460` dòng (`04/10/2026 08:00` $\rightarrow$ `17/10/2026 18:00` — kết thúc đúng tại giờ hiện tại)
-
-#### 2. Kiến trúc 3 tầng: Hybrid (`GRU + Ridge + HistGradientBoosting`) + Học phần dư `XGBoost`
-* **Tầng 1 — Dự báo xu hướng cơ sở (`Base Trend Ensemble`):**
-  Kết hợp mạng nơ-ron hồi quy có cổng `WeatherGRUNet` (`PyTorch nn.GRU` học chuỗi 8 bước trễ `t-72h` $\rightarrow$ `t-1h`), mô hình tuyến tính `Ridge Autoregressive` và `HistGradientBoosting`:
-  $$\hat{y}_{\text{base}}(X_t) = 0.15 \cdot \hat{y}_{\text{GRU}}(X_t) + 0.10 \cdot \hat{y}_{\text{Ridge}}(X_t) + 0.75 \cdot \hat{y}_{\text{HistGB}}(X_t)$$
-* **Tầng 2 — Học phần dư phi tuyến bằng `XGBoost` (`XGBoost Residual Learner`):**
-  Huấn luyện `XGBRegressor` học trực tiếp phần dư $r_t = y_t - \hat{y}_{\text{base}}(X_t)$ để bắt các biến động vi khí hậu cục bộ:
-  $$\hat{r}_t = f_{\text{XGBoost}}(X_t)$$
-* **Tầng 3 — Tổng hợp dự báo Hybrid:**
-  $$\hat{y}_{\text{Hybrid}}(X_t) = \hat{y}_{\text{base}}(X_t) + 0.50 \cdot \hat{r}_{\text{XGBoost}}(X_t)$$
-
-#### 3. Bảng Kết Quả Đánh Giá Mô Hình Trên Tập Kiểm Thử (`figures/fig7_model_training_and_forecast_eval.png`)
-
-##### So sánh 5 mô hình dự báo Nhiệt độ (`temperature_2m`)
-| Mô Hình | Val MAE | Test MAE | Khoảng Tin Cậy 95% (Bootstrap CI) | Test RMSE | Test $R^2$ |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Seasonal Naive (Baseline $y_{t-24\text{h}}$)** | `0.723 °C` | `1.019 °C` | `[0.995, 1.045]` | `1.442 °C` | `0.8483` |
-| **Ridge Autoregressive** | `0.394 °C` | `0.455 °C` | `[0.442, 0.466]` | `0.643 °C` | `0.9699` |
-| **GRU Neural Network (PyTorch)** | `0.392 °C` | `0.460 °C` | `[0.449, 0.470]` | `0.636 °C` | `0.9705` |
-| **HistGradientBoosting** | `0.354 °C` | `0.422 °C` | `[0.411, 0.433]` | `0.642 °C` | `0.9700` |
-| **Hybrid GRU + XGBoost Residual** | **`0.346 °C`** | **`0.410 °C`** | **`[0.400, 0.420]`** | **`0.610 °C`** | **`0.9729`** |
-
-##### Sai số dự báo đa mục tiêu cho cả 5 biến khí tượng (Huấn luyện trên `Train + Val`, kiểm thử trên `Test`)
-| Biến Dự Báo | Test MAE | Test RMSE | Test $R^2$ |
-| :--- | :---: | :---: | :---: |
-| **`temperature_2m` (°C)** | **`0.389 °C`** | **`0.593 °C`** | **`0.9743`** |
-| **`relative_humidity_2m` (%)** | **`2.088 %`** | **`3.197 %`** | **`0.9414`** |
-| **`wind_speed_10m` (km/h)** | **`1.491 km/h`** | **`2.066 km/h`** | **`0.8277`** |
-| **`precipitation` (mm/h)** | **`0.266 mm`** | **`0.640 mm`** | **`0.3598`** |
-| **`pressure_msl` (hPa)** | **`0.271 hPa`** | **`0.387 hPa`** | **`0.9821`** |
-
----
-
-### 5.6. Conclusion, Limitations, Future Work & References
-
-#### 1. Kết luận (`Conclusion`)
-Đồ án đã giải quyết trọn vẹn bài toán thu thập và làm sạch dữ liệu thời tiết thời gian thực đa nguồn trên quy mô 20 tỉnh/thành phố tại Việt Nam. Quy trình làm sạch 6 bước đã xử lý triệt để `49,109` bản ghi thô không đồng nhất từ 4 API thành bộ dữ liệu chuẩn `44,540` dòng (`0` ô khuyết, `0` bản ghi trùng, `0` lỗi vật lý). Hơn thế nữa, kiến trúc **Hybrid (`GRU + Ridge + HistGradientBoosting`) + `XGBoost Residual`** kết hợp giao diện **Streamlit Dashboard** đã chứng minh giá trị thực tiễn cao của bộ dữ liệu sạch trong bài toán dự báo thời tiết ngắn hạn và trung hạn (7 ngày).
-
-#### 2. Hạn chế & Hướng phát triển (`Limitations & Future Work`)
-* **Hạn chế:** Biến lượng mưa theo giờ (`precipitation`) có tính chất phân phối lệch phải (Zero-inflated / Sparse spikes) do các cơn mưa rào đối lưu nhiệt đới xảy ra cục bộ và đột ngột, nên hệ số $R^2$ theo từng giờ (`0.3598`) thấp hơn các biến liên tục như áp suất (`0.9821`) và nhiệt độ (`0.9743`).
-* **Hướng phát triển:** Tích hợp thêm dữ liệu ảnh mây vệ tinh (Himawari-9) hoặc radar thời tiết và mô hình phân loại 2 giai đoạn (*Hurdle / Tweedie Loss*) để nâng cao hơn nữa độ chính xác dự báo lượng mưa cực đoan theo giờ.
-
-#### 3. Tài liệu tham khảo & Nguồn API (`References`)
-1. **Open-Meteo Historical Weather API (ERA5 / ECMWF Reanalysis):** `https://open-meteo.com/en/docs/historical-weather-api`
-2. **Open-Meteo Weather Forecast API:** `https://open-meteo.com/en/docs`
-3. **WeatherAPI.com Real-Time & Forecast REST API:** `https://www.weatherapi.com/docs/`
-4. **Vaisala Xweather Conditions API:** `https://www.xweather.com/docs/weather-api/endpoints/conditions`
-5. **FreeOpenAPI.dev Weather Endpoint:** `https://www.freeopenapi.dev/`
-6. **Thư viện Khoa học Dữ liệu & Học máy:** `pandas`, `numpy`, `matplotlib`, `scikit-learn`, `xgboost`, `torch` (PyTorch), `statsmodels`, `streamlit`.
+| Hạng mục | Trước | Sau |
+| :-- | :-- | :-- |
+| Response API bị thiếu | Lỗi request chỉ được `print`; 11 cặp nguồn × địa điểm không có dữ liệu mà không bị phát hiện | Request log + bảng coverage + `fig7` |
+| Nhãn nguồn | Archive và Forecast đều là "Open-Meteo SDK"; không phân biệt quan trắc / dự báo | `source_api`, `source_family`, `record_type`, `run_id`, `collected_at` |
+| Timestamp | Xóa `T` và `+07:00` bằng regex, làm tròn xuống (17:45 → 17:00) | Parse theo múi giờ, làm tròn về giờ gần nhất (17:45 → 18:00) |
+| Mốc "chưa xảy ra" | `now()` lúc chạy bước làm sạch | Thời điểm thu thập của từng lần chạy |
+| Trùng lặp | Một mức | 3 mức, có quy tắc ưu tiên theo loại bản ghi |
+| Hợp nhất đa nguồn | Trung bình, không kiểm tra | Trung bình + độ lệch + cờ xung đột + bảng độ lệch hệ thống từng nguồn |
+| Nội suy | Nội suy, ffill/bfill không giới hạn, không đánh dấu | Chỉ gap ≤ 6 giờ, có cờ `is_imputed` |
+| Thu thập theo thời gian | Một lần duy nhất | `--mode realtime --repeat` nối thêm theo `run_id` |
+| Đánh giá mô hình | Chia cố định 70/15/15; MAE 0.389 °C là sai số **1 giờ tới** nhưng được trình bày như kết quả dự báo 7 ngày | Walk-forward, MAE theo lead time 1–168 giờ, so với 3 baseline, CI theo fold |
+| Rò rỉ dữ liệu khi train | XGBoost học phần dư in-sample; trọng số kết hợp cố định 0.15/0.10/0.75/0.5 | Phần dư out-of-fold; trọng số NNLS và hệ số co chọn trên khối validation trong tập train |
+| Train/serve skew | Train trên ERA5, inference trên trung bình nhiều nguồn; `std` khác `ddof` giữa train và inference; `location_id` là biến số | Một hàm feature dùng chung; inference dùng lịch sử Open-Meteo; bỏ `location_id` |
+| Housekeeping | Hai script `04_`; thiếu `pyarrow`; link `file:///C:/...` hỏng; WeatherAPI gọi qua `http://` | Đánh số 01–07; pin phiên bản; https; README theo khung báo cáo |

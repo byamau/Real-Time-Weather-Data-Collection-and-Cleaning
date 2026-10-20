@@ -1,59 +1,86 @@
 """
 Topic 6: Real-Time Weather Data Collection and Cleaning
-Step 1: Multi-Source Historical Archive & Real-Time Weather Data Collection
-Integrates Open-Meteo Historical Archive API + 4 Real-Time Weather APIs across 20 Locations in Vietnam:
-  1. Open-Meteo Archive SDK (`https://archive-api.open-meteo.com/v1/archive` - ERA5/ECMWF Historical Reanalysis)
-     + Real-Time Recent Bridge (`https://api.open-meteo.com/v1/forecast` for the last 5 days where ERA5 is pending)
-  2. WeatherAPI.com (`/v1/forecast.json` & `current`, 3 days hourly + realtime)
-  3. Vaisala Xweather API (`/conditions`, 24h hourly station-assimilated conditions)
-  4. FreeOpenAPI.dev (`/api/v1/weather/current`, live real-time snapshot)
+Step 1: Multi-source weather data collection through web APIs (our own collection code)
+
+Two collection modes
+--------------------
+  --mode full      (default) One complete collection run:
+                     1A. Open-Meteo Archive API  (ERA5 reanalysis, last ~92 days, hourly)
+                     1B. Open-Meteo Forecast API (past_days=5: recent hourly model values)
+                     2.  WeatherAPI.com /v1/forecast.json (current conditions + hourly values of 3 days)
+                     3.  Vaisala Xweather /conditions      (hourly conditions of the last 24 h)
+                     4.  FreeOpenAPI.dev /weather/current  (current snapshot)
+  --mode realtime  Poll only the *current conditions* of every source, optionally repeated
+                   (--repeat N --interval-min M). Each poll is a separate run, so the raw file
+                   accumulates real observations over time ("combine observations over time").
+
+What is recorded for every run
+------------------------------
+  data/raw/raw_weather_data.csv     raw rows, APPENDED across runs (use --fresh to start over).
+                                    Each row carries run_id, collected_at, source_api,
+                                    source_family and record_type.
+  data/raw/api_request_log.csv      one line per API request: status (ok / empty / http_error /
+                                    network_error / parse_error / missing_key), HTTP code,
+                                    latency, records expected vs. returned. This is how
+                                    "missing API responses" are detected in step 2.
+  data/raw/responses/<run_id>.json  JSON payload excerpts per request (no API keys).
+
+API keys are read from .env (WEATHERAPI_KEY, XWEATHER_CLIENT_ID, XWEATHER_CLIENT_SECRET,
+FREE_OPENAPI_DEV_KEY) and are masked in every log.
 """
 
+import argparse
 import json
 import os
+import re
+import socket
 import sys
 import time
-import urllib.request
 import urllib.error
+import urllib.parse
+import urllib.request
 from datetime import datetime, timedelta
 from pathlib import Path
-import openmeteo_requests
-import pandas as pd
+
 import numpy as np
-import requests_cache
-from retry_requests import retry
+import pandas as pd
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 RAW_DIR = BASE_DIR / "data" / "raw"
-RAW_DIR.mkdir(parents=True, exist_ok=True)
+RESP_DIR = RAW_DIR / "responses"
+RAW_CSV = RAW_DIR / "raw_weather_data.csv"
+REQUEST_LOG_CSV = RAW_DIR / "api_request_log.csv"
 
+LOCAL_TZ = "Asia/Ho_Chi_Minh"
+ARCHIVE_DAYS = 92
+RECENT_PAST_DAYS = 5
 
-def load_env_file(env_path: Path) -> dict:
-    """Load API credentials from .env file into environment variables."""
-    env_vars = {}
-    if env_path.exists():
-        for line in env_path.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                k, v = line.split("=", 1)
-                env_vars[k.strip()] = v.strip()
-                os.environ.setdefault(k.strip(), v.strip())
-    return env_vars
+HOURLY_VARS = [
+    "temperature_2m",
+    "wind_speed_10m",
+    "relative_humidity_2m",
+    "precipitation",
+    "pressure_msl",
+    "wind_gusts_10m",
+]
 
+RAW_COLUMNS = [
+    "run_id", "collected_at", "date", "location_id", "city", "region",
+    "source_api", "source_family", "record_type", "endpoint",
+    "requested_lat", "requested_lon", "api_latitude", "api_longitude", "elevation_m", "timezone",
+    *HOURLY_VARS,
+]
 
-def http_get_json(url: str, headers: dict = None, timeout: int = 15) -> dict:
-    req_headers = {"User-Agent": "VN-MultiAPI-WeatherCollector/3.0"}
-    if headers:
-        req_headers.update(headers)
-    req = urllib.request.Request(url, headers=req_headers)
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+# record_type vocabulary (used by step 2 to decide which record wins inside one source family)
+#   reanalysis_hourly  : ERA5 reanalysis (Open-Meteo Archive)
+#   model_hourly       : hourly model values for past hours (Open-Meteo Forecast past_days)
+#   conditions_hourly  : Xweather hourly conditions (station-assimilated analysis)
+#   current_conditions : "current" snapshot of a provider at request time
+#   forecast_hourly    : hourly values from a forecast endpoint (WeatherAPI forecast.json)
 
-
-# 20 Locations matching the exact latitude & longitude arrays provided by the user (clean names without parentheses)
 LOCATION_METADATA = [
     {"location_id": 1,  "city": "Phu Loc - Hue",      "region": "Central",           "req_lat": 16.1667, "req_lon": 107.8333},
     {"location_id": 2,  "city": "Da Lat - Lam Dong",  "region": "Central Highlands", "req_lat": 11.4111, "req_lon": 107.8444},
@@ -78,267 +105,262 @@ LOCATION_METADATA = [
 ]
 
 
-def _extract_om_dataframe(response, meta: dict, source_label: str) -> pd.DataFrame:
-    tz_name = (
-        response.Timezone().decode("utf-8")
-        if isinstance(response.Timezone(), bytes)
-        else str(response.Timezone())
-    )
-    hourly = response.Hourly()
-    hourly_data = {
-        "date": pd.date_range(
-            start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
-            end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
-            freq=pd.Timedelta(seconds=hourly.Interval()),
-            inclusive="left",
-        )
-        .tz_convert(tz_name)
-        .astype(str),
+# =============================================================================
+# Helpers: environment, HTTP with status logging
+# =============================================================================
+def load_env_file(env_path: Path) -> None:
+    if env_path.exists():
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip())
+
+
+SECRET_PARAM_RE = re.compile(r"(key|client_id|client_secret|apikey|api_key)=([^&]+)", re.IGNORECASE)
+
+
+def mask_url(url: str) -> str:
+    return SECRET_PARAM_RE.sub(lambda m: f"{m.group(1)}=***", url)
+
+
+class RequestLogger:
+    """Collects one log line per API request so missing responses can be audited later."""
+
+    def __init__(self, run_id: str):
+        self.run_id = run_id
+        self.rows: list[dict] = []
+        self.payloads: list[dict] = []
+
+    def log(self, source_api, endpoint, location_id, status, http_status=None, latency_ms=0.0,
+            records_expected=0, records_returned=0, error=""):
+        self.rows.append({
+            "run_id": self.run_id,
+            "requested_at": now_local().strftime("%Y-%m-%d %H:%M:%S"),
+            "source_api": source_api,
+            "endpoint": mask_url(endpoint),
+            "location_id": location_id,
+            "status": status,
+            "http_status": http_status,
+            "latency_ms": round(latency_ms, 1),
+            "records_expected": records_expected,
+            "records_returned": records_returned,
+            "error_message": str(error)[:300],
+        })
+
+    def keep_payload(self, source_api, location_id, payload):
+        self.payloads.append({"source_api": source_api, "location_id": location_id, "payload": payload})
+
+
+def now_local() -> pd.Timestamp:
+    return pd.Timestamp.now(tz=LOCAL_TZ).tz_localize(None)
+
+
+def http_get_json(url: str, headers: dict | None = None, timeout: int = 15):
+    """Return (payload, http_status, status, error, latency_ms). Never raises."""
+    req_headers = {"User-Agent": "VN-Weather-Topic6-Collector/4.0"}
+    if headers:
+        req_headers.update(headers)
+    req = urllib.request.Request(url, headers=req_headers)
+    t0 = time.perf_counter()
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            body = resp.read().decode("utf-8")
+            code = resp.status
+        latency = (time.perf_counter() - t0) * 1000
+        try:
+            return json.loads(body), code, "ok", "", latency
+        except json.JSONDecodeError as exc:
+            return None, code, "parse_error", exc, latency
+    except urllib.error.HTTPError as exc:
+        return None, exc.code, "http_error", exc.reason, (time.perf_counter() - t0) * 1000
+    except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError) as exc:
+        return None, None, "network_error", exc, (time.perf_counter() - t0) * 1000
+
+
+def base_row(meta: dict, run_id: str, collected_at: str, source_api: str, family: str,
+             record_type: str, endpoint: str) -> dict:
+    return {
+        "run_id": run_id,
+        "collected_at": collected_at,
         "location_id": meta["location_id"],
         "city": meta["city"],
         "region": meta["region"],
-        "source_api": source_label,
+        "source_api": source_api,
+        "source_family": family,
+        "record_type": record_type,
+        "endpoint": endpoint,
         "requested_lat": meta["req_lat"],
         "requested_lon": meta["req_lon"],
-        "api_latitude": round(float(response.Latitude()), 6),
-        "api_longitude": round(float(response.Longitude()), 6),
-        "elevation_m": round(float(response.Elevation()), 1),
-        "timezone": tz_name,
-        "temperature_2m": hourly.Variables(0).ValuesAsNumpy(),
-        "wind_speed_10m": hourly.Variables(1).ValuesAsNumpy(),
-        "relative_humidity_2m": hourly.Variables(2).ValuesAsNumpy(),
-        "precipitation": hourly.Variables(3).ValuesAsNumpy(),
-        "pressure_msl": hourly.Variables(4).ValuesAsNumpy(),
-        "wind_gusts_10m": hourly.Variables(5).ValuesAsNumpy(),
-    }
-    return pd.DataFrame(data=hourly_data)
-
-
-def collect_all_four_weather_apis():
-    load_env_file(BASE_DIR / ".env")
-    weatherapi_key = os.environ.get("WEATHERAPI_KEY", "")
-    freeopenapi_key = os.environ.get("FREE_OPENAPI_DEV_KEY", "")
-    xweather_id = os.environ.get("XWEATHER_CLIENT_ID", "")
-    xweather_secret = os.environ.get("XWEATHER_CLIENT_SECRET", "")
-
-    all_frames = []
-    raw_json_archive = {
-        "open_meteo_archive_sdk": [],
-        "open_meteo_realtime_bridge": [],
-        "weatherapi_com": [],
-        "xweather_api": [],
-        "freeopenapi_dev": [],
     }
 
-    cache_path = str(BASE_DIR / ".cache_archive")
-    cache_session = requests_cache.CachedSession(cache_path, expire_after=3600)
-    retry_session = retry(cache_session, retries=5, backoff_factor=0.3)
-    openmeteo = openmeteo_requests.Client(session=retry_session)
 
-    hourly_vars = [
-        "temperature_2m",
-        "wind_speed_10m",
-        "relative_humidity_2m",
-        "precipitation",
-        "pressure_msl",
-        "wind_gusts_10m",
-    ]
+# =============================================================================
+# Source 1: Open-Meteo (Archive ERA5 + Forecast past_days) via the official SDK
+# =============================================================================
+def collect_open_meteo_hourly(logger: RequestLogger, run_id: str, collected_at: str) -> list[pd.DataFrame]:
+    import openmeteo_requests
+    import requests_cache
+    from retry_requests import retry
 
-    # =========================================================================
-    # SOURCE 1A: Open-Meteo Historical Archive API (`archive-api.open-meteo.com/v1/archive`)
-    # Primary historical ground-truth dataset (ERA5 / ECMWF Reanalysis)
-    # =========================================================================
-    print("=" * 78)
-    print("[SOURCE 1A] COLLECTING PRIMARY HISTORICAL DATA FROM OPEN-METEO ARCHIVE API")
-    print("            Endpoint: https://archive-api.open-meteo.com/v1/archive")
-    print("=" * 78)
+    cache_session = requests_cache.CachedSession(str(BASE_DIR / ".cache_archive"), expire_after=3600)
+    client = openmeteo_requests.Client(session=retry(cache_session, retries=5, backoff_factor=0.3))
 
     end_dt = datetime.now()
-    start_dt = end_dt - timedelta(days=92)
-    start_date_str = start_dt.strftime("%Y-%m-%d")
-    end_date_str = end_dt.strftime("%Y-%m-%d")
-
-    archive_url = "https://archive-api.open-meteo.com/v1/archive"
-    archive_params = {
-        "latitude": [loc["req_lat"] for loc in LOCATION_METADATA],
-        "longitude": [loc["req_lon"] for loc in LOCATION_METADATA],
-        "start_date": start_date_str,
-        "end_date": end_date_str,
-        "hourly": hourly_vars,
-        "timezone": "Asia/Bangkok",
-    }
-
-    archive_responses = openmeteo.weather_api(archive_url, params=archive_params)
-    for idx, response in enumerate(archive_responses):
-        meta = LOCATION_METADATA[idx]
-        df_arch = _extract_om_dataframe(response, meta, "Open-Meteo SDK")
-        all_frames.append(df_arch)
-        meta["elevation_m"] = round(float(response.Elevation()), 1)
-
-        raw_json_archive["open_meteo_archive_sdk"].append({
-            "location_id": meta["location_id"],
-            "city": meta["city"],
-            "endpoint": archive_url,
-            "start_date": start_date_str,
-            "end_date": end_date_str,
-            "api_latitude": float(response.Latitude()),
-            "api_longitude": float(response.Longitude()),
-            "elevation_m": float(response.Elevation()),
-            "rows_collected": len(df_arch),
-        })
-        print(f"  [Archive API {idx+1:02d}/20] {meta['city']:<18} -> {len(df_arch):,} hourly records ({start_date_str} to {end_date_str})")
-
-    # =========================================================================
-    # SOURCE 1B: Open-Meteo Real-Time Bridge (`api.open-meteo.com/v1/forecast`)
-    # Fills the last 5 days where ERA5 Archive is still pending station assimilation
-    # =========================================================================
-    print("\n" + "=" * 78)
-    print("[SOURCE 1B] COLLECTING OPEN-METEO REAL-TIME BRIDGE (LAST 5 DAYS + TODAY)")
-    print("            Endpoint: https://api.open-meteo.com/v1/forecast")
-    print("=" * 78)
-
-    bridge_url = "https://api.open-meteo.com/v1/forecast"
-    bridge_params = {
-        "latitude": [loc["req_lat"] for loc in LOCATION_METADATA],
-        "longitude": [loc["req_lon"] for loc in LOCATION_METADATA],
-        "hourly": hourly_vars,
-        "timezone": "Asia/Bangkok",
-        "past_days": 5,
-        "forecast_days": 1,
-    }
-    bridge_responses = openmeteo.weather_api(bridge_url, params=bridge_params)
-    for idx, response in enumerate(bridge_responses):
-        meta = LOCATION_METADATA[idx]
-        df_bridge = _extract_om_dataframe(response, meta, "Open-Meteo SDK")
-        all_frames.append(df_bridge)
-        raw_json_archive["open_meteo_realtime_bridge"].append({
-            "location_id": meta["location_id"],
-            "city": meta["city"],
-            "endpoint": bridge_url,
-            "rows_collected": len(df_bridge),
-        })
-        print(f"  [Bridge API  {idx+1:02d}/20] {meta['city']:<18} -> {len(df_bridge):,} recent hourly records")
-
-    # =========================================================================
-    # SOURCE 2: WeatherAPI.com (/v1/forecast.json - 3 Days Hourly + Current)
-    # =========================================================================
-    print("\n" + "=" * 78)
-    print("[SOURCE 2/4] COLLECTING FROM WEATHERAPI.COM (/v1/forecast.json)")
-    print("=" * 78)
-
-    wapi_rows = []
-    for idx, meta in enumerate(LOCATION_METADATA):
-        lat, lon = meta["req_lat"], meta["req_lon"]
-        w_url = f"http://api.weatherapi.com/v1/forecast.json?key={weatherapi_key}&q={lat},{lon}&days=3&aqi=no&alerts=no"
+    start_dt = end_dt - timedelta(days=ARCHIVE_DAYS)
+    jobs = [
+        (
+            "Open-Meteo Archive", "reanalysis_hourly",
+            "https://archive-api.open-meteo.com/v1/archive",
+            {"start_date": start_dt.strftime("%Y-%m-%d"), "end_date": end_dt.strftime("%Y-%m-%d")},
+            (ARCHIVE_DAYS + 1) * 24,
+        ),
+        (
+            "Open-Meteo Forecast", "model_hourly",
+            "https://api.open-meteo.com/v1/forecast",
+            {"past_days": RECENT_PAST_DAYS, "forecast_days": 1},
+            (RECENT_PAST_DAYS + 1) * 24,
+        ),
+    ]
+    frames = []
+    for source_api, record_type, url, extra, expected in jobs:
+        print(f"[{source_api}] {url}")
+        params = {
+            "latitude": [loc["req_lat"] for loc in LOCATION_METADATA],
+            "longitude": [loc["req_lon"] for loc in LOCATION_METADATA],
+            "hourly": HOURLY_VARS,
+            "timezone": "Asia/Bangkok",
+            **extra,
+        }
+        t0 = time.perf_counter()
         try:
-            payload = http_get_json(w_url)
+            responses = client.weather_api(url, params=params)
+        except Exception as exc:  # the SDK raises on HTTP / limit errors
+            latency = (time.perf_counter() - t0) * 1000
+            for meta in LOCATION_METADATA:
+                logger.log(source_api, url, meta["location_id"], "network_error", None, latency, expected, 0, exc)
+            print(f"   FAILED for all locations: {exc}")
+            continue
+        latency = (time.perf_counter() - t0) * 1000 / max(1, len(LOCATION_METADATA))
+
+        for idx, response in enumerate(responses):
+            meta = LOCATION_METADATA[idx]
+            tz_name = response.Timezone()
+            tz_name = tz_name.decode("utf-8") if isinstance(tz_name, bytes) else str(tz_name)
+            hourly = response.Hourly()
+            times = pd.date_range(
+                start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
+                end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
+                freq=pd.Timedelta(seconds=hourly.Interval()),
+                inclusive="left",
+            ).tz_convert(tz_name)
+            df = pd.DataFrame({"date": times.astype(str)})
+            for k, v in base_row(meta, run_id, collected_at, source_api, "Open-Meteo", record_type, url).items():
+                df[k] = v
+            df["api_latitude"] = round(float(response.Latitude()), 6)
+            df["api_longitude"] = round(float(response.Longitude()), 6)
+            df["elevation_m"] = round(float(response.Elevation()), 1)
+            df["timezone"] = tz_name
+            for v_idx, var in enumerate(HOURLY_VARS):
+                df[var] = hourly.Variables(v_idx).ValuesAsNumpy()
+            meta["elevation_m"] = df["elevation_m"].iloc[0]
+
+            n_valid = int(df[HOURLY_VARS].notna().any(axis=1).sum())
+            status = "ok" if n_valid > 0 else "empty"
+            logger.log(source_api, url, meta["location_id"], status, 200, latency, expected, n_valid)
+            frames.append(df)
+            print(f"   {meta['city']:<18} -> {len(df):,} rows ({n_valid:,} with values)")
+    return frames
+
+
+# =============================================================================
+# Source 2: WeatherAPI.com
+# =============================================================================
+def weatherapi_row(meta, run_id, collected_at, record_type, endpoint, loc_info, obj, time_key):
+    row = base_row(meta, run_id, collected_at, "WeatherAPI.com", "WeatherAPI.com", record_type, endpoint)
+    row.update({
+        "date": obj.get(time_key),
+        "api_latitude": loc_info.get("lat", meta["req_lat"]),
+        "api_longitude": loc_info.get("lon", meta["req_lon"]),
+        "elevation_m": meta.get("elevation_m", np.nan),
+        "timezone": loc_info.get("tz_id", LOCAL_TZ),
+        "temperature_2m": obj.get("temp_c"),
+        "wind_speed_10m": obj.get("wind_kph"),
+        "relative_humidity_2m": obj.get("humidity"),
+        "precipitation": obj.get("precip_mm"),
+        "pressure_msl": obj.get("pressure_mb"),
+        "wind_gusts_10m": obj.get("gust_kph"),
+    })
+    return row
+
+
+def collect_weatherapi(logger, run_id, collected_at, current_only: bool) -> list[dict]:
+    key = os.environ.get("WEATHERAPI_KEY", "")
+    endpoint = "https://api.weatherapi.com/v1/current.json" if current_only else "https://api.weatherapi.com/v1/forecast.json"
+    expected = 1 if current_only else 1 + 3 * 24
+    print(f"[WeatherAPI.com] {endpoint}")
+    rows = []
+    for meta in LOCATION_METADATA:
+        q = f"{meta['req_lat']},{meta['req_lon']}"
+        url = f"{endpoint}?key={key}&q={q}&aqi=no" + ("" if current_only else "&days=3&alerts=no")
+        if not key:
+            logger.log("WeatherAPI.com", url, meta["location_id"], "missing_key", None, 0, expected, 0, "WEATHERAPI_KEY not set")
+            continue
+        payload, code, status, err, latency = http_get_json(url)
+        n = 0
+        if status == "ok":
             loc_info = payload.get("location", {})
             curr = payload.get("current", {})
-            f_days = payload.get("forecast", {}).get("forecastday", [])
-
-            raw_json_archive["weatherapi_com"].append({
-                "location_id": meta["location_id"],
-                "city": meta["city"],
-                "location_response": loc_info,
-                "current_response": curr,
-                "forecast_days_count": len(f_days),
-            })
-
             if curr and "last_updated" in curr:
-                wapi_rows.append({
-                    "date": curr.get("last_updated"),
-                    "location_id": meta["location_id"],
-                    "city": meta["city"],
-                    "region": meta["region"],
-                    "source_api": "WeatherAPI.com",
-                    "requested_lat": lat,
-                    "requested_lon": lon,
-                    "api_latitude": loc_info.get("lat", lat),
-                    "api_longitude": loc_info.get("lon", lon),
-                    "elevation_m": meta.get("elevation_m", np.nan),
-                    "timezone": loc_info.get("tz_id", "Asia/Ho_Chi_Minh"),
-                    "temperature_2m": curr.get("temp_c"),
-                    "wind_speed_10m": curr.get("wind_kph"),
-                    "relative_humidity_2m": curr.get("humidity"),
-                    "precipitation": curr.get("precip_mm"),
-                    "pressure_msl": curr.get("pressure_mb"),
-                    "wind_gusts_10m": curr.get("gust_kph"),
-                })
-
-            hour_cnt = 0
-            for day_obj in f_days:
-                for h_obj in day_obj.get("hour", []):
-                    hour_cnt += 1
-                    wapi_rows.append({
-                        "date": h_obj.get("time"),
-                        "location_id": meta["location_id"],
-                        "city": meta["city"],
-                        "region": meta["region"],
-                        "source_api": "WeatherAPI.com",
-                        "requested_lat": lat,
-                        "requested_lon": lon,
-                        "api_latitude": loc_info.get("lat", lat),
-                        "api_longitude": loc_info.get("lon", lon),
-                        "elevation_m": meta.get("elevation_m", np.nan),
-                        "timezone": loc_info.get("tz_id", "Asia/Ho_Chi_Minh"),
-                        "temperature_2m": h_obj.get("temp_c"),
-                        "wind_speed_10m": h_obj.get("wind_kph"),
-                        "relative_humidity_2m": h_obj.get("humidity"),
-                        "precipitation": h_obj.get("precip_mm"),
-                        "pressure_msl": h_obj.get("pressure_mb"),
-                        "wind_gusts_10m": h_obj.get("gust_kph"),
-                    })
-            print(f"  [WeatherAPI {idx+1:02d}/20] {meta['city']:<18} -> {hour_cnt} hourly + 1 current obs")
-        except Exception as e:
-            print(f"  [WeatherAPI {idx+1:02d}/20] {meta['city']:<18} -> ERROR: {e}")
+                rows.append(weatherapi_row(meta, run_id, collected_at, "current_conditions", endpoint, loc_info, curr, "last_updated"))
+                n += 1
+            if not current_only:
+                for day in payload.get("forecast", {}).get("forecastday", []):
+                    for h in day.get("hour", []):
+                        rows.append(weatherapi_row(meta, run_id, collected_at, "forecast_hourly", endpoint, loc_info, h, "time"))
+                        n += 1
+            status = "ok" if n > 0 else "empty"
+            logger.keep_payload("WeatherAPI.com", meta["location_id"], {"location": loc_info, "current": curr})
+        logger.log("WeatherAPI.com", url, meta["location_id"], status, code, latency, expected, n, err)
+        print(f"   {meta['city']:<18} -> {status} ({n} records)")
         time.sleep(0.1)
+    return rows
 
-    if wapi_rows:
-        all_frames.append(pd.DataFrame(wapi_rows))
 
-    # =========================================================================
-    # SOURCE 3: Vaisala Xweather API (/conditions 24h)
-    # =========================================================================
-    print("\n" + "=" * 78)
-    print("[SOURCE 3/4] COLLECTING FROM XWEATHER API (/conditions)")
-    print("=" * 78)
-
-    xw_rows = []
-    for idx, meta in enumerate(LOCATION_METADATA):
+# =============================================================================
+# Source 3: Vaisala Xweather /conditions
+# =============================================================================
+def collect_xweather(logger, run_id, collected_at, hours_back: int) -> list[dict]:
+    cid = os.environ.get("XWEATHER_CLIENT_ID", "")
+    secret = os.environ.get("XWEATHER_CLIENT_SECRET", "")
+    print("[Xweather API] https://data.api.xweather.com/conditions")
+    rows = []
+    for meta in LOCATION_METADATA:
         lat, lon = meta["req_lat"], meta["req_lon"]
-        cond_url = (
+        url = (
             f"https://data.api.xweather.com/conditions/{lat},{lon}"
-            f"?client_id={xweather_id}&client_secret={xweather_secret}&from=-24hours&to=now&plimit=24"
+            f"?client_id={cid}&client_secret={secret}&from=-{hours_back}hours&to=now&plimit={hours_back}"
         )
-        try:
-            payload = http_get_json(cond_url)
-            resp_list = payload.get("response", [])
-            periods = resp_list[0].get("periods", []) if resp_list else []
-            place_loc = resp_list[0].get("loc", {}) if resp_list else {}
-            prof = resp_list[0].get("profile", {}) if resp_list else {}
-
-            raw_json_archive["xweather_api"].append({
-                "location_id": meta["location_id"],
-                "city": meta["city"],
-                "loc": place_loc,
-                "profile": prof,
-                "periods_count": len(periods),
-                "sample_period": periods[0] if periods else None,
-            })
-
-            for p in periods:
-                xw_rows.append({
+        if not (cid and secret):
+            logger.log("Xweather API", url, meta["location_id"], "missing_key", None, 0, hours_back, 0, "XWEATHER credentials not set")
+            continue
+        payload, code, status, err, latency = http_get_json(url)
+        n = 0
+        if status == "ok":
+            if payload.get("success") is False:
+                status, err = "http_error", (payload.get("error") or {}).get("description", "success=false")
+            resp_list = payload.get("response") or []
+            first = resp_list[0] if resp_list else {}
+            place_loc, prof = first.get("loc", {}), first.get("profile", {})
+            for p in first.get("periods", []):
+                row = base_row(meta, run_id, collected_at, "Xweather API", "Xweather API", "conditions_hourly",
+                               "https://data.api.xweather.com/conditions")
+                row.update({
                     "date": p.get("dateTimeISO"),
-                    "location_id": meta["location_id"],
-                    "city": meta["city"],
-                    "region": meta["region"],
-                    "source_api": "Xweather API",
-                    "requested_lat": lat,
-                    "requested_lon": lon,
                     "api_latitude": place_loc.get("lat", lat),
                     "api_longitude": place_loc.get("long", lon),
                     "elevation_m": prof.get("elevM", meta.get("elevation_m", np.nan)),
-                    "timezone": prof.get("tz", "Asia/Ho_Chi_Minh"),
+                    "timezone": prof.get("tz", LOCAL_TZ),
                     "temperature_2m": p.get("tempC"),
                     "wind_speed_10m": p.get("windSpeedKPH"),
                     "relative_humidity_2m": p.get("humidity"),
@@ -346,46 +368,42 @@ def collect_all_four_weather_apis():
                     "pressure_msl": p.get("pressureMB"),
                     "wind_gusts_10m": p.get("windGustKPH"),
                 })
-            print(f"  [Xweather   {idx+1:02d}/20] {meta['city']:<18} -> {len(periods)} hourly condition periods")
-        except Exception as e:
-            print(f"  [Xweather   {idx+1:02d}/20] {meta['city']:<18} -> ERROR: {e}")
+                rows.append(row)
+                n += 1
+            if status == "ok" and n == 0:
+                status = "empty"
+            logger.keep_payload("Xweather API", meta["location_id"], {"loc": place_loc, "profile": prof, "periods": n})
+        logger.log("Xweather API", url, meta["location_id"], status, code, latency, hours_back, n, err)
+        print(f"   {meta['city']:<18} -> {status} ({n} records)")
         time.sleep(0.12)
+    return rows
 
-    if xw_rows:
-        all_frames.append(pd.DataFrame(xw_rows))
 
-    # =========================================================================
-    # SOURCE 4: FreeOpenAPI.dev (/api/v1/weather/current)
-    # =========================================================================
-    print("\n" + "=" * 78)
-    print("[SOURCE 4/4] COLLECTING FROM FREEOPENAPI.DEV (/api/v1/weather/current)")
-    print("=" * 78)
-
-    foa_rows = []
-    for idx, meta in enumerate(LOCATION_METADATA):
-        lat, lon = meta["req_lat"], meta["req_lon"]
-        foa_url = f"https://www.freeopenapi.dev/api/v1/weather/current?lat={lat}&lon={lon}"
-        try:
-            payload = http_get_json(foa_url, headers={"X-Api-Key": freeopenapi_key})
-            curr = payload.get("current", {})
-            raw_json_archive["freeopenapi_dev"].append({
-                "location_id": meta["location_id"],
-                "city": meta["city"],
-                "response": payload,
-            })
-            if curr and "timestamp" in curr:
-                foa_rows.append({
+# =============================================================================
+# Source 4: FreeOpenAPI.dev current weather
+# =============================================================================
+def collect_freeopenapi(logger, run_id, collected_at) -> list[dict]:
+    key = os.environ.get("FREE_OPENAPI_DEV_KEY", "")
+    endpoint = "https://www.freeopenapi.dev/api/v1/weather/current"
+    print(f"[FreeOpenAPI.dev] {endpoint}")
+    rows = []
+    for meta in LOCATION_METADATA:
+        url = f"{endpoint}?lat={meta['req_lat']}&lon={meta['req_lon']}"
+        if not key:
+            logger.log("FreeOpenAPI.dev", url, meta["location_id"], "missing_key", None, 0, 1, 0, "FREE_OPENAPI_DEV_KEY not set")
+            continue
+        payload, code, status, err, latency = http_get_json(url, headers={"X-Api-Key": key})
+        n = 0
+        if status == "ok":
+            curr = payload.get("current") or {}
+            if "timestamp" in curr:
+                row = base_row(meta, run_id, collected_at, "FreeOpenAPI.dev", "FreeOpenAPI.dev", "current_conditions", endpoint)
+                row.update({
                     "date": curr.get("timestamp"),
-                    "location_id": meta["location_id"],
-                    "city": meta["city"],
-                    "region": meta["region"],
-                    "source_api": "FreeOpenAPI.dev",
-                    "requested_lat": lat,
-                    "requested_lon": lon,
-                    "api_latitude": payload.get("latitude", lat),
-                    "api_longitude": payload.get("longitude", lon),
+                    "api_latitude": payload.get("latitude", meta["req_lat"]),
+                    "api_longitude": payload.get("longitude", meta["req_lon"]),
                     "elevation_m": meta.get("elevation_m", np.nan),
-                    "timezone": payload.get("timezone", "Asia/Ho_Chi_Minh"),
+                    "timezone": payload.get("timezone", LOCAL_TZ),
                     "temperature_2m": curr.get("temperatureC"),
                     "wind_speed_10m": curr.get("windSpeedKmh"),
                     "relative_humidity_2m": curr.get("humidity"),
@@ -393,36 +411,126 @@ def collect_all_four_weather_apis():
                     "pressure_msl": curr.get("pressureHpa"),
                     "wind_gusts_10m": curr.get("windGustsKmh"),
                 })
-            print(f"  [FreeOpenAPI {idx+1:02d}/20] {meta['city']:<18} -> 1 current obs (timestamp={curr.get('timestamp')})")
-        except Exception as e:
-            print(f"  [FreeOpenAPI {idx+1:02d}/20] {meta['city']:<18} -> ERROR: {e}")
+                rows.append(row)
+                n = 1
+            else:
+                status = "empty"
+            logger.keep_payload("FreeOpenAPI.dev", meta["location_id"], payload)
+        logger.log("FreeOpenAPI.dev", url, meta["location_id"], status, code, latency, 1, n, err)
+        print(f"   {meta['city']:<18} -> {status}")
         time.sleep(0.15)
+    return rows
 
-    if foa_rows:
-        all_frames.append(pd.DataFrame(foa_rows))
 
-    # =========================================================================
-    # Combine All Authentic API Outputs into Raw Dataset
-    # =========================================================================
-    df_raw = pd.concat(all_frames, ignore_index=True)
+# =============================================================================
+# Source 1C (realtime mode): Open-Meteo current conditions, parsed from plain JSON
+# =============================================================================
+def collect_open_meteo_current(logger, run_id, collected_at) -> list[dict]:
+    endpoint = "https://api.open-meteo.com/v1/forecast"
+    query = urllib.parse.urlencode({
+        "latitude": ",".join(str(m["req_lat"]) for m in LOCATION_METADATA),
+        "longitude": ",".join(str(m["req_lon"]) for m in LOCATION_METADATA),
+        "current": ",".join(HOURLY_VARS),
+        "timezone": "Asia/Bangkok",
+    })
+    url = f"{endpoint}?{query}"
+    print(f"[Open-Meteo current] {endpoint}")
+    payload, code, status, err, latency = http_get_json(url)
+    rows = []
+    items = payload if isinstance(payload, list) else ([payload] if payload else [])
+    for idx, meta in enumerate(LOCATION_METADATA):
+        item = items[idx] if idx < len(items) else None
+        cur = (item or {}).get("current") or {}
+        n = 0
+        if status == "ok" and cur.get("time"):
+            row = base_row(meta, run_id, collected_at, "Open-Meteo Forecast", "Open-Meteo", "current_conditions", endpoint)
+            row.update({
+                "date": cur["time"],
+                "api_latitude": item.get("latitude"),
+                "api_longitude": item.get("longitude"),
+                "elevation_m": item.get("elevation"),
+                "timezone": item.get("timezone", "Asia/Bangkok"),
+                **{var: cur.get(var) for var in HOURLY_VARS},
+            })
+            rows.append(row)
+            n = 1
+        st = status if status != "ok" else ("ok" if n else "empty")
+        logger.log("Open-Meteo Forecast", url, meta["location_id"], st, code, latency / len(LOCATION_METADATA), 1, n, err)
+    print(f"   {len(rows)}/{len(LOCATION_METADATA)} locations returned current conditions")
+    return rows
 
-    raw_csv_path = RAW_DIR / "raw_weather_data.csv"
-    df_raw.to_csv(raw_csv_path, index=False, encoding="utf-8-sig")
 
-    raw_json_path = RAW_DIR / "raw_weather_responses.json"
-    with open(raw_json_path, "w", encoding="utf-8") as f:
-        json.dump(raw_json_archive, f, ensure_ascii=False, indent=2)
+# =============================================================================
+# Run orchestration
+# =============================================================================
+def write_outputs(frames: list[pd.DataFrame], logger: RequestLogger, fresh: bool) -> pd.DataFrame:
+    RAW_DIR.mkdir(parents=True, exist_ok=True)
+    RESP_DIR.mkdir(parents=True, exist_ok=True)
+    df_new = pd.concat([f for f in frames if f is not None and len(f)], ignore_index=True) if frames else pd.DataFrame()
+    df_new = df_new.reindex(columns=RAW_COLUMNS)
 
-    print("\n" + "=" * 78)
-    print("MULTI-SOURCE ARCHIVE + REAL-TIME WEATHER DATA COLLECTION SUMMARY")
+    if RAW_CSV.exists() and not fresh:
+        df_old = pd.read_csv(RAW_CSV, low_memory=False)
+        df_all = pd.concat([df_old, df_new], ignore_index=True)
+    else:
+        df_all = df_new
+    df_all.to_csv(RAW_CSV, index=False, encoding="utf-8-sig")
+
+    df_log = pd.DataFrame(logger.rows)
+    if REQUEST_LOG_CSV.exists() and not fresh:
+        df_log = pd.concat([pd.read_csv(REQUEST_LOG_CSV), df_log], ignore_index=True)
+    df_log.to_csv(REQUEST_LOG_CSV, index=False, encoding="utf-8-sig")
+
+    with open(RESP_DIR / f"{logger.run_id}.json", "w", encoding="utf-8") as f:
+        json.dump(logger.payloads, f, ensure_ascii=False, indent=1, default=str)
+    return df_new
+
+
+def run_once(mode: str, fresh: bool) -> None:
+    collected = now_local()
+    run_id = f"{mode}-{collected.strftime('%Y%m%dT%H%M%S')}"
+    collected_at = collected.strftime("%Y-%m-%d %H:%M:%S")
+    logger = RequestLogger(run_id)
     print("=" * 78)
-    for src, cnt in df_raw["source_api"].value_counts().items():
-        print(f"  - {src:<20}: {cnt:>7,} rows")
-    print(f"  - {'TOTAL RAW ROWS':<20}: {len(df_raw):>7,} rows across {df_raw['location_id'].nunique()} locations")
-    print(f"Saved Raw CSV  : {raw_csv_path}")
-    print(f"Saved Raw JSON : {raw_json_path}")
+    print(f"COLLECTION RUN {run_id} (mode={mode})")
     print("=" * 78)
+
+    frames: list[pd.DataFrame] = []
+    if mode == "full":
+        frames += collect_open_meteo_hourly(logger, run_id, collected_at)
+        frames.append(pd.DataFrame(collect_weatherapi(logger, run_id, collected_at, current_only=False)))
+        frames.append(pd.DataFrame(collect_xweather(logger, run_id, collected_at, hours_back=24)))
+    else:
+        frames.append(pd.DataFrame(collect_open_meteo_current(logger, run_id, collected_at)))
+        frames.append(pd.DataFrame(collect_weatherapi(logger, run_id, collected_at, current_only=True)))
+        frames.append(pd.DataFrame(collect_xweather(logger, run_id, collected_at, hours_back=2)))
+    frames.append(pd.DataFrame(collect_freeopenapi(logger, run_id, collected_at)))
+
+    df_new = write_outputs(frames, logger, fresh)
+    log = pd.DataFrame(logger.rows)
+    print("-" * 78)
+    print(f"Rows collected in this run : {len(df_new):,}")
+    if not log.empty:
+        print(log.groupby(["source_api", "status"]).size().to_string())
+    print(f"Raw CSV (appended)         : {RAW_CSV}")
+    print(f"Request log                : {REQUEST_LOG_CSV}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Topic 6 weather data collector")
+    parser.add_argument("--mode", choices=["full", "realtime"], default="full")
+    parser.add_argument("--repeat", type=int, default=1, help="number of polling runs (realtime mode)")
+    parser.add_argument("--interval-min", type=float, default=60.0, help="minutes between polling runs")
+    parser.add_argument("--fresh", action="store_true", help="overwrite raw CSV and request log instead of appending")
+    args = parser.parse_args()
+
+    load_env_file(BASE_DIR / ".env")
+    for i in range(args.repeat):
+        run_once(args.mode, fresh=args.fresh and i == 0)
+        if i < args.repeat - 1:
+            print(f"Sleeping {args.interval_min:.0f} min before next poll ({i + 2}/{args.repeat})...")
+            time.sleep(args.interval_min * 60)
 
 
 if __name__ == "__main__":
-    collect_all_four_weather_apis()
+    main()

@@ -1,0 +1,101 @@
+﻿run_id,source_api,location_id,status,http_status,records_expected,records_returned,evidence,coverage_pct,incomplete
+legacy-run,Open-Meteo Archive,1,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,2,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,3,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,4,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,5,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,6,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,7,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,8,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,9,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,10,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,11,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,12,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,13,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,14,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,15,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,16,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,17,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,18,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,19,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Archive,20,ok,,2232,2232,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,1,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,2,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,3,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,4,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,5,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,6,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,7,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,8,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,9,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,10,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,11,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,12,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,13,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,14,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,15,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,16,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,17,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,18,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,19,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,Open-Meteo Forecast,20,ok,,144,144,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,1,missing,,73,0,inferred_from_raw_rows,0.0,False
+legacy-run,WeatherAPI.com,2,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,3,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,4,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,5,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,6,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,7,missing,,73,0,inferred_from_raw_rows,0.0,False
+legacy-run,WeatherAPI.com,8,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,9,missing,,73,0,inferred_from_raw_rows,0.0,False
+legacy-run,WeatherAPI.com,10,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,11,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,12,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,13,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,14,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,15,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,16,missing,,73,0,inferred_from_raw_rows,0.0,False
+legacy-run,WeatherAPI.com,17,missing,,73,0,inferred_from_raw_rows,0.0,False
+legacy-run,WeatherAPI.com,18,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,19,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,WeatherAPI.com,20,ok,,73,73,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,1,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,2,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,3,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,4,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,5,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,6,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,7,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,8,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,9,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,10,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,11,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,12,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,13,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,14,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,15,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,16,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,17,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,18,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,19,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,Xweather API,20,ok,,24,24,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,1,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,2,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,3,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,4,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,5,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,6,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,7,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,8,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,9,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,10,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,11,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,12,missing,,1,0,inferred_from_raw_rows,0.0,False
+legacy-run,FreeOpenAPI.dev,13,missing,,1,0,inferred_from_raw_rows,0.0,False
+legacy-run,FreeOpenAPI.dev,14,missing,,1,0,inferred_from_raw_rows,0.0,False
+legacy-run,FreeOpenAPI.dev,15,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,16,ok,,1,1,inferred_from_raw_rows,100.0,False
+legacy-run,FreeOpenAPI.dev,17,missing,,1,0,inferred_from_raw_rows,0.0,False
+legacy-run,FreeOpenAPI.dev,18,missing,,1,0,inferred_from_raw_rows,0.0,False
+legacy-run,FreeOpenAPI.dev,19,missing,,1,0,inferred_from_raw_rows,0.0,False
+legacy-run,FreeOpenAPI.dev,20,ok,,1,1,inferred_from_raw_rows,100.0,False

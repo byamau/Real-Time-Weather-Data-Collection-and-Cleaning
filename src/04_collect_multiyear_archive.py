@@ -1,24 +1,29 @@
 """
-Topic 6: Real-Time Weather Data Collection and Cleaning
-Step 4: Multi-Year ERA5 Archive Collection & Cleaning (Modeling Extension Dataset)
+Topic 6 — OPTIONAL extension: multi-year ERA5 archive for walk-forward model evaluation
 
-Why this step exists:
-  - The core Topic 6 dataset (steps 1-3) covers ~3 months, which never contains a full seasonal cycle.
-  - Weather has strong yearly seasonality plus inter-annual variability (ENSO: El Nino / La Nina),
-    so a trustworthy model evaluation needs walk-forward validation across many years.
+This dataset is NOT part of the Topic 6 deliverable. Topic 6 asks for observations collected
+with our own API code and does not accept historical datasets downloaded elsewhere; this
+archive is also collected with our own code, but it is reanalysis history, so it is kept
+separate (data/archive/) and used only to test forecast robustness across years.
 
-What it does:
-  1. Calls `https://archive-api.open-meteo.com/v1/archive` (ERA5 / ECMWF Reanalysis) with our own code,
-     year by year, for the same 20 locations as step 1 (2016-01-01 -> ~6 days ago, ERA5 publication delay).
+Why it exists
+  - The core dataset covers ~3 months, which never contains a full seasonal cycle.
+  - Weather has yearly seasonality plus inter-annual variability (ENSO: El Nino / La Nina),
+    so robustness has to be tested with walk-forward folds spread over many years.
+    START_YEAR = 2014 so that the strong 2015-16 El Nino is covered, as well as the
+    2020-23 La Nina and the 2023-24 El Nino.
+
+What it does
+  1. Calls https://archive-api.open-meteo.com/v1/archive (ERA5 reanalysis) year by year for the
+     same 20 locations as step 1 (START_YEAR -> ~6 days ago, ERA5 publication delay).
   2. Respects the Open-Meteo free-tier limits (600 calls/min, 5,000 calls/hour, 10,000 calls/day).
-     Requests longer than 2 weeks are billed as multiple calls, so one year x 20 locations ~= 521 calls.
-     A client-side rolling budget waits automatically before each request.
-  3. Saves one resumable parquet chunk per year (`data/archive/chunks/era5_<year>.parquet`), so a re-run
-     only downloads what is missing.
-  4. Cleans the combined series with the same rules as step 2 (range validation, gust consistency,
-     interpolation of short gaps, continuous hourly grid, 2-decimal rounding) and writes:
-       - data/archive/era5_multiyear_cleaned.parquet
-       - data/archive/archive_quality_report.json
+     Requests longer than 2 weeks are billed as multiple calls (one year x 20 locations ~= 521).
+  3. Saves one resumable parquet chunk per year (data/archive/chunks/era5_<year>.parquet).
+  4. Cleans the combined series with the rules of step 2 (range validation, gust consistency,
+     interpolation of gaps <= 6 h only, continuous hourly grid, 2-decimal rounding) and writes
+       data/archive/era5_multiyear_cleaned.parquet and data/archive/archive_quality_report.json
+
+Then:  python src/05_walk_forward_evaluation.py --data archive
 """
 
 import importlib.util
@@ -44,7 +49,7 @@ CHUNK_DIR = ARCHIVE_DIR / "chunks"
 CHUNK_DIR.mkdir(parents=True, exist_ok=True)
 
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
-START_YEAR = 2016
+START_YEAR = 2014
 ERA5_DELAY_DAYS = 6
 TIMEZONE = "Asia/Bangkok"
 
@@ -248,10 +253,10 @@ def clean_multiyear_archive(chunk_paths: list[Path]) -> tuple[pd.DataFrame, dict
         for meta_col in ["location_id", "city", "region", "requested_lat", "requested_lon", "elevation_m"]:
             g[meta_col] = g[meta_col].ffill().bfill()
         for var in HOURLY_VARS:
-            if var == "precipitation":
-                g[var] = g[var].fillna(0.0)
-            else:
-                g[var] = g[var].interpolate(method="time", limit=6).ffill().bfill()
+            miss = g[var].isna()
+            run_len = miss.groupby((miss != miss.shift()).cumsum()).transform("sum")
+            short_gap = miss & (run_len <= 6)
+            g[var] = g[var].where(~short_gap, g[var].interpolate(method="time", limit_area="inside"))
         cleaned_groups.append(g.reset_index())
 
     df_clean = pd.concat(cleaned_groups, ignore_index=True)
@@ -290,7 +295,7 @@ def clean_multiyear_archive(chunk_paths: list[Path]) -> tuple[pd.DataFrame, dict
 
 def main():
     print("=" * 78)
-    print("STEP 4: MULTI-YEAR ERA5 ARCHIVE COLLECTION (2016 -> NOW) FOR WALK-FORWARD VALIDATION")
+    print(f"STEP 4 (OPTIONAL): MULTI-YEAR ERA5 ARCHIVE ({START_YEAR} -> NOW) FOR WALK-FORWARD VALIDATION")
     print(f"        Endpoint: {ARCHIVE_URL}")
     print("=" * 78)
 
