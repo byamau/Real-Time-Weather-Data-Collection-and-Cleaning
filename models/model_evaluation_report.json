@@ -1,107 +1,1508 @@
 {
-  "model_name": "Hybrid (GRU + Ridge + HistGradientBoosting) + XGBoost Residual Forecaster",
-  "trained_at": "2026-10-17 18:57:54",
-  "train_rows": 30180,
-  "val_rows": 6460,
-  "test_rows": 6460,
-  "num_features": 58,
-  "stationarity_diagnostics": {
-    "adf_statistic": -3.9569,
-    "adf_pvalue": 0.0016536224572098294,
-    "lag24_autocorrelation": 0.8296
-  },
-  "temperature_model_comparison": {
-    "Seasonal Naive": {
-      "val_mae": 0.7232,
-      "val_rmse": 1.0182,
-      "val_r2": 0.9158,
-      "test_mae": 1.0187,
-      "test_mae_95ci": [
-        0.9947,
-        1.0445
-      ],
-      "test_rmse": 1.4423,
-      "test_r2": 0.8483,
-      "train_time_sec": 0.001
+  "model_name": "Recursive hybrid forecaster: weighted (Ridge + HistGradientBoosting + GRU) + out-of-fold XGBoost residual, damped towards climatology",
+  "trained_at": "2026-10-20 18:48:16",
+  "fit_seconds": 421.2,
+  "production_model": {
+    "train": {
+      "rows": 43100,
+      "start": "2026-07-17 00:00:00",
+      "end": "2026-10-17 18:00:00",
+      "climatology": "hourly_mean",
+      "use_doy": false,
+      "n_features": 70,
+      "use_gru": true
     },
-    "Ridge Autoregressive": {
-      "val_mae": 0.3943,
-      "val_rmse": 0.5695,
-      "val_r2": 0.9737,
-      "test_mae": 0.455,
-      "test_mae_95ci": [
-        0.4422,
-        0.4657
-      ],
-      "test_rmse": 0.6425,
-      "test_r2": 0.9699,
-      "train_time_sec": 0.0306
+    "damping": {
+      "calibrated": true,
+      "inner_train_end": "2026-10-03 20:00:00",
+      "origins": 28,
+      "trajectories": 560,
+      "scored_pairs": 70560,
+      "anchor": {
+        "temperature_2m": "climatology",
+        "relative_humidity_2m": "seasonal_naive",
+        "wind_speed_10m": "seasonal_naive",
+        "precipitation": "seasonal_naive",
+        "pressure_msl": "seasonal_naive"
+      },
+      "tau_hours": {
+        "temperature_2m": 96.0,
+        "relative_humidity_2m": 24.0,
+        "wind_speed_10m": 96.0,
+        "precipitation": 6.0,
+        "pressure_msl": 48.0
+      }
     },
-    "GRU Neural Network": {
-      "val_mae": 0.3915,
-      "val_rmse": 0.5569,
-      "val_r2": 0.9748,
-      "test_mae": 0.4603,
-      "test_mae_95ci": [
-        0.4494,
-        0.4704
-      ],
-      "test_rmse": 0.6359,
-      "test_r2": 0.9705,
-      "train_time_sec": 24.166
-    },
-    "HistGradientBoosting": {
-      "val_mae": 0.3541,
-      "val_rmse": 0.5248,
-      "val_r2": 0.9776,
-      "test_mae": 0.4217,
-      "test_mae_95ci": [
-        0.4109,
-        0.4328
-      ],
-      "test_rmse": 0.6415,
-      "test_r2": 0.97,
-      "train_time_sec": 3.1551
-    },
-    "Hybrid GRU + XGBoost Residual": {
-      "val_mae": 0.3461,
-      "val_rmse": 0.5146,
-      "val_r2": 0.9785,
-      "test_mae": 0.4104,
-      "test_mae_95ci": [
-        0.3998,
-        0.4202
-      ],
-      "test_rmse": 0.61,
-      "test_r2": 0.9729,
-      "train_time_sec": 20.6626
+    "models": {
+      "temperature_2m": {
+        "weights": {
+          "ridge": 0.032,
+          "hgb": 0.538,
+          "gru": 0.429
+        },
+        "residual_alpha": 0.25,
+        "inner_validation": {
+          "members_mae_C": {
+            "ridge": 0.3776,
+            "hgb": 0.3718,
+            "gru": 0.378
+          },
+          "base_mae_C": 0.362,
+          "hybrid_mae_C": 0.3585
+        }
+      },
+      "relative_humidity_2m": {
+        "weights": {
+          "ridge": 0.07,
+          "hgb": 0.533,
+          "gru": 0.397
+        },
+        "residual_alpha": 0.0,
+        "inner_validation": {
+          "members_mae_C": {
+            "ridge": 2.249,
+            "hgb": 2.1328,
+            "gru": 2.1816
+          },
+          "base_mae_C": 2.0904,
+          "hybrid_mae_C": 2.0904
+        }
+      },
+      "wind_speed_10m": {
+        "weights": {
+          "ridge": 0.0,
+          "hgb": 0.325,
+          "gru": 0.675
+        },
+        "residual_alpha": 0.5,
+        "inner_validation": {
+          "members_mae_C": {
+            "ridge": 1.5412,
+            "hgb": 1.4971,
+            "gru": 1.5072
+          },
+          "base_mae_C": 1.4842,
+          "hybrid_mae_C": 1.4779
+        }
+      },
+      "precipitation": {
+        "weights": {
+          "ridge": 0.499,
+          "hgb": 0.296,
+          "gru": 0.205
+        },
+        "residual_alpha": 0.0,
+        "inner_validation": {
+          "members_mae_C": {
+            "ridge": 0.2983,
+            "hgb": 0.2707,
+            "gru": 0.3246
+          },
+          "base_mae_C": 0.2853,
+          "hybrid_mae_C": 0.2853
+        }
+      },
+      "pressure_msl": {
+        "weights": {
+          "ridge": 0.327,
+          "hgb": 0.53,
+          "gru": 0.143
+        },
+        "residual_alpha": 0.0,
+        "inner_validation": {
+          "members_mae_C": {
+            "ridge": 0.2323,
+            "hgb": 0.3705,
+            "gru": 0.2455
+          },
+          "base_mae_C": 0.2939,
+          "hybrid_mae_C": 0.2939
+        }
+      }
     }
   },
-  "multi_target_test_metrics": {
-    "temperature_2m": {
-      "test_mae": 0.3889,
-      "test_rmse": 0.5934,
-      "test_r2": 0.9743
+  "versions": {
+    "scikit-learn": "1.8.0",
+    "xgboost": "3.4.1",
+    "pandas": "3.0.5"
+  },
+  "walk_forward_evaluation": {
+    "config": {
+      "data": "cleaned",
+      "fold_days": 7,
+      "refit_every_folds": 1,
+      "horizon_h": 168,
+      "origin_hours": "0,12",
+      "gru": true,
+      "train_stride": 1,
+      "max_train_years": null,
+      "n_folds": 7,
+      "test_period": [
+        "2026-08-28 00:00:00",
+        "2026-10-16 00:00:00"
+      ],
+      "n_trajectories_total": 1760
     },
-    "relative_humidity_2m": {
-      "test_mae": 2.0876,
-      "test_rmse": 3.1968,
-      "test_r2": 0.9414
+    "buckets_h": {
+      "h1": [
+        1,
+        1
+      ],
+      "day1": [
+        1,
+        24
+      ],
+      "day2-3": [
+        25,
+        72
+      ],
+      "day4-7": [
+        73,
+        168
+      ]
     },
-    "wind_speed_10m": {
-      "test_mae": 1.4906,
-      "test_rmse": 2.0662,
-      "test_r2": 0.8277
+    "by_variable": {
+      "temperature_2m": {
+        "h1": {
+          "hybrid_mae": 0.5053,
+          "hybrid_mae_fold_std": 0.0817,
+          "hybrid_mae_ci95_over_folds": [
+            0.449,
+            0.5612
+          ],
+          "persistence_mae": 0.5389,
+          "persistence_mae_fold_std": 0.0899,
+          "persistence_mae_ci95_over_folds": [
+            0.4784,
+            0.599
+          ],
+          "seasonal_naive_mae": 1.0288,
+          "seasonal_naive_mae_fold_std": 0.1198,
+          "seasonal_naive_mae_ci95_over_folds": [
+            0.943,
+            1.1124
+          ],
+          "climatology_mae": 1.597,
+          "climatology_mae_fold_std": 0.3411,
+          "climatology_mae_ci95_over_folds": [
+            1.3717,
+            1.8262
+          ],
+          "skill_vs_seasonal_naive": 0.5069,
+          "skill_vs_seasonal_naive_ci95": [
+            0.4582,
+            0.5602
+          ],
+          "share_folds_beating_seasonal_naive": 1.0,
+          "skill_vs_climatology": 0.6693,
+          "skill_vs_climatology_ci95": [
+            0.6014,
+            0.7317
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": 0.0613,
+          "skill_vs_persistence_ci95": [
+            0.0331,
+            0.0894
+          ],
+          "share_folds_beating_persistence": 1.0
+        },
+        "day1": {
+          "hybrid_mae": 0.9436,
+          "hybrid_mae_fold_std": 0.0833,
+          "hybrid_mae_ci95_over_folds": [
+            0.8863,
+            1.0029
+          ],
+          "persistence_mae": 2.4557,
+          "persistence_mae_fold_std": 0.2529,
+          "persistence_mae_ci95_over_folds": [
+            2.2885,
+            2.6435
+          ],
+          "seasonal_naive_mae": 0.917,
+          "seasonal_naive_mae_fold_std": 0.108,
+          "seasonal_naive_mae_ci95_over_folds": [
+            0.8363,
+            0.9881
+          ],
+          "climatology_mae": 1.4868,
+          "climatology_mae_fold_std": 0.3292,
+          "climatology_mae_ci95_over_folds": [
+            1.265,
+            1.7103
+          ],
+          "skill_vs_seasonal_naive": -0.0404,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.1552,
+            0.0487
+          ],
+          "share_folds_beating_seasonal_naive": 0.571,
+          "skill_vs_climatology": 0.3375,
+          "skill_vs_climatology_ci95": [
+            0.2241,
+            0.4394
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": 0.6129,
+          "skill_vs_persistence_ci95": [
+            0.5752,
+            0.6432
+          ],
+          "share_folds_beating_persistence": 1.0
+        },
+        "day2-3": {
+          "hybrid_mae": 1.3682,
+          "hybrid_mae_fold_std": 0.2218,
+          "hybrid_mae_ci95_over_folds": [
+            1.2136,
+            1.5186
+          ],
+          "persistence_mae": 2.6741,
+          "persistence_mae_fold_std": 0.2712,
+          "persistence_mae_ci95_over_folds": [
+            2.4897,
+            2.8713
+          ],
+          "seasonal_naive_mae": 1.2671,
+          "seasonal_naive_mae_fold_std": 0.2347,
+          "seasonal_naive_mae_ci95_over_folds": [
+            1.1137,
+            1.4418
+          ],
+          "climatology_mae": 1.496,
+          "climatology_mae_fold_std": 0.3063,
+          "climatology_mae_ci95_over_folds": [
+            1.2681,
+            1.7034
+          ],
+          "skill_vs_seasonal_naive": -0.1041,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.2936,
+            0.0467
+          ],
+          "share_folds_beating_seasonal_naive": 0.286,
+          "skill_vs_climatology": 0.0568,
+          "skill_vs_climatology_ci95": [
+            -0.1331,
+            0.1901
+          ],
+          "share_folds_beating_climatology": 0.857,
+          "skill_vs_persistence": 0.4862,
+          "skill_vs_persistence_ci95": [
+            0.4274,
+            0.5426
+          ],
+          "share_folds_beating_persistence": 1.0
+        },
+        "day4-7": {
+          "hybrid_mae": 1.5615,
+          "hybrid_mae_fold_std": 0.3099,
+          "hybrid_mae_ci95_over_folds": [
+            1.3363,
+            1.7659
+          ],
+          "persistence_mae": 2.8714,
+          "persistence_mae_fold_std": 0.2999,
+          "persistence_mae_ci95_over_folds": [
+            2.6826,
+            3.0913
+          ],
+          "seasonal_naive_mae": 1.5562,
+          "seasonal_naive_mae_fold_std": 0.223,
+          "seasonal_naive_mae_ci95_over_folds": [
+            1.4156,
+            1.7155
+          ],
+          "climatology_mae": 1.5156,
+          "climatology_mae_fold_std": 0.3104,
+          "climatology_mae_ci95_over_folds": [
+            1.3004,
+            1.7235
+          ],
+          "skill_vs_seasonal_naive": -0.0042,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.1241,
+            0.1048
+          ],
+          "share_folds_beating_seasonal_naive": 0.571,
+          "skill_vs_climatology": -0.0369,
+          "skill_vs_climatology_ci95": [
+            -0.1437,
+            0.0485
+          ],
+          "share_folds_beating_climatology": 0.714,
+          "skill_vs_persistence": 0.4523,
+          "skill_vs_persistence_ci95": [
+            0.3648,
+            0.5378
+          ],
+          "share_folds_beating_persistence": 1.0
+        }
+      },
+      "relative_humidity_2m": {
+        "h1": {
+          "hybrid_mae": 3.0109,
+          "hybrid_mae_fold_std": 0.393,
+          "hybrid_mae_ci95_over_folds": [
+            2.7427,
+            3.272
+          ],
+          "persistence_mae": 3.3173,
+          "persistence_mae_fold_std": 0.5013,
+          "persistence_mae_ci95_over_folds": [
+            2.9983,
+            3.6714
+          ],
+          "seasonal_naive_mae": 6.166,
+          "seasonal_naive_mae_fold_std": 0.7038,
+          "seasonal_naive_mae_ci95_over_folds": [
+            5.6406,
+            6.6288
+          ],
+          "climatology_mae": 8.8245,
+          "climatology_mae_fold_std": 1.0578,
+          "climatology_mae_ci95_over_folds": [
+            8.1628,
+            9.6162
+          ],
+          "skill_vs_seasonal_naive": 0.509,
+          "skill_vs_seasonal_naive_ci95": [
+            0.4639,
+            0.5541
+          ],
+          "share_folds_beating_seasonal_naive": 1.0,
+          "skill_vs_climatology": 0.6568,
+          "skill_vs_climatology_ci95": [
+            0.6222,
+            0.6844
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": 0.0897,
+          "skill_vs_persistence_ci95": [
+            0.0613,
+            0.1225
+          ],
+          "share_folds_beating_persistence": 1.0
+        },
+        "day1": {
+          "hybrid_mae": 5.3726,
+          "hybrid_mae_fold_std": 0.5925,
+          "hybrid_mae_ci95_over_folds": [
+            4.9402,
+            5.7666
+          ],
+          "persistence_mae": 11.8873,
+          "persistence_mae_fold_std": 1.3085,
+          "persistence_mae_ci95_over_folds": [
+            11.0224,
+            12.8509
+          ],
+          "seasonal_naive_mae": 5.6326,
+          "seasonal_naive_mae_fold_std": 0.8247,
+          "seasonal_naive_mae_ci95_over_folds": [
+            5.0232,
+            6.1764
+          ],
+          "climatology_mae": 8.1986,
+          "climatology_mae_fold_std": 0.9814,
+          "climatology_mae_ci95_over_folds": [
+            7.5589,
+            8.9055
+          ],
+          "skill_vs_seasonal_naive": 0.0334,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.0785,
+            0.1199
+          ],
+          "share_folds_beating_seasonal_naive": 0.714,
+          "skill_vs_climatology": 0.3354,
+          "skill_vs_climatology_ci95": [
+            0.2625,
+            0.4176
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": 0.545,
+          "skill_vs_persistence_ci95": [
+            0.505,
+            0.5832
+          ],
+          "share_folds_beating_persistence": 1.0
+        },
+        "day2-3": {
+          "hybrid_mae": 7.2719,
+          "hybrid_mae_fold_std": 1.2581,
+          "hybrid_mae_ci95_over_folds": [
+            6.3711,
+            8.0763
+          ],
+          "persistence_mae": 13.2126,
+          "persistence_mae_fold_std": 1.3,
+          "persistence_mae_ci95_over_folds": [
+            12.2758,
+            14.0799
+          ],
+          "seasonal_naive_mae": 7.3089,
+          "seasonal_naive_mae_fold_std": 1.4565,
+          "seasonal_naive_mae_ci95_over_folds": [
+            6.3057,
+            8.3395
+          ],
+          "climatology_mae": 8.2792,
+          "climatology_mae_fold_std": 0.9792,
+          "climatology_mae_ci95_over_folds": [
+            7.5937,
+            8.9056
+          ],
+          "skill_vs_seasonal_naive": -0.0204,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.2108,
+            0.121
+          ],
+          "share_folds_beating_seasonal_naive": 0.714,
+          "skill_vs_climatology": 0.1088,
+          "skill_vs_climatology_ci95": [
+            -0.0413,
+            0.2458
+          ],
+          "share_folds_beating_climatology": 0.857,
+          "skill_vs_persistence": 0.4498,
+          "skill_vs_persistence_ci95": [
+            0.392,
+            0.5009
+          ],
+          "share_folds_beating_persistence": 1.0
+        },
+        "day4-7": {
+          "hybrid_mae": 8.3888,
+          "hybrid_mae_fold_std": 1.3995,
+          "hybrid_mae_ci95_over_folds": [
+            7.4458,
+            9.3104
+          ],
+          "persistence_mae": 13.9798,
+          "persistence_mae_fold_std": 1.1927,
+          "persistence_mae_ci95_over_folds": [
+            13.1077,
+            14.7828
+          ],
+          "seasonal_naive_mae": 8.141,
+          "seasonal_naive_mae_fold_std": 1.3344,
+          "seasonal_naive_mae_ci95_over_folds": [
+            7.2528,
+            9.1197
+          ],
+          "climatology_mae": 8.3099,
+          "climatology_mae_fold_std": 1.1647,
+          "climatology_mae_ci95_over_folds": [
+            7.535,
+            9.1445
+          ],
+          "skill_vs_seasonal_naive": -0.0425,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.1618,
+            0.0777
+          ],
+          "share_folds_beating_seasonal_naive": 0.571,
+          "skill_vs_climatology": -0.0196,
+          "skill_vs_climatology_ci95": [
+            -0.1498,
+            0.0997
+          ],
+          "share_folds_beating_climatology": 0.714,
+          "skill_vs_persistence": 0.3981,
+          "skill_vs_persistence_ci95": [
+            0.3251,
+            0.4638
+          ],
+          "share_folds_beating_persistence": 1.0
+        }
+      },
+      "wind_speed_10m": {
+        "h1": {
+          "hybrid_mae": 1.8674,
+          "hybrid_mae_fold_std": 0.2667,
+          "hybrid_mae_ci95_over_folds": [
+            1.7329,
+            2.0755
+          ],
+          "persistence_mae": 1.9156,
+          "persistence_mae_fold_std": 0.2028,
+          "persistence_mae_ci95_over_folds": [
+            1.775,
+            2.0545
+          ],
+          "seasonal_naive_mae": 3.6356,
+          "seasonal_naive_mae_fold_std": 0.5712,
+          "seasonal_naive_mae_ci95_over_folds": [
+            3.276,
+            4.0461
+          ],
+          "climatology_mae": 4.422,
+          "climatology_mae_fold_std": 1.1127,
+          "climatology_mae_ci95_over_folds": [
+            3.6181,
+            5.1558
+          ],
+          "skill_vs_seasonal_naive": 0.4826,
+          "skill_vs_seasonal_naive_ci95": [
+            0.453,
+            0.522
+          ],
+          "share_folds_beating_seasonal_naive": 1.0,
+          "skill_vs_climatology": 0.5554,
+          "skill_vs_climatology_ci95": [
+            0.4721,
+            0.6317
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": 0.0235,
+          "skill_vs_persistence_ci95": [
+            -0.047,
+            0.0905
+          ],
+          "share_folds_beating_persistence": 0.429
+        },
+        "day1": {
+          "hybrid_mae": 2.9132,
+          "hybrid_mae_fold_std": 0.7408,
+          "hybrid_mae_ci95_over_folds": [
+            2.5103,
+            3.4806
+          ],
+          "persistence_mae": 3.9071,
+          "persistence_mae_fold_std": 0.3852,
+          "persistence_mae_ci95_over_folds": [
+            3.6268,
+            4.1515
+          ],
+          "seasonal_naive_mae": 3.2951,
+          "seasonal_naive_mae_fold_std": 0.4535,
+          "seasonal_naive_mae_ci95_over_folds": [
+            2.9902,
+            3.5976
+          ],
+          "climatology_mae": 4.1662,
+          "climatology_mae_fold_std": 1.0404,
+          "climatology_mae_ci95_over_folds": [
+            3.448,
+            4.8851
+          ],
+          "skill_vs_seasonal_naive": 0.1228,
+          "skill_vs_seasonal_naive_ci95": [
+            0.026,
+            0.1838
+          ],
+          "share_folds_beating_seasonal_naive": 0.857,
+          "skill_vs_climatology": 0.2817,
+          "skill_vs_climatology_ci95": [
+            0.1842,
+            0.3926
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": 0.2531,
+          "skill_vs_persistence_ci95": [
+            0.1273,
+            0.3583
+          ],
+          "share_folds_beating_persistence": 0.857
+        },
+        "day2-3": {
+          "hybrid_mae": 3.6373,
+          "hybrid_mae_fold_std": 0.9007,
+          "hybrid_mae_ci95_over_folds": [
+            3.1134,
+            4.3395
+          ],
+          "persistence_mae": 4.646,
+          "persistence_mae_fold_std": 0.5076,
+          "persistence_mae_ci95_over_folds": [
+            4.2655,
+            4.9657
+          ],
+          "seasonal_naive_mae": 3.8392,
+          "seasonal_naive_mae_fold_std": 0.4938,
+          "seasonal_naive_mae_ci95_over_folds": [
+            3.5149,
+            4.1818
+          ],
+          "climatology_mae": 4.1974,
+          "climatology_mae_fold_std": 0.9842,
+          "climatology_mae_ci95_over_folds": [
+            3.5266,
+            4.8873
+          ],
+          "skill_vs_seasonal_naive": 0.0616,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.0323,
+            0.1268
+          ],
+          "share_folds_beating_seasonal_naive": 0.857,
+          "skill_vs_climatology": 0.1157,
+          "skill_vs_climatology_ci95": [
+            0.0106,
+            0.2455
+          ],
+          "share_folds_beating_climatology": 0.714,
+          "skill_vs_persistence": 0.2202,
+          "skill_vs_persistence_ci95": [
+            0.1158,
+            0.3074
+          ],
+          "share_folds_beating_persistence": 0.857
+        },
+        "day4-7": {
+          "hybrid_mae": 4.3616,
+          "hybrid_mae_fold_std": 0.8328,
+          "hybrid_mae_ci95_over_folds": [
+            3.7891,
+            4.9423
+          ],
+          "persistence_mae": 4.9332,
+          "persistence_mae_fold_std": 0.6216,
+          "persistence_mae_ci95_over_folds": [
+            4.5045,
+            5.3747
+          ],
+          "seasonal_naive_mae": 4.2133,
+          "seasonal_naive_mae_fold_std": 0.5593,
+          "seasonal_naive_mae_ci95_over_folds": [
+            3.8465,
+            4.6233
+          ],
+          "climatology_mae": 4.2812,
+          "climatology_mae_fold_std": 0.9613,
+          "climatology_mae_ci95_over_folds": [
+            3.6155,
+            4.914
+          ],
+          "skill_vs_seasonal_naive": -0.0404,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.1964,
+            0.0648
+          ],
+          "share_folds_beating_seasonal_naive": 0.714,
+          "skill_vs_climatology": -0.086,
+          "skill_vs_climatology_ci95": [
+            -0.4352,
+            0.1504
+          ],
+          "share_folds_beating_climatology": 0.571,
+          "skill_vs_persistence": 0.119,
+          "skill_vs_persistence_ci95": [
+            0.0437,
+            0.1821
+          ],
+          "share_folds_beating_persistence": 0.857
+        }
+      },
+      "precipitation": {
+        "h1": {
+          "hybrid_mae": 0.4313,
+          "hybrid_mae_fold_std": 0.1445,
+          "hybrid_mae_ci95_over_folds": [
+            0.3359,
+            0.536
+          ],
+          "persistence_mae": 0.3687,
+          "persistence_mae_fold_std": 0.181,
+          "persistence_mae_ci95_over_folds": [
+            0.2468,
+            0.5007
+          ],
+          "seasonal_naive_mae": 0.6128,
+          "seasonal_naive_mae_fold_std": 0.3026,
+          "seasonal_naive_mae_ci95_over_folds": [
+            0.4123,
+            0.8278
+          ],
+          "climatology_mae": 0.6274,
+          "climatology_mae_fold_std": 0.1714,
+          "climatology_mae_ci95_over_folds": [
+            0.5166,
+            0.7526
+          ],
+          "skill_vs_seasonal_naive": 0.2381,
+          "skill_vs_seasonal_naive_ci95": [
+            0.1199,
+            0.3419
+          ],
+          "share_folds_beating_seasonal_naive": 1.0,
+          "skill_vs_climatology": 0.3212,
+          "skill_vs_climatology_ci95": [
+            0.2828,
+            0.3702
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": -0.295,
+          "skill_vs_persistence_ci95": [
+            -0.5978,
+            -0.0648
+          ],
+          "share_folds_beating_persistence": 0.143
+        },
+        "day1": {
+          "hybrid_mae": 0.5821,
+          "hybrid_mae_fold_std": 0.1917,
+          "hybrid_mae_ci95_over_folds": [
+            0.468,
+            0.7263
+          ],
+          "persistence_mae": 0.5732,
+          "persistence_mae_fold_std": 0.2762,
+          "persistence_mae_ci95_over_folds": [
+            0.3937,
+            0.7779
+          ],
+          "seasonal_naive_mae": 0.5641,
+          "seasonal_naive_mae_fold_std": 0.2662,
+          "seasonal_naive_mae_ci95_over_folds": [
+            0.4002,
+            0.7581
+          ],
+          "climatology_mae": 0.5654,
+          "climatology_mae_fold_std": 0.1454,
+          "climatology_mae_ci95_over_folds": [
+            0.4747,
+            0.6674
+          ],
+          "skill_vs_seasonal_naive": -0.1026,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.3003,
+            0.0364
+          ],
+          "share_folds_beating_seasonal_naive": 0.429,
+          "skill_vs_climatology": -0.0176,
+          "skill_vs_climatology_ci95": [
+            -0.0762,
+            0.0238
+          ],
+          "share_folds_beating_climatology": 0.429,
+          "skill_vs_persistence": -0.1094,
+          "skill_vs_persistence_ci95": [
+            -0.3414,
+            0.0845
+          ],
+          "share_folds_beating_persistence": 0.286
+        },
+        "day2-3": {
+          "hybrid_mae": 0.6421,
+          "hybrid_mae_fold_std": 0.245,
+          "hybrid_mae_ci95_over_folds": [
+            0.4978,
+            0.8302
+          ],
+          "persistence_mae": 0.6423,
+          "persistence_mae_fold_std": 0.3076,
+          "persistence_mae_ci95_over_folds": [
+            0.4344,
+            0.8645
+          ],
+          "seasonal_naive_mae": 0.6327,
+          "seasonal_naive_mae_fold_std": 0.2906,
+          "seasonal_naive_mae_ci95_over_folds": [
+            0.4482,
+            0.8459
+          ],
+          "climatology_mae": 0.5681,
+          "climatology_mae_fold_std": 0.1187,
+          "climatology_mae_ci95_over_folds": [
+            0.4891,
+            0.6562
+          ],
+          "skill_vs_seasonal_naive": -0.069,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.2482,
+            0.0553
+          ],
+          "share_folds_beating_seasonal_naive": 0.286,
+          "skill_vs_climatology": -0.1115,
+          "skill_vs_climatology_ci95": [
+            -0.3063,
+            -0.005
+          ],
+          "share_folds_beating_climatology": 0.0,
+          "skill_vs_persistence": -0.0893,
+          "skill_vs_persistence_ci95": [
+            -0.333,
+            0.1066
+          ],
+          "share_folds_beating_persistence": 0.286
+        },
+        "day4-7": {
+          "hybrid_mae": 0.6364,
+          "hybrid_mae_fold_std": 0.2656,
+          "hybrid_mae_ci95_over_folds": [
+            0.4777,
+            0.8461
+          ],
+          "persistence_mae": 0.6696,
+          "persistence_mae_fold_std": 0.3271,
+          "persistence_mae_ci95_over_folds": [
+            0.4542,
+            0.9128
+          ],
+          "seasonal_naive_mae": 0.6515,
+          "seasonal_naive_mae_fold_std": 0.2937,
+          "seasonal_naive_mae_ci95_over_folds": [
+            0.4628,
+            0.8735
+          ],
+          "climatology_mae": 0.5631,
+          "climatology_mae_fold_std": 0.1503,
+          "climatology_mae_ci95_over_folds": [
+            0.4725,
+            0.6794
+          ],
+          "skill_vs_seasonal_naive": -0.0086,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.1268,
+            0.1141
+          ],
+          "share_folds_beating_seasonal_naive": 0.429,
+          "skill_vs_climatology": -0.1141,
+          "skill_vs_climatology_ci95": [
+            -0.3289,
+            -0.0023
+          ],
+          "share_folds_beating_climatology": 0.0,
+          "skill_vs_persistence": -0.0219,
+          "skill_vs_persistence_ci95": [
+            -0.198,
+            0.1599
+          ],
+          "share_folds_beating_persistence": 0.286
+        }
+      },
+      "pressure_msl": {
+        "h1": {
+          "hybrid_mae": 0.2741,
+          "hybrid_mae_fold_std": 0.0414,
+          "hybrid_mae_ci95_over_folds": [
+            0.2479,
+            0.3037
+          ],
+          "persistence_mae": 0.5377,
+          "persistence_mae_fold_std": 0.0556,
+          "persistence_mae_ci95_over_folds": [
+            0.4961,
+            0.5748
+          ],
+          "seasonal_naive_mae": 1.1226,
+          "seasonal_naive_mae_fold_std": 0.2208,
+          "seasonal_naive_mae_ci95_over_folds": [
+            0.973,
+            1.2704
+          ],
+          "climatology_mae": 3.5348,
+          "climatology_mae_fold_std": 1.2721,
+          "climatology_mae_ci95_over_folds": [
+            2.6072,
+            4.3574
+          ],
+          "skill_vs_seasonal_naive": 0.745,
+          "skill_vs_seasonal_naive_ci95": [
+            0.6917,
+            0.7933
+          ],
+          "share_folds_beating_seasonal_naive": 1.0,
+          "skill_vs_climatology": 0.9018,
+          "skill_vs_climatology_ci95": [
+            0.8426,
+            0.9368
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": 0.484,
+          "skill_vs_persistence_ci95": [
+            0.4119,
+            0.5529
+          ],
+          "share_folds_beating_persistence": 1.0
+        },
+        "day1": {
+          "hybrid_mae": 0.7897,
+          "hybrid_mae_fold_std": 0.0999,
+          "hybrid_mae_ci95_over_folds": [
+            0.718,
+            0.8598
+          ],
+          "persistence_mae": 1.3005,
+          "persistence_mae_fold_std": 0.0682,
+          "persistence_mae_ci95_over_folds": [
+            1.2575,
+            1.3508
+          ],
+          "seasonal_naive_mae": 1.0791,
+          "seasonal_naive_mae_fold_std": 0.183,
+          "seasonal_naive_mae_ci95_over_folds": [
+            0.9441,
+            1.2073
+          ],
+          "climatology_mae": 3.7195,
+          "climatology_mae_fold_std": 1.2993,
+          "climatology_mae_ci95_over_folds": [
+            2.762,
+            4.5523
+          ],
+          "skill_vs_seasonal_naive": 0.2552,
+          "skill_vs_seasonal_naive_ci95": [
+            0.1703,
+            0.3403
+          ],
+          "share_folds_beating_seasonal_naive": 1.0,
+          "skill_vs_climatology": 0.7522,
+          "skill_vs_climatology_ci95": [
+            0.6551,
+            0.8198
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": 0.3917,
+          "skill_vs_persistence_ci95": [
+            0.3293,
+            0.4432
+          ],
+          "share_folds_beating_persistence": 1.0
+        },
+        "day2-3": {
+          "hybrid_mae": 1.6238,
+          "hybrid_mae_fold_std": 0.231,
+          "hybrid_mae_ci95_over_folds": [
+            1.462,
+            1.787
+          ],
+          "persistence_mae": 1.8612,
+          "persistence_mae_fold_std": 0.2953,
+          "persistence_mae_ci95_over_folds": [
+            1.6774,
+            2.0816
+          ],
+          "seasonal_naive_mae": 1.6913,
+          "seasonal_naive_mae_fold_std": 0.3785,
+          "seasonal_naive_mae_ci95_over_folds": [
+            1.4376,
+            1.9678
+          ],
+          "climatology_mae": 3.9903,
+          "climatology_mae_fold_std": 1.1713,
+          "climatology_mae_ci95_over_folds": [
+            3.0813,
+            4.6681
+          ],
+          "skill_vs_seasonal_naive": 0.0244,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.0396,
+            0.09
+          ],
+          "share_folds_beating_seasonal_naive": 0.714,
+          "skill_vs_climatology": 0.5505,
+          "skill_vs_climatology_ci95": [
+            0.412,
+            0.6437
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": 0.1247,
+          "skill_vs_persistence_ci95": [
+            0.0834,
+            0.1653
+          ],
+          "share_folds_beating_persistence": 1.0
+        },
+        "day4-7": {
+          "hybrid_mae": 1.9542,
+          "hybrid_mae_fold_std": 0.2951,
+          "hybrid_mae_ci95_over_folds": [
+            1.7687,
+            2.1595
+          ],
+          "persistence_mae": 2.0944,
+          "persistence_mae_fold_std": 0.1841,
+          "persistence_mae_ci95_over_folds": [
+            1.9786,
+            2.2318
+          ],
+          "seasonal_naive_mae": 1.9016,
+          "seasonal_naive_mae_fold_std": 0.2437,
+          "seasonal_naive_mae_ci95_over_folds": [
+            1.7382,
+            2.0705
+          ],
+          "climatology_mae": 4.3509,
+          "climatology_mae_fold_std": 0.9427,
+          "climatology_mae_ci95_over_folds": [
+            3.6377,
+            4.9253
+          ],
+          "skill_vs_seasonal_naive": -0.0277,
+          "skill_vs_seasonal_naive_ci95": [
+            -0.0965,
+            0.0188
+          ],
+          "share_folds_beating_seasonal_naive": 0.286,
+          "skill_vs_climatology": 0.5113,
+          "skill_vs_climatology_ci95": [
+            0.34,
+            0.6332
+          ],
+          "share_folds_beating_climatology": 1.0,
+          "skill_vs_persistence": 0.0652,
+          "skill_vs_persistence_ci95": [
+            -0.0333,
+            0.1486
+          ],
+          "share_folds_beating_persistence": 0.714
+        }
+      }
     },
-    "precipitation": {
-      "test_mae": 0.2664,
-      "test_rmse": 0.6395,
-      "test_r2": 0.3598
+    "by_season": {
+      "JJA": {
+        "h1": {
+          "n_folds": 1,
+          "hybrid_mae": 0.5298,
+          "seasonal_naive_mae": 1.0054,
+          "climatology_mae": 1.1789,
+          "skill_vs_seasonal_naive": 0.473
+        },
+        "day1": {
+          "n_folds": 1,
+          "hybrid_mae": 0.8877,
+          "seasonal_naive_mae": 0.9365,
+          "climatology_mae": 1.0511,
+          "skill_vs_seasonal_naive": 0.0521
+        },
+        "day2-3": {
+          "n_folds": 1,
+          "hybrid_mae": 1.0587,
+          "seasonal_naive_mae": 1.3031,
+          "climatology_mae": 1.0761,
+          "skill_vs_seasonal_naive": 0.1875
+        },
+        "day4-7": {
+          "n_folds": 1,
+          "hybrid_mae": 1.0778,
+          "seasonal_naive_mae": 1.3664,
+          "climatology_mae": 1.0809,
+          "skill_vs_seasonal_naive": 0.2112
+        }
+      },
+      "SON": {
+        "h1": {
+          "n_folds": 6,
+          "hybrid_mae": 0.5012,
+          "seasonal_naive_mae": 1.0327,
+          "climatology_mae": 1.6667,
+          "skill_vs_seasonal_naive": 0.5126
+        },
+        "day1": {
+          "n_folds": 6,
+          "hybrid_mae": 0.9529,
+          "seasonal_naive_mae": 0.9137,
+          "climatology_mae": 1.5595,
+          "skill_vs_seasonal_naive": -0.0558
+        },
+        "day2-3": {
+          "n_folds": 6,
+          "hybrid_mae": 1.4197,
+          "seasonal_naive_mae": 1.2611,
+          "climatology_mae": 1.566,
+          "skill_vs_seasonal_naive": -0.1527
+        },
+        "day4-7": {
+          "n_folds": 6,
+          "hybrid_mae": 1.6421,
+          "seasonal_naive_mae": 1.5879,
+          "climatology_mae": 1.5881,
+          "skill_vs_seasonal_naive": -0.0401
+        }
+      }
     },
-    "pressure_msl": {
-      "test_mae": 0.2711,
-      "test_rmse": 0.3871,
-      "test_r2": 0.9821
-    }
-  }
+    "by_enso_phase": {
+      "unknown": {
+        "h1": {
+          "n_folds": 7,
+          "hybrid_mae": 0.5053,
+          "seasonal_naive_mae": 1.0288,
+          "climatology_mae": 1.597,
+          "skill_vs_seasonal_naive": 0.5069
+        },
+        "day1": {
+          "n_folds": 7,
+          "hybrid_mae": 0.9436,
+          "seasonal_naive_mae": 0.917,
+          "climatology_mae": 1.4868,
+          "skill_vs_seasonal_naive": -0.0404
+        },
+        "day2-3": {
+          "n_folds": 7,
+          "hybrid_mae": 1.3682,
+          "seasonal_naive_mae": 1.2671,
+          "climatology_mae": 1.496,
+          "skill_vs_seasonal_naive": -0.1041
+        },
+        "day4-7": {
+          "n_folds": 7,
+          "hybrid_mae": 1.5615,
+          "seasonal_naive_mae": 1.5562,
+          "climatology_mae": 1.5156,
+          "skill_vs_seasonal_naive": -0.0042
+        }
+      }
+    },
+    "last_model": {
+      "train": {
+        "rows": 38880,
+        "start": "2026-07-17 00:00:00",
+        "end": "2026-10-08 23:00:00",
+        "climatology": "hourly_mean",
+        "use_doy": false,
+        "n_features": 70,
+        "use_gru": true
+      },
+      "damping": {
+        "calibrated": true,
+        "inner_train_end": "2026-09-26 09:00:00",
+        "origins": 25,
+        "trajectories": 500,
+        "scored_pairs": 61880,
+        "anchor": {
+          "temperature_2m": "climatology",
+          "relative_humidity_2m": "seasonal_naive",
+          "wind_speed_10m": "seasonal_naive",
+          "precipitation": "seasonal_naive",
+          "pressure_msl": "seasonal_naive"
+        },
+        "tau_hours": {
+          "temperature_2m": 96.0,
+          "relative_humidity_2m": 24.0,
+          "wind_speed_10m": 48.0,
+          "precipitation": 6.0,
+          "pressure_msl": 24.0
+        }
+      },
+      "models": {
+        "temperature_2m": {
+          "weights": {
+            "ridge": 0.0,
+            "hgb": 0.537,
+            "gru": 0.463
+          },
+          "residual_alpha": 0.0,
+          "inner_validation": {
+            "members_mae_C": {
+              "ridge": 0.3594,
+              "hgb": 0.3574,
+              "gru": 0.3624
+            },
+            "base_mae_C": 0.3484,
+            "hybrid_mae_C": 0.3484
+          }
+        },
+        "relative_humidity_2m": {
+          "weights": {
+            "ridge": 0.0,
+            "hgb": 0.571,
+            "gru": 0.429
+          },
+          "residual_alpha": 0.25,
+          "inner_validation": {
+            "members_mae_C": {
+              "ridge": 2.1966,
+              "hgb": 2.0615,
+              "gru": 2.1653
+            },
+            "base_mae_C": 2.0498,
+            "hybrid_mae_C": 2.039
+          }
+        },
+        "wind_speed_10m": {
+          "weights": {
+            "ridge": 0.189,
+            "hgb": 0.135,
+            "gru": 0.676
+          },
+          "residual_alpha": 0.5,
+          "inner_validation": {
+            "members_mae_C": {
+              "ridge": 1.549,
+              "hgb": 1.5139,
+              "gru": 1.5281
+            },
+            "base_mae_C": 1.5086,
+            "hybrid_mae_C": 1.4818
+          }
+        },
+        "precipitation": {
+          "weights": {
+            "ridge": 0.398,
+            "hgb": 0.209,
+            "gru": 0.393
+          },
+          "residual_alpha": 0.0,
+          "inner_validation": {
+            "members_mae_C": {
+              "ridge": 0.2805,
+              "hgb": 0.2702,
+              "gru": 0.2931
+            },
+            "base_mae_C": 0.2744,
+            "hybrid_mae_C": 0.2744
+          }
+        },
+        "pressure_msl": {
+          "weights": {
+            "ridge": 0.865,
+            "hgb": 0.099,
+            "gru": 0.036
+          },
+          "residual_alpha": 1.0,
+          "inner_validation": {
+            "members_mae_C": {
+              "ridge": 0.2355,
+              "hgb": 0.353,
+              "gru": 0.2454
+            },
+            "base_mae_C": 0.2381,
+            "hybrid_mae_C": 0.2288
+          }
+        }
+      }
+    },
+    "temperature_by_region": {
+      "Central": {
+        "h1": {
+          "hybrid": 0.6306,
+          "persistence": 0.5847,
+          "seasonal_naive": 1.1392,
+          "climatology": 2.7915
+        },
+        "day1": {
+          "hybrid": 1.2353,
+          "persistence": 2.5987,
+          "seasonal_naive": 1.0142,
+          "climatology": 2.5718
+        },
+        "day2-3": {
+          "hybrid": 1.9784,
+          "persistence": 2.9172,
+          "seasonal_naive": 1.6478,
+          "climatology": 2.6465
+        },
+        "day4-7": {
+          "hybrid": 2.4342,
+          "persistence": 3.2172,
+          "seasonal_naive": 2.121,
+          "climatology": 2.7671
+        }
+      },
+      "Central Highlands": {
+        "h1": {
+          "hybrid": 0.5058,
+          "persistence": 0.5299,
+          "seasonal_naive": 0.9703,
+          "climatology": 1.0362
+        },
+        "day1": {
+          "hybrid": 0.8133,
+          "persistence": 2.7051,
+          "seasonal_naive": 0.7726,
+          "climatology": 0.8981
+        },
+        "day2-3": {
+          "hybrid": 1.0677,
+          "persistence": 2.7944,
+          "seasonal_naive": 0.8988,
+          "climatology": 0.9094
+        },
+        "day4-7": {
+          "hybrid": 1.1035,
+          "persistence": 2.8876,
+          "seasonal_naive": 1.0615,
+          "climatology": 0.9078
+        }
+      },
+      "Islands": {
+        "h1": {
+          "hybrid": 0.4606,
+          "persistence": 0.5435,
+          "seasonal_naive": 0.9491,
+          "climatology": 0.9627
+        },
+        "day1": {
+          "hybrid": 0.7301,
+          "persistence": 1.3199,
+          "seasonal_naive": 0.8216,
+          "climatology": 0.9078
+        },
+        "day2-3": {
+          "hybrid": 0.9066,
+          "persistence": 1.5144,
+          "seasonal_naive": 1.0152,
+          "climatology": 0.9145
+        },
+        "day4-7": {
+          "hybrid": 0.9749,
+          "persistence": 1.7217,
+          "seasonal_naive": 1.2299,
+          "climatology": 0.9233
+        }
+      },
+      "Mekong Delta": {
+        "h1": {
+          "hybrid": 0.633,
+          "persistence": 0.7162,
+          "seasonal_naive": 1.1074,
+          "climatology": 1.0023
+        },
+        "day1": {
+          "hybrid": 0.8063,
+          "persistence": 2.1678,
+          "seasonal_naive": 0.9247,
+          "climatology": 0.9319
+        },
+        "day2-3": {
+          "hybrid": 0.9948,
+          "persistence": 2.3127,
+          "seasonal_naive": 1.1472,
+          "climatology": 0.9333
+        },
+        "day4-7": {
+          "hybrid": 1.0468,
+          "persistence": 2.4339,
+          "seasonal_naive": 1.2558,
+          "climatology": 0.9474
+        }
+      },
+      "North": {
+        "h1": {
+          "hybrid": 0.5319,
+          "persistence": 0.525,
+          "seasonal_naive": 1.2116,
+          "climatology": 1.7229
+        },
+        "day1": {
+          "hybrid": 1.1949,
+          "persistence": 2.6924,
+          "seasonal_naive": 1.054,
+          "climatology": 1.6294
+        },
+        "day2-3": {
+          "hybrid": 1.8819,
+          "persistence": 3.0492,
+          "seasonal_naive": 1.6291,
+          "climatology": 1.6659
+        },
+        "day4-7": {
+          "hybrid": 2.2105,
+          "persistence": 3.4251,
+          "seasonal_naive": 2.1759,
+          "climatology": 1.6536
+        }
+      },
+      "North Central": {
+        "h1": {
+          "hybrid": 0.4524,
+          "persistence": 0.4688,
+          "seasonal_naive": 1.2239,
+          "climatology": 2.2428
+        },
+        "day1": {
+          "hybrid": 1.0804,
+          "persistence": 2.2844,
+          "seasonal_naive": 1.111,
+          "climatology": 2.1065
+        },
+        "day2-3": {
+          "hybrid": 1.732,
+          "persistence": 2.6337,
+          "seasonal_naive": 1.6987,
+          "climatology": 2.1675
+        },
+        "day4-7": {
+          "hybrid": 2.226,
+          "persistence": 2.9346,
+          "seasonal_naive": 2.0653,
+          "climatology": 2.2087
+        }
+      },
+      "North Mountain": {
+        "h1": {
+          "hybrid": 0.4416,
+          "persistence": 0.4761,
+          "seasonal_naive": 0.9949,
+          "climatology": 1.7817
+        },
+        "day1": {
+          "hybrid": 1.1124,
+          "persistence": 3.0975,
+          "seasonal_naive": 0.9267,
+          "climatology": 1.7027
+        },
+        "day2-3": {
+          "hybrid": 1.7991,
+          "persistence": 3.3633,
+          "seasonal_naive": 1.4382,
+          "climatology": 1.7669
+        },
+        "day4-7": {
+          "hybrid": 2.1321,
+          "persistence": 3.6506,
+          "seasonal_naive": 1.9113,
+          "climatology": 1.8587
+        }
+      },
+      "South": {
+        "h1": {
+          "hybrid": 0.5532,
+          "persistence": 0.6347,
+          "seasonal_naive": 0.9736,
+          "climatology": 1.0078
+        },
+        "day1": {
+          "hybrid": 0.7396,
+          "persistence": 2.3771,
+          "seasonal_naive": 0.8414,
+          "climatology": 0.9542
+        },
+        "day2-3": {
+          "hybrid": 0.907,
+          "persistence": 2.4959,
+          "seasonal_naive": 1.0835,
+          "climatology": 0.9519
+        },
+        "day4-7": {
+          "hybrid": 0.9656,
+          "persistence": 2.5946,
+          "seasonal_naive": 1.1881,
+          "climatology": 0.9695
+        }
+      },
+      "South Central": {
+        "h1": {
+          "hybrid": 0.3736,
+          "persistence": 0.4438,
+          "seasonal_naive": 0.7412,
+          "climatology": 1.5638
+        },
+        "day1": {
+          "hybrid": 0.7708,
+          "persistence": 2.4213,
+          "seasonal_naive": 0.8208,
+          "climatology": 1.495
+        },
+        "day2-3": {
+          "hybrid": 1.0757,
+          "persistence": 2.5535,
+          "seasonal_naive": 1.0655,
+          "climatology": 1.5404
+        },
+        "day4-7": {
+          "hybrid": 1.1754,
+          "persistence": 2.6469,
+          "seasonal_naive": 1.2049,
+          "climatology": 1.617
+        }
+      }
+    },
+    "runtime_minutes": 36.1
+  },
+  "note": "Production model is fitted on all data. Its expected accuracy is the walk-forward result, which is computed with models that never saw the test windows."
 }
